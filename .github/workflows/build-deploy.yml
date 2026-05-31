@@ -74,7 +74,8 @@ jobs:
           # (the tag the CDK-owned task definition references).
           docker build \
             --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
-            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
