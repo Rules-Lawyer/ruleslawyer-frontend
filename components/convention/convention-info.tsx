@@ -263,7 +263,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             }}
           >
             <span className="text-3xl inline-flex items-center hover:cursor-pointer">
-              <Link target="_blank" aria-label="Legacy Board Game Admin Frontend (opens in new tab)" className="text-white hover:text-gwgreen" href={`${legacyUrls.adminUrl}/org/${String(convention.organizationId)}/con/${String(convention.id)}/admin`}><MdAdminPanelSettings aria-hidden="true" className="h-8 w-auto" /></Link>
+              <Link target="_blank" aria-label="Legacy Board Game Admin Frontend (opens in new tab)" className="text-white hover:text-gwgreen" href={`${legacyUrls.adminUrl}/org/${String(convention.organizationId)}/con/${String(convention.id)}`}><MdAdminPanelSettings aria-hidden="true" className="h-8 w-auto" /></Link>
             </span>
           </Tooltip>
 
@@ -277,7 +277,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             }}
           >
             <span className="text-3xl inline-flex items-center hover:cursor-pointer">
-              <Link target="_blank" aria-label="Legacy Librarian Frontend (opens in new tab)" className="text-white hover:text-gwgreen" href={`${legacyUrls.librarianUrl}/org/${String(convention.organizationId)}/con/${String(convention.id)}/librarian`}><MdOutlineShoppingCartCheckout aria-hidden="true" className="h-8 w-auto" /></Link>
+              <Link target="_blank" aria-label="Legacy Librarian Frontend (opens in new tab)" className="text-white hover:text-gwgreen" href={`${legacyUrls.librarianUrl}/org/${String(convention.organizationId)}/con/${String(convention.id)}`}><MdOutlineShoppingCartCheckout aria-hidden="true" className="h-8 w-auto" /></Link>
             </span>
           </Tooltip>
 
@@ -291,7 +291,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             }}
           >
             <span className="text-3xl inline-flex items-center hover:cursor-pointer">
-              <Link target="_blank" aria-label="Legacy Play Prize Entry Frontend (opens in new tab)" className="text-white hover:text-gwgreen" href={`${legacyUrls.playPrizeEntryUrl}/org/${String(convention.organizationId)}/con/${String(convention.id)}/playandwin`}><FaTrophy aria-hidden="true" className="h-8 w-auto" /></Link>
+              <Link target="_blank" aria-label="Legacy Play Prize Entry Frontend (opens in new tab)" className="text-white hover:text-gwgreen" href={`${legacyUrls.playPrizeEntryUrl}/org/${String(convention.organizationId)}/con/${String(convention.id)}`}><FaTrophy aria-hidden="true" className="h-8 w-auto" /></Link>
             </span>
           </Tooltip>
         </div>
