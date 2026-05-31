@@ -26,6 +26,7 @@ env:
   NEXT_PUBLIC_API_URL: ${{ inputs.environment == 'prod' && 'https://library.geekway.com/api' || 'https://nonprod.library.geekway.com/api' }}
 
 permissions:
+  id-token: write   # required to mint the OIDC token for AssumeRoleWithWebIdentity
   contents: read
 
 jobs:
@@ -55,8 +56,6 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           role-to-assume: ${{ env.ROLE_TO_ASSUME }}
           role-duration-seconds: 1200
