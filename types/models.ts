@@ -5,11 +5,16 @@
 // JSON-serialized form on the wire:
 //   - Prisma `DateTime`  -> string (ISO)
 //   - Prisma `Decimal`   -> string | number
-//   - Prisma `Bytes`     -> CoverArtData (see game-card getCoverArtSrc)
+//   - Prisma `Bytes`     -> CoverArtData (org/convention logos, inlined as JSON)
 // Relation/`_count` variants match the same optionality the entities declare,
 // except where a specific endpoint always includes a relation (noted inline).
+//
+// Game cover art and per-copy cover-art overrides are NOT inlined: the backend
+// omits those blobs from all JSON responses and streams them from dedicated
+// public routes instead (GET /api/game/:id/cover, GET /api/copy/:id/cover), so
+// they have no field here.
 
-/** Prisma `Bytes` as serialized over JSON (see game-card getCoverArtSrc). */
+/** Prisma `Bytes` as serialized over JSON (org/convention logos). */
 export type CoverArtData =
   | string
   | { type: "Buffer"; data: number[] }
@@ -46,7 +51,7 @@ export interface Collection {
   archived: boolean;
 }
 
-/** GameEntity (weight: Decimal, bggRating: Decimala, coverArt: Bytes). */
+/** GameEntity (weight: Decimal, bggRating: Decimal; cover art served separately). */
 export interface Game {
   id: number;
   organizationId: number;
@@ -66,11 +71,10 @@ export interface Game {
   maxTime: number | null;
   minAge: number | null;
   weight: string | number | null;
-  coverArt: CoverArtData | null;
   yearPublished: number | null;
 }
 
-/** CopyEntity (coverArtOverride: Bytes). */
+/** CopyEntity (cover-art override served separately, see header note). */
 export interface Copy {
   id: number;
   gameId: number;
@@ -81,7 +85,6 @@ export interface Copy {
   comments: string | null;
   winnable: boolean;
   winnerId: number | null;
-  coverArtOverride: CoverArtData | null;
   collectionId: number;
   organizationId: number;
 }
