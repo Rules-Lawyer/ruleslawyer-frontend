@@ -22,10 +22,10 @@ export default function RootLayout({
         <Providers>{children}</Providers>
         <footer className="justify-center gap-3 text-center text-sm text-gray-500 py-4">
           <div>
-            &copy; {new Date().getFullYear()} Geekway to the West and The Rules Lawyer. All rights reserved.
+            &copy; {new Date().getFullYear()} <a href="https://geekway.com">Geekway to the West</a> and <a href="https://ruleslawyer.net">Rules Lawyer</a>. All rights reserved.
           </div>
           <div className="text-center">
-            <img src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/poweredbybgg.png`} alt="Powered by BGG" className="h-10 inline-block" />
+            <a href="https://boardgamegeek.com"><img src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/poweredbybgg.png`} alt="Powered by BGG" className="h-10 inline-block" /></a>
           </div>
         </footer>
       </body>
