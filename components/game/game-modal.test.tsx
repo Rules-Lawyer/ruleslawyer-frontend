@@ -92,7 +92,7 @@ describe("GameModal", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: "Sync With BGG" }));
 
-    expect(fetchMock).toHaveBeenCalledWith("PUT", "/game/5/syncWithBGG", null, "tok");
+    expect(fetchMock).toHaveBeenCalledWith("PUT", "/game/5/orgId/7/syncWithBGG", null, "tok");
   });
 
   it("deletes a game with no copies after confirmation", async () => {
