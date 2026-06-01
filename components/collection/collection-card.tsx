@@ -2,6 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
+import {
+  toastDeleteError,
+  toastDeleteNetworkError,
+  toastDetachError,
+  toastDetachNetworkError,
+} from "@/utilities/toastFetchError";
 import { Skeleton, Tooltip, useDisclosure } from "@heroui/react";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import { IoLibrary } from "react-icons/io5";
@@ -122,9 +128,15 @@ export default function CollectionCard(props: CollectionCardProps) {
         session?.data?.token
       )
         .then((res) => {
+          if (!res.ok) {
+            toastDetachError(res);
+            return;
+          }
           onDeleted();
         })
-        .catch((err) => {});
+        .catch(() => {
+          toastDetachNetworkError();
+        });
     }
   };
 
@@ -143,9 +155,15 @@ export default function CollectionCard(props: CollectionCardProps) {
         session?.data?.token
       )
         .then((res) => {
+          if (!res.ok) {
+            toastDeleteError(res);
+            return;
+          }
           onDeleted();
         })
-        .catch((err) => {});
+        .catch(() => {
+          toastDeleteNetworkError();
+        });
     }
   };
 

@@ -1,6 +1,12 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import {
+  toastDeleteError,
+  toastDeleteNetworkError,
+  toastNetworkError,
+  toastSaveError,
+} from "@/utilities/toastFetchError";
+import {
   Button,
   Checkbox,
   Input,
@@ -64,9 +70,17 @@ export default function CopyModal(props: CopyModalProps) {
           "/copy/" + copy.id,
           null,
           session?.data?.token
-        ).then((res) => {
-          onClose();
-        });
+        )
+          .then((res) => {
+            if (!res.ok) {
+              toastDeleteError(res);
+              return;
+            }
+            onClose();
+          })
+          .catch(() => {
+            toastDeleteNetworkError();
+          });
       }
     }
   };
@@ -86,15 +100,24 @@ export default function CopyModal(props: CopyModalProps) {
         },
         session?.data?.token
       )
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            toastSaveError(res);
+            return undefined;
+          }
+          return res.json();
+        })
         .then((data) => {
+          if (!data) return;
           copy.collection = data.collection;
           copy.collectionId = data.collectionId;
           copy.game = data.game;
           copy.gameId = data.gameId;
           onClose();
         })
-        .catch((err) => {});
+        .catch(() => {
+          toastNetworkError();
+        });
     } else {
       const createCopyGame: {
         game:
@@ -133,9 +156,15 @@ export default function CopyModal(props: CopyModalProps) {
         session?.data?.token
       )
         .then((res) => {
+          if (!res.ok) {
+            toastSaveError(res);
+            return;
+          }
           onClose();
         })
-        .catch((err) => {});
+        .catch(() => {
+          toastNetworkError();
+        });
     }
   };
 

@@ -64,7 +64,7 @@ function routeFetch(convention: ConventionWithCollections, collections: unknown[
     if (url.endsWith("/collections")) {
       return Promise.resolve({ json: async () => collections });
     }
-    return Promise.resolve({ json: async () => ({}) });
+    return Promise.resolve({ ok: true, json: async () => ({}) });
   });
 }
 

@@ -35,7 +35,11 @@ function routeFetch(copies: unknown[] = []) {
     if (method === "GET" && url.endsWith("/copies")) {
       return Promise.resolve({ json: async () => copies });
     }
-    return Promise.resolve({ json: async () => ({ id: 5, name: "Catan", bggId: 42 }) });
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({ id: 5, name: "Catan", bggId: 42 }),
+      text: async () => JSON.stringify({ id: 5, name: "Catan", bggId: 42 }),
+    });
   });
 }
 

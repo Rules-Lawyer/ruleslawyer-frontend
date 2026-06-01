@@ -1,7 +1,7 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
+import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import {
-  addToast,
   Button,
   Checkbox,
   Input,
@@ -75,14 +75,7 @@ export default function UserModal(props: UserModalProps) {
         )
         .then((res) => {
             if (!res.ok) {
-                addToast({
-                    title: "Unable to save",
-                    description:
-                        res.status === 403
-                            ? "You don't have permission to edit this user."
-                            : "Something went wrong saving your changes.",
-                    color: "danger",
-                });
+                toastSaveError(res);
                 return;
             }
             onSaved?.({
@@ -92,12 +85,8 @@ export default function UserModal(props: UserModalProps) {
             });
             onClose();
           })
-          .catch((err) => {
-              addToast({
-                  title: "Unable to save",
-                  description: "Could not reach the server. Please try again.",
-                  color: "danger",
-              });
+          .catch(() => {
+              toastNetworkError();
           });
       } else {
         frontendFetch(
@@ -113,14 +102,7 @@ export default function UserModal(props: UserModalProps) {
         )
         .then((res) => {
             if (!res.ok) {
-                addToast({
-                    title: "Unable to save",
-                    description:
-                        res.status === 403
-                            ? "You don't have permission to edit this user."
-                            : "Something went wrong saving your changes.",
-                    color: "danger",
-                });
+                toastSaveError(res);
                 return;
             }
             onSaved?.({
@@ -130,12 +112,8 @@ export default function UserModal(props: UserModalProps) {
             });
             onClose();
           })
-          .catch((err) => {
-              addToast({
-                  title: "Unable to save",
-                  description: "Could not reach the server. Please try again.",
-                  color: "danger",
-              });
+          .catch(() => {
+              toastNetworkError();
           });
       }
     } else if (userType === "convention") {
@@ -152,14 +130,7 @@ export default function UserModal(props: UserModalProps) {
         )
         .then((res) => {
             if (!res.ok) {
-                addToast({
-                    title: "Unable to save",
-                    description:
-                        res.status === 403
-                            ? "You don't have permission to edit this user."
-                            : "Something went wrong saving your changes.",
-                    color: "danger",
-                });
+                toastSaveError(res);
                 return;
             }
             onSaved?.({
@@ -169,12 +140,8 @@ export default function UserModal(props: UserModalProps) {
             });
             onClose();
           })
-          .catch((err) => {
-              addToast({
-                  title: "Unable to save",
-                  description: "Could not reach the server. Please try again.",
-                  color: "danger",
-              });
+          .catch(() => {
+              toastNetworkError();
           });
       } else {
         frontendFetch(
@@ -190,14 +157,7 @@ export default function UserModal(props: UserModalProps) {
         )
         .then((res) => {
             if (!res.ok) {
-                addToast({
-                    title: "Unable to save",
-                    description:
-                        res.status === 403
-                            ? "You don't have permission to edit this user."
-                            : "Something went wrong saving your changes.",
-                    color: "danger",
-                });
+                toastSaveError(res);
                 return;
             }
             onSaved?.({
@@ -207,12 +167,8 @@ export default function UserModal(props: UserModalProps) {
             });
             onClose();
           })
-          .catch((err) => {
-              addToast({
-                  title: "Unable to save",
-                  description: "Could not reach the server. Please try again.",
-                  color: "danger",
-              });
+          .catch(() => {
+              toastNetworkError();
           });
       }
     }

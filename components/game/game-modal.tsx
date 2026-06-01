@@ -1,6 +1,13 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import {
+  toastDeleteError,
+  toastDeleteNetworkError,
+  toastNetworkError,
+  toastSaveError,
+  toastSyncError,
+} from "@/utilities/toastFetchError";
+import {
   Button,
   Input,
   Modal,
@@ -49,10 +56,16 @@ export default function GameModal(props: GameModalProps) {
   const onDelete = () => {
     if (confirm("Are you sure you want to delete this collection?")) {
       frontendFetch("DELETE", "/game/" + game?.id, null, session?.data?.token)
-        .then(() => {
+        .then((res) => {
+          if (!res.ok) {
+            toastDeleteError(res);
+            return;
+          }
           onClose();
         })
-        .catch(() => {});
+        .catch(() => {
+          toastDeleteNetworkError();
+        });
     }
   };
 
@@ -63,12 +76,21 @@ export default function GameModal(props: GameModalProps) {
       { name: gameName, bggId: Number(bggId) },
       session?.data?.token
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          toastSaveError(res);
+          return undefined;
+        }
+        return res.json();
+      })
       .then((data) => {
+        if (!data) return;
         setData(data);
         onClose();
       })
-      .catch(() => {});
+      .catch(() => {
+        toastNetworkError();
+      });
   };
 
   const onSyncWithBGG = () => {
@@ -78,12 +100,24 @@ export default function GameModal(props: GameModalProps) {
       null,
       session?.data?.token
     )
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          await toastSyncError(res);
+          return undefined;
+        }
+        // syncWithBGG can answer 200 with an empty body; tolerate that rather
+        // than letting res.json() throw into the network-error catch.
+        const text = await res.text();
+        return text ? JSON.parse(text) : undefined;
+      })
       .then((data) => {
+        if (!data) return;
         setData(data);
         onClose();
       })
-      .catch(() => {});
+      .catch(() => {
+        toastNetworkError();
+      });
   };
 
   useEffect(() => {
