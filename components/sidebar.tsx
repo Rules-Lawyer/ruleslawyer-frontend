@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SignOut } from "./auth/signout-client";
 import { CircularProgress } from "@heroui/react";
 import usePermissions from "@/utilities/swr/usePermissions";
@@ -23,20 +23,26 @@ export default function SideBar({
   const { user } = useUser();
 
   const pathname = usePathname();
+  const router = useRouter();
 
   const [collapsed, setCollapsed] = useState(initialCollapsed);
 
   const navRef = useRef<HTMLDivElement>(null);
-  const hasClicked = useRef(false);
+  const hasRedirected = useRef(false);
 
+  // /dashboard is an empty shell; once permissions load, send the user to their
+  // first available section. The destination is read from the first rendered nav
+  // link (rather than re-deriving the branching above) so it always matches what
+  // the nav shows — including the orgs-less / conventions-only case. replace()
+  // keeps the blank /dashboard out of history so Back doesn't bounce here.
   useEffect(() => {
-    if (isLoading || hasClicked.current || pathname !== "/dashboard") return;
-    const firstLink = navRef.current?.querySelector("a");
-    if (firstLink) {
-      hasClicked.current = true;
-      firstLink.click();
+    if (isLoading || hasRedirected.current || pathname !== "/dashboard") return;
+    const target = navRef.current?.querySelector("a")?.getAttribute("href");
+    if (target) {
+      hasRedirected.current = true;
+      router.replace(target);
     }
-  }, [isLoading]);
+  }, [isLoading, pathname, router]);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
