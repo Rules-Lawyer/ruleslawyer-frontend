@@ -24,9 +24,18 @@ export default function usePermissions() {
     conventions: { data: combined.data?.conventions ?? [] },
   };
 
+  // combined.isLoading only covers the permissions request itself. While auth is
+  // still resolving (Auth0 loading the user, then the access-token fetch), the SWR
+  // key above is null, so combined.isLoading is false and consumers would render
+  // empty data with no loading indicator. Treat that window as loading too.
+  const isLoading =
+    session.status === "loading" ||
+    (session.status === "authenticated" && !session?.data?.token) ||
+    combined.isLoading;
+
   return {
     permissions: permissions,
-    isLoading: combined.isLoading,
+    isLoading: isLoading,
     isError: {
       userError: combined.error,
       organizationsError: combined.error,
