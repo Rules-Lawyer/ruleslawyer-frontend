@@ -1,18 +1,23 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useUser } from "@auth0/nextjs-auth0";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SideBar from "@/components/sidebar";
 import usePermissions from "@/utilities/swr/usePermissions";
 
 jest.mock("@/utilities/swr/usePermissions");
 // @auth0/nextjs-auth0 is auto-mocked via <rootDir>/__mocks__ (its package ships
 // only an ESM export condition jest's CJS resolver can't load).
-jest.mock("next/navigation", () => ({ usePathname: jest.fn() }));
+jest.mock("next/navigation", () => ({
+  usePathname: jest.fn(),
+  useRouter: jest.fn(),
+}));
 
 const usePermissionsMock = usePermissions as jest.Mock;
 const useUserMock = useUser as jest.Mock;
 const usePathnameMock = usePathname as jest.Mock;
+const useRouterMock = useRouter as jest.Mock;
+const replaceMock = jest.fn();
 
 interface OrgEntry {
   organizationId: number;
@@ -45,6 +50,9 @@ describe("SideBar", () => {
     usePermissionsMock.mockReset();
     useUserMock.mockReset();
     usePathnameMock.mockReset();
+    useRouterMock.mockReset();
+    replaceMock.mockReset();
+    useRouterMock.mockReturnValue({ replace: replaceMock });
     // Default: not on /dashboard so the auto-redirect effect stays dormant.
     usePathnameMock.mockReturnValue("/dashboard/organizations");
     useUserMock.mockReturnValue({ user: { name: "Mattie", picture: "" } });
@@ -131,5 +139,27 @@ describe("SideBar", () => {
     expect(
       screen.getByRole("button", { name: "Expand sidebar" })
     ).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("redirects from the empty /dashboard to the first nav link once loaded", () => {
+    usePathnameMock.mockReturnValue("/dashboard");
+    mockPermissions({ organizations: singleOrg });
+    render(<SideBar />);
+    // First rendered link for a single-org member is their org dashboard.
+    expect(replaceMock).toHaveBeenCalledWith("/dashboard/organization/7");
+  });
+
+  it("does not redirect while permissions are still loading", () => {
+    usePathnameMock.mockReturnValue("/dashboard");
+    mockPermissions({ isLoading: true });
+    render(<SideBar />);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("does not redirect when already on a real section", () => {
+    usePathnameMock.mockReturnValue("/dashboard/organizations");
+    mockPermissions({ organizations: singleOrg });
+    render(<SideBar />);
+    expect(replaceMock).not.toHaveBeenCalled();
   });
 });

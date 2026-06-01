@@ -78,6 +78,42 @@ describe("usePermissions", () => {
     expect(result.current.permissions.conventions.data).toEqual([{ id: 20 }]);
   });
 
+  it("reports loading while Auth0 is still resolving the user", () => {
+    useAuthMock.mockReturnValue({
+      data: { user: undefined, token: undefined },
+      status: "loading",
+    });
+    useSWRMock.mockReturnValue({ data: undefined, error: undefined, isLoading: false });
+
+    const { result } = renderHook(() => usePermissions());
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it("reports loading once authenticated but before the access token arrives", () => {
+    useAuthMock.mockReturnValue({
+      data: { user: { email: "user@test.dev" }, token: undefined },
+      status: "authenticated",
+    });
+    useSWRMock.mockReturnValue({ data: undefined, error: undefined, isLoading: false });
+
+    const { result } = renderHook(() => usePermissions());
+
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it("is not loading when unauthenticated", () => {
+    useAuthMock.mockReturnValue({
+      data: { user: undefined, token: undefined },
+      status: "unauthenticated",
+    });
+    useSWRMock.mockReturnValue({ data: undefined, error: undefined, isLoading: false });
+
+    const { result } = renderHook(() => usePermissions());
+
+    expect(result.current.isLoading).toBe(false);
+  });
+
   it("surfaces the SWR error on every permission slice", () => {
     mockAuth({ email: "user@test.dev", token: "tok" });
     const error = new Error("boom");
