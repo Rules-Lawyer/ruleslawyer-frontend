@@ -28,7 +28,6 @@ function makeCopy(over: Partial<GameCopy> = {}): GameCopy {
     comments: null,
     winnable: false,
     winnerId: null,
-    coverArtOverride: null,
     collectionId: 1,
     organizationId: 1,
     checkOuts: [],

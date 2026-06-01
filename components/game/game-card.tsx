@@ -12,45 +12,6 @@ import usePermissions from "@/utilities/swr/usePermissions";
 import BoardGameGeek from "../boardgamegeek/board-game-geek";
 import { GameWithCopies } from "@/types/models";
 
-function getCoverArtSrc(coverArt: unknown): string | null {
-  if (!coverArt) return null;
-  if (typeof coverArt === "string") return coverArt;
-  if (typeof coverArt !== "object") return null;
-
-  let bytes: number[] | null = null;
-  const buffer = coverArt as { type?: string; data?: number[] };
-
-  if (buffer.type === "Buffer" && buffer.data != null) {
-    // Standard JSON.stringify(Buffer) format: {type: "Buffer", data: [...]}
-    bytes = Array.from(buffer.data);
-  } else {
-    // Numeric-keyed object: {"0": 255, "1": 216, ...}
-    const numeric = coverArt as Record<string, number>;
-    const keys = Object.keys(numeric);
-
-    if (keys.length > 0 && keys.every((k) => !isNaN(Number(k)))) {
-      bytes = keys.sort((a, b) => Number(a) - Number(b)).map((k) => numeric[k]);
-    }
-  }
-
-  if (!bytes || bytes.length === 0) {
-    return null;
-  }
-
-  const u8 = new Uint8Array(bytes);
-  let mimeType = "image/jpeg";
-
-  if (u8[0] === 0x89 && u8[1] === 0x50) {
-    mimeType = "image/png";
-  } else if (u8[0] === 0x47 && u8[1] === 0x49) {
-    mimeType = "image/gif";
-  }
-
-  const binary = Array.from(u8).map((b) => String.fromCharCode(b)).join("");
-
-  return `data:${mimeType};base64,${btoa(binary)}`;
-}
-
 interface GameCardProps {
   gameIn?: GameWithCopies;
   gameId: number;
@@ -107,10 +68,22 @@ function GameCard(props: GameCardProps) {
   });
   const { isOpen, onOpen, onClose } = disclosure;
 
+  // Cover art is no longer inlined in the game JSON; it's streamed from a
+  // dedicated public backend route. Point the <img> straight at it and fall
+  // back to the placeholder icon if the game has no cover (the route 404s,
+  // firing onError).
+  const [coverError, setCoverError] = useState(false);
+
   const coverArtSrc = React.useMemo(
-    () => getCoverArtSrc(game?.coverArt),
-    [game?.coverArt]
+    () =>
+      game ? `${process.env.NEXT_PUBLIC_API_URL}/game/${game.id}/cover` : null,
+    [game?.id]
   );
+
+  // Reset the error flag when switching to a different game.
+  useEffect(() => {
+    setCoverError(false);
+  }, [game?.id]);
 
   useEffect(() => {
     if (gameIn) {
@@ -172,8 +145,13 @@ function GameCard(props: GameCardProps) {
         className="flex items-center border-2 border-gwblue w-88 h-46 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] cursor-pointer"
       >
         <div className="flex-col p-3 w-40">
-          {coverArtSrc ? (
-            <img src={coverArtSrc} alt={game.name} className="w-full h-full object-cover" />
+          {coverArtSrc && !coverError ? (
+            <img
+              src={coverArtSrc}
+              alt={game.name}
+              onError={() => setCoverError(true)}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <IoLibrary size={64} />
           )}

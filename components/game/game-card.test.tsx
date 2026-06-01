@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GameCard from "@/components/game/game-card";
 import usePermissions from "@/utilities/swr/usePermissions";
-import type { CoverArtData, GameWithCopies } from "@/types/models";
+import type { GameWithCopies } from "@/types/models";
 
 jest.mock("@/utilities/swr/useAuth", () => ({
   useAuth: () => ({ data: { token: "tok", user: { email: "u@test.dev" } } }),
@@ -38,7 +38,6 @@ function makeGame(over: Partial<GameWithCopies> = {}): GameWithCopies {
     organizationId: 7,
     name: "Catan",
     copies: [],
-    coverArt: null,
     bggId: null,
     ...over,
   } as unknown as GameWithCopies;
@@ -90,43 +89,21 @@ describe("GameCard — rendering", () => {
     expect(screen.getByRole("button", { name: "Edit game" })).toBeInTheDocument();
   });
 
-  it("renders the library icon (no img) when there is no cover art", async () => {
-    render(<GameCard gameIn={makeGame({ coverArt: null })} gameId={1} />);
-    await screen.findByRole("button", { name: "Edit Catan" });
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
-  });
-});
-
-describe("GameCard — cover art decoding", () => {
-  beforeEach(() => mockPermissions({ superAdmin: true }));
-
-  it("renders a string cover art straight through as the img src", async () => {
-    const coverArt: CoverArtData = "https://cdn.test/cover.png";
-    render(<GameCard gameIn={makeGame({ coverArt })} gameId={1} />);
+  it("points the cover <img> at the backend cover route for the game id", async () => {
+    render(<GameCard gameIn={makeGame({ id: 42 })} gameId={42} />);
     const img = await screen.findByRole("img", { name: "Catan" });
-    expect(img).toHaveAttribute("src", "https://cdn.test/cover.png");
+    expect(img.getAttribute("src")).toMatch(/\/game\/42\/cover$/);
   });
 
-  it("decodes a {type:'Buffer'} payload, sniffing JPEG by magic bytes", async () => {
-    // 0xFF 0xD8 is the JPEG start-of-image marker -> default image/jpeg.
-    const coverArt: CoverArtData = { type: "Buffer", data: [0xff, 0xd8, 0x01] };
-    render(<GameCard gameIn={makeGame({ coverArt })} gameId={1} />);
+  it("falls back to the library icon when the cover image fails to load", async () => {
+    render(<GameCard gameIn={makeGame()} gameId={1} />);
     const img = await screen.findByRole("img", { name: "Catan" });
-    expect(img.getAttribute("src")).toMatch(/^data:image\/jpeg;base64,/);
-  });
 
-  it("sniffs PNG magic bytes from a numeric-keyed payload", async () => {
-    // 0x89 0x50 ("\x89P") is the PNG signature start.
-    const coverArt: CoverArtData = { "0": 0x89, "1": 0x50, "2": 0x4e };
-    render(<GameCard gameIn={makeGame({ coverArt })} gameId={1} />);
-    const img = await screen.findByRole("img", { name: "Catan" });
-    expect(img.getAttribute("src")).toMatch(/^data:image\/png;base64,/);
-  });
+    // The cover route 404s for a game with no art; the browser fires onError.
+    fireEvent.error(img);
 
-  it("renders no img for an empty byte payload", async () => {
-    const coverArt: CoverArtData = { type: "Buffer", data: [] };
-    render(<GameCard gameIn={makeGame({ coverArt })} gameId={1} />);
-    await screen.findByRole("button", { name: "Edit Catan" });
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole("img")).not.toBeInTheDocument()
+    );
   });
 });

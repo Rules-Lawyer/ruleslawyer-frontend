@@ -64,7 +64,6 @@ function makeCopy(over: Partial<CopyForEditor> = {}): CopyForEditor {
     dateAdded: "2026-01-01",
     dateRetired: null,
     winnerId: null,
-    coverArtOverride: null,
     game: { id: 10, name: "Catan" } as CopyForEditor["game"],
     collection: { id: 3, name: "Main", organizationId: 7, public: true, allowWinning: false, archived: false },
     ...over,

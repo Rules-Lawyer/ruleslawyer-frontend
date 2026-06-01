@@ -30,7 +30,6 @@ function makeGame(over: Partial<Game> = {}): Game {
     maxTime: null,
     minAge: null,
     weight: null,
-    coverArt: null,
     yearPublished: null,
     ...over,
   };
