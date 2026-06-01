@@ -50,6 +50,9 @@ describe("SideBar", () => {
     usePermissionsMock.mockReset();
     useUserMock.mockReset();
     usePathnameMock.mockReset();
+    useRouterMock.mockReset();
+    replaceMock.mockReset();
+    useRouterMock.mockReturnValue({ replace: replaceMock });
     // Default: not on /dashboard so the auto-redirect effect stays dormant.
     usePathnameMock.mockReturnValue("/dashboard/organizations");
     useUserMock.mockReturnValue({ user: { name: "Mattie", picture: "" } });
@@ -136,5 +139,27 @@ describe("SideBar", () => {
     expect(
       screen.getByRole("button", { name: "Expand sidebar" })
     ).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("redirects from the empty /dashboard to the first nav link once loaded", () => {
+    usePathnameMock.mockReturnValue("/dashboard");
+    mockPermissions({ organizations: singleOrg });
+    render(<SideBar />);
+    // First rendered link for a single-org member is their org dashboard.
+    expect(replaceMock).toHaveBeenCalledWith("/dashboard/organization/7");
+  });
+
+  it("does not redirect while permissions are still loading", () => {
+    usePathnameMock.mockReturnValue("/dashboard");
+    mockPermissions({ isLoading: true });
+    render(<SideBar />);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("does not redirect when already on a real section", () => {
+    usePathnameMock.mockReturnValue("/dashboard/organizations");
+    mockPermissions({ organizations: singleOrg });
+    render(<SideBar />);
+    expect(replaceMock).not.toHaveBeenCalled();
   });
 });
