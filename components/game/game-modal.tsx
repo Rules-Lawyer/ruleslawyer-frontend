@@ -96,7 +96,7 @@ export default function GameModal(props: GameModalProps) {
   const onSyncWithBGG = () => {
     frontendFetch(
       "PUT",
-      "/game/" + game?.id + "/syncWithBGG",
+      "/game/" + game?.id + "/orgId/" + game?.organizationId + "/syncWithBGG",
       null,
       session?.data?.token
     )
