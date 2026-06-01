@@ -75,7 +75,7 @@ export default function BoardGameGeek(props: BoardGameGeekProps) {
         </span>
       ) : null}
       {game.bggRating != null ? (
-        <div className="relative flex items-center justify-center size-8">
+        <div className="relative flex items-center justify-center size-8 mr-3">
           <BsFillHexagonFill
             className="size-full"
             style={{ color: `var(--color-bgg-${ratingTier})` }}

@@ -33,7 +33,7 @@ export default function OrgView(props: { params: Params }) {
   if (!organization) return <p>No organization data</p>;
 
   return (
-    <div className="flex row gap-9 items-center text-center">
+    <div className="flex flex-row flex-wrap gap-9 items-center text-center">
       <div>
         <Link
           href={`/dashboard/organization/${params.orgId}/conventions`}
