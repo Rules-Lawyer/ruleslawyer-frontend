@@ -36,6 +36,7 @@ export default function GameModal(props: GameModalProps) {
   const [isLoading, setLoading] = useState(true);
   const [gameName, setGameName] = useState("");
   const [bggId, setBggId] = useState<string | number | null>("");
+  const [bggVersionId, setBggVersionId] = useState<string | number | null>("");
   const [readOnly, setReadOnly] = useState(true);
   const [trigger, setTrigger] = useState(0);
   const [copyCount, setCopyCount] = useState(0);
@@ -69,11 +70,41 @@ export default function GameModal(props: GameModalProps) {
     }
   };
 
+  // Map the text inputs to int-or-null: an empty/cleared field means "no value"
+  // (null), not BGG id 0. Number("") is 0 and Number(undefined) is NaN, so the
+  // raw Number() coercion would persist bogus ids on every save.
+  const toIntOrNull = (v: string | number | null | undefined) => {
+    const s = String(v ?? "").trim();
+    return s === "" ? null : Number(s);
+  };
+
   const onSave = () => {
+    let syncWithBgg = false;
+
+    // Normalize both sides before comparing: the inputs hold strings once
+    // edited, so a raw !== against the model's numbers ("42" !== 42) would
+    // report a change even when the value is unchanged.
+    if (
+      toIntOrNull(game?.bggId) !== toIntOrNull(bggId) ||
+      toIntOrNull(game?.bggVersionId) !== toIntOrNull(bggVersionId)
+    ) {
+      if (
+        confirm(
+          "BGG ID and/or BGG Version ID have changed. Do you want to sync with BGG?"
+        )
+      ) {
+        syncWithBgg = true;
+      }
+    }
+
     frontendFetch(
       "PUT",
       "/game/" + game?.id,
-      { name: gameName, bggId: Number(bggId) },
+      {
+        name: gameName,
+        bggId: toIntOrNull(bggId),
+        bggVersionId: toIntOrNull(bggVersionId),
+      },
       session?.data?.token
     )
       .then((res) => {
@@ -86,6 +117,12 @@ export default function GameModal(props: GameModalProps) {
       .then((data) => {
         if (!data) return;
         setData(data);
+
+        if (syncWithBgg) {
+          onSyncWithBGG();
+          return;
+        }
+
         onClose();
       })
       .catch(() => {
@@ -128,6 +165,7 @@ export default function GameModal(props: GameModalProps) {
       setData(gameIn);
       setGameName(gameIn.name);
       setBggId(gameIn.bggId);
+      setBggVersionId(gameIn.bggVersionId);
       setLoading(false);
     }
 
@@ -158,6 +196,7 @@ export default function GameModal(props: GameModalProps) {
           setData(data);
           setGameName(data.name);
           setBggId(data.bggId);
+          setBggVersionId(data.bggVersionId);
           setLoading(false);
         })
         .catch(() => {});
@@ -221,6 +260,14 @@ export default function GameModal(props: GameModalProps) {
                 label="BoardGameGeek ID"
                 value={bggId == null ? "" : String(bggId)}
                 onValueChange={(value) => setBggId(value)}
+              />
+
+              <Input
+                name="bggVersionId"
+                type="text"
+                label="BoardGameGeek Version ID"
+                value={bggVersionId == null ? "" : String(bggVersionId)}
+                onValueChange={(value) => setBggVersionId(value)}
               />
 
               <CopyBubbles game={game} disclosure={copyDisclosure} />

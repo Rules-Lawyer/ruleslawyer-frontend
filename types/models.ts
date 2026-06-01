@@ -56,6 +56,7 @@ export interface Game {
   id: number;
   organizationId: number;
   bggId: number | null;
+  bggVersionId: number | null;
   bggRank: number | null;
   bggRating: string | number | null;
   lastBGGSync: string | null;
@@ -85,6 +86,7 @@ export interface Copy {
   comments: string | null;
   winnable: boolean;
   winnerId: number | null;
+  bggVersionOverride: number | null;
   collectionId: number;
   organizationId: number;
 }

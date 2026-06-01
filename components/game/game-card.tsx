@@ -74,11 +74,17 @@ function GameCard(props: GameCardProps) {
   // firing onError).
   const [coverError, setCoverError] = useState(false);
 
-  const coverArtSrc = React.useMemo(
-    () =>
-      game ? `${process.env.NEXT_PUBLIC_API_URL}/game/${game.id}/cover` : null,
-    [game?.id]
-  );
+  // The cover route sends a long-lived Cache-Control header, so the browser
+  // keeps serving the old image after a BGG resync swaps in new art. Bust the
+  // cache by keying a query param on lastBGGSync, which changes on every sync.
+  const coverArtSrc = React.useMemo(() => {
+    const id = game?.id;
+    if (id == null) return null;
+    const base = `${process.env.NEXT_PUBLIC_API_URL}/game/${id}/cover`;
+    return game?.lastBGGSync
+      ? `${base}?v=${encodeURIComponent(game.lastBGGSync)}`
+      : base;
+  }, [game?.id, game?.lastBGGSync]);
 
   // Reset the error flag when switching to a different game.
   useEffect(() => {

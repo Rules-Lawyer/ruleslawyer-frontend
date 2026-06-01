@@ -68,13 +68,39 @@ describe("GameModal", () => {
   });
 
   it("titles the modal with the game name and prefills the inputs", async () => {
-    render(<GameModal gameIn={makeGame()} disclosure={openDisclosure()} />);
+    render(
+      <GameModal
+        gameIn={makeGame({ bggVersionId: 99 })}
+        disclosure={openDisclosure()}
+      />
+    );
     expect(await screen.findByText("Catan")).toBeInTheDocument();
     expect(screen.getByLabelText("Game Name")).toHaveValue("Catan");
     expect(screen.getByLabelText("BoardGameGeek ID")).toHaveValue("42");
+    expect(screen.getByLabelText("BoardGameGeek Version ID")).toHaveValue("99");
   });
 
-  it("PUTs the game with a numeric bggId on save", async () => {
+  it("PUTs the game with numeric bggId/bggVersionId on save", async () => {
+    render(
+      <GameModal
+        gameIn={makeGame({ id: 5, bggVersionId: 99 })}
+        disclosure={openDisclosure()}
+      />
+    );
+
+    await userEvent.click(await screen.findByRole("button", { name: "Save" }));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "PUT",
+      "/game/5",
+      { name: "Catan", bggId: 42, bggVersionId: 99 },
+      "tok"
+    );
+  });
+
+  it("sends null (not 0) for an unset bggVersionId on save", async () => {
+    // makeGame() leaves bggVersionId undefined -> the field is empty -> null,
+    // so we never persist a bogus version id 0.
     render(<GameModal gameIn={makeGame({ id: 5 })} disclosure={openDisclosure()} />);
 
     await userEvent.click(await screen.findByRole("button", { name: "Save" }));
@@ -82,7 +108,7 @@ describe("GameModal", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       "PUT",
       "/game/5",
-      { name: "Catan", bggId: 42 },
+      { name: "Catan", bggId: 42, bggVersionId: null },
       "tok"
     );
   });
@@ -93,6 +119,48 @@ describe("GameModal", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Sync With BGG" }));
 
     expect(fetchMock).toHaveBeenCalledWith("PUT", "/game/5/orgId/7/syncWithBGG", null, "tok");
+  });
+
+  it("does not prompt to sync when re-typing the same bggId on save", async () => {
+    // Editing the field turns the state into a string ("42"); normalizing both
+    // sides means "42" still equals the model's 42, so no change is detected.
+    const confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
+    render(<GameModal gameIn={makeGame({ id: 5 })} disclosure={openDisclosure()} />);
+
+    const bggInput = await screen.findByLabelText("BoardGameGeek ID");
+    await userEvent.clear(bggInput);
+    await userEvent.type(bggInput, "42");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(confirmSpy).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      "PUT",
+      "/game/5/orgId/7/syncWithBGG",
+      null,
+      "tok"
+    );
+    confirmSpy.mockRestore();
+  });
+
+  it("prompts and syncs when the bggId actually changes on save", async () => {
+    const confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
+    render(<GameModal gameIn={makeGame({ id: 5 })} disclosure={openDisclosure()} />);
+
+    const bggInput = await screen.findByLabelText("BoardGameGeek ID");
+    await userEvent.clear(bggInput);
+    await userEvent.type(bggInput, "43");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(confirmSpy).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        "PUT",
+        "/game/5/orgId/7/syncWithBGG",
+        null,
+        "tok"
+      )
+    );
+    confirmSpy.mockRestore();
   });
 
   it("deletes a game with no copies after confirmation", async () => {
