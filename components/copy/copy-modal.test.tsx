@@ -40,6 +40,7 @@ function routeFetch() {
     }
     // save (PUT/POST) response
     return Promise.resolve({
+      ok: true,
       json: async () => ({ collection: {}, collectionId: 3, game: {}, gameId: 10 }),
     });
   });

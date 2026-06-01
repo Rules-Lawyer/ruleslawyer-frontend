@@ -35,7 +35,7 @@ const openDisclosure = () =>
 // The modal stays in its loading state until the convention-type list resolves,
 // so every test needs this fetch to return an array.
 function mockConventionTypes() {
-  fetchMock.mockResolvedValue({ json: async () => [{ id: 1, name: "Annual" }] });
+  fetchMock.mockResolvedValue({ ok: true, json: async () => [{ id: 1, name: "Annual" }] });
 }
 
 function makeConvention(over: Partial<Convention> = {}): Convention {

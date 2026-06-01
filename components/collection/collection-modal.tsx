@@ -1,5 +1,6 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
+import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import {
   Button,
   Checkbox,
@@ -65,11 +66,20 @@ export default function CollectionModal(props: CollectionModalProps) {
         },
         session?.data?.token
       )
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            toastSaveError(res);
+            return undefined;
+          }
+          return res.json();
+        })
         .then((data) => {
+          if (!data) return;
           onClose();
         })
-        .catch((err) => {});
+        .catch(() => {
+          toastNetworkError();
+        });
     } else if (importFile) {
       const formData = new FormData();
 
@@ -85,8 +95,15 @@ export default function CollectionModal(props: CollectionModalProps) {
         undefined,
         true
       )
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            toastSaveError(res);
+            return undefined;
+          }
+          return res.json();
+        })
         .then((data) => {
+          if (!data) return;
           if (conventionId) {
             frontendFetch(
               "POST",
@@ -97,14 +114,26 @@ export default function CollectionModal(props: CollectionModalProps) {
               null,
               session?.data?.token
             )
-              .then((res) => res.json())
+              .then((res) => {
+                if (!res.ok) {
+                  toastSaveError(res);
+                  return undefined;
+                }
+                return res.json();
+              })
               .then((data) => {
+                if (!data) return;
                 onClose();
               })
-              .catch((err) => {});
+              .catch(() => {
+                toastNetworkError();
+              });
           } else {
             onClose();
           }
+        })
+        .catch(() => {
+          toastNetworkError();
         });
     } else {
       frontendFetch(
@@ -116,8 +145,15 @@ export default function CollectionModal(props: CollectionModalProps) {
         },
         session?.data?.token
       )
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            toastSaveError(res);
+            return undefined;
+          }
+          return res.json();
+        })
         .then((data) => {
+          if (!data) return;
           if (conventionId) {
             frontendFetch(
               "POST",
@@ -125,16 +161,27 @@ export default function CollectionModal(props: CollectionModalProps) {
               null,
               session?.data?.token
             )
-              .then((res) => res.json())
+              .then((res) => {
+                if (!res.ok) {
+                  toastSaveError(res);
+                  return undefined;
+                }
+                return res.json();
+              })
               .then((data) => {
+                if (!data) return;
                 onClose();
               })
-              .catch((err) => {});
+              .catch(() => {
+                toastNetworkError();
+              });
           } else {
             onClose();
           }
         })
-        .catch((err) => {});
+        .catch(() => {
+          toastNetworkError();
+        });
     }
   };
 
@@ -147,11 +194,20 @@ export default function CollectionModal(props: CollectionModalProps) {
         null,
         session?.data?.token
       )
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          toastSaveError(res);
+          return undefined;
+        }
+        return res.json();
+      })
       .then((data) => {
+        if (!data) return;
         onClose();
       })
-      .catch((err) => {});
+      .catch(() => {
+        toastNetworkError();
+      });
       }
     }
   };

@@ -2,6 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
+import {
+  toastDeleteError,
+  toastDeleteNetworkError,
+} from "@/utilities/toastFetchError";
 import { Skeleton, Tooltip, useDisclosure } from "@heroui/react";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import { IoLibrary } from "react-icons/io5";
@@ -108,9 +112,15 @@ export default function UserCard(props: UserCardProps) {
           session?.data?.token
         )
           .then((res) => {
+            if (!res.ok) {
+              toastDeleteError(res);
+              return;
+            }
             onDeleted();
           })
-          .catch((err) => {});
+          .catch(() => {
+            toastDeleteNetworkError();
+          });
       }
     } else if (userType === 'convention') {
       if (confirm("Are you sure you want to delete this user?")) {
@@ -121,9 +131,15 @@ export default function UserCard(props: UserCardProps) {
           session?.data?.token
         )
           .then((res) => {
+            if (!res.ok) {
+              toastDeleteError(res);
+              return;
+            }
             onDeleted();
           })
-          .catch((err) => {});
+          .catch(() => {
+            toastDeleteNetworkError();
+          });
       }
     }
   };

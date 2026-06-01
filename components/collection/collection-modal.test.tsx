@@ -50,7 +50,7 @@ describe("CollectionModal — edit", () => {
     fetchMock.mockReset();
     usePermissionsMock.mockReset();
     mockPermissions({ superAdmin: true });
-    fetchMock.mockResolvedValue({ json: async () => ({ id: 5 }) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: 5 }) });
   });
 
   it("titles the modal 'Edit' and prefills the form from the collection", async () => {
@@ -108,7 +108,7 @@ describe("CollectionModal — create", () => {
   });
 
   it("POSTs a new collection to the organization", async () => {
-    fetchMock.mockResolvedValue({ json: async () => ({ id: 42 }) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: 42 }) });
     render(<CollectionModal organizationId={7} disclosure={openDisclosure()} />);
 
     await userEvent.type(await screen.findByLabelText("Name"), "New Shelf");
@@ -123,7 +123,7 @@ describe("CollectionModal — create", () => {
   });
 
   it("attaches the new collection to a convention when conventionId is set", async () => {
-    fetchMock.mockResolvedValue({ json: async () => ({ id: 42 }) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: 42 }) });
     render(
       <CollectionModal organizationId={7} conventionId={3} disclosure={openDisclosure()} />
     );
@@ -147,7 +147,7 @@ describe("CollectionModal — import", () => {
     fetchMock.mockReset();
     usePermissionsMock.mockReset();
     mockPermissions({ superAdmin: true });
-    fetchMock.mockResolvedValue({ json: async () => ({ collectionId: 99 }) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ collectionId: 99 }) });
   });
 
   it("titles the modal 'Import' and uploads a multipart payload", async () => {
@@ -179,7 +179,7 @@ describe("CollectionModal — permissions", () => {
 
   it("hides Save and Archive from read-only viewers", async () => {
     mockPermissions({ superAdmin: false });
-    fetchMock.mockResolvedValue({ json: async () => ({ id: 5 }) });
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ id: 5 }) });
     render(<CollectionModal collectionIn={makeCollection()} disclosure={openDisclosure()} />);
 
     await screen.findByText("Edit Collection");

@@ -1,5 +1,6 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
+import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import CollectionCard from "../collection/collection-card";
@@ -154,11 +155,20 @@ export default function ConventionInfo(props: ConventionInfoProps) {
       {},
       session?.data?.token
     )
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          toastSaveError(res);
+          return undefined;
+        }
+        return res.json();
+      })
       .then((data) => {
+        if (!data) return;
         onClose();
       })
-      .catch((err) => {});
+      .catch(() => {
+        toastNetworkError();
+      });
   };
 
   const disclosure = useDisclosure({
