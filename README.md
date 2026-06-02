@@ -2,9 +2,6 @@
 
 The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, and users, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
 
-This frontend is a **work in progress**. It already offers many capabilities the legacy board-game-admin frontend lacks, but it is not yet a complete replacement — most notably, attendee management is still missing.
-
-The end goal is a single unified experience for admins, geek guides, and attendees.
 ## Tech stack
 
 - [Next.js 15](https://nextjs.org/) (App Router, standalone output) with React 19
@@ -12,21 +9,6 @@ The end goal is a single unified experience for admins, geek guides, and attende
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [Auth0](https://auth0.com/) (`@auth0/nextjs-auth0`) for authentication
 - [SWR](https://swr.vercel.app/) for client-side data fetching
-
-The app is mounted under the `/ruleslawyer` base path (see `next.config.mjs`).
-# ruleslawyer-frontend
-
-The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, and users, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
-
-## Tech stack
-
-- [Next.js 15](https://nextjs.org/) (App Router, standalone output) with React 19
-- [HeroUI](https://www.heroui.com/) component library
-- [Tailwind CSS v4](https://tailwindcss.com/)
-- [Auth0](https://auth0.com/) (`@auth0/nextjs-auth0`) for authentication
-- [SWR](https://swr.vercel.app/) for client-side data fetching
-
-The app is mounted under the `/ruleslawyer` base path (see `next.config.mjs`).
 
 ## Getting started
 
@@ -43,7 +25,7 @@ Fill in the required values in `.env` (see below), then run the development serv
 npm run dev
 ```
 
-Open [http://localhost:3000/ruleslawyer](http://localhost:3000/ruleslawyer) to view the app.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Scripts
 
