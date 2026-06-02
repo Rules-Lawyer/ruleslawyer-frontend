@@ -15,6 +15,7 @@ function makeGame(over: Partial<Game> = {}): Game {
     id: 1,
     organizationId: 1,
     bggId: 42,
+    bggVersionId: null,
     bggRank: null,
     bggRating: null,
     lastBGGSync: null,
