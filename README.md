@@ -1,22 +1,6 @@
 # ruleslawyer-frontend
 
-The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, and users, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
-
-This frontend is a **work in progress**. It already offers many capabilities the legacy board-game-admin frontend lacks, but it is not yet a complete replacement — most notably, attendee management is still missing.
-
-The end goal is a single unified experience for admins, geek guides, and attendees.
-## Tech stack
-
-- [Next.js 15](https://nextjs.org/) (App Router, standalone output) with React 19
-- [HeroUI](https://www.heroui.com/) component library
-- [Tailwind CSS v4](https://tailwindcss.com/)
-- [Auth0](https://auth0.com/) (`@auth0/nextjs-auth0`) for authentication
-- [SWR](https://swr.vercel.app/) for client-side data fetching
-
-The app is mounted under the `/ruleslawyer` base path (see `next.config.mjs`).
-# ruleslawyer-frontend
-
-The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, and users, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
+The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, and users, backed by the [ruleslawyer-backend](https://github.com/rules-lawyer/ruleslawyer-backend) API.
 
 ## Tech stack
 
@@ -25,8 +9,6 @@ The web frontend for the **Geekway to the West Library Management System** — a
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [Auth0](https://auth0.com/) (`@auth0/nextjs-auth0`) for authentication
 - [SWR](https://swr.vercel.app/) for client-side data fetching
-
-The app is mounted under the `/ruleslawyer` base path (see `next.config.mjs`).
 
 ## Getting started
 
@@ -43,7 +25,7 @@ Fill in the required values in `.env` (see below), then run the development serv
 npm run dev
 ```
 
-Open [http://localhost:3000/ruleslawyer](http://localhost:3000/ruleslawyer) to view the app.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Scripts
 
@@ -60,7 +42,7 @@ Configured in `.env` (template: `env.template`). Key variables:
 - `BOARDGAMEGEEK_API_TOKEN` — token for BoardGameGeek lookups
 - `NEXT_PUBLIC_API_URL` — base URL of the ruleslawyer-backend API (e.g. `http://localhost:8080/api`)
 - `NEXT_PUBLIC_BASE_PATH` — app base path; empty (the default) serves the dashboard at the apex (`/`). Set a non-empty value (baked at build time) to nest it under a prefix instead. The dashboard's Auth0 routes (`/auth/*`) follow this base path, so callback URLs must match.
-- `LEGACY_ADMIN_URL`, `LEGACY_LIBRARIAN_URL`, `LEGACY_PLAY_PRIZE_ENTRY_URL` — links out to the legacy SPA frontends (admin / librarian / play-and-win) for the capabilities this dashboard doesn't cover yet. Locally these point at the SPAs' dev servers (e.g. `http://localhost:8081`–`8083/legacy/<app>`); in deployed environments they're the CloudFront paths (`/legacy/admin`, `/legacy/librarian`, `/legacy/playandwin`) and are set on the ECS task by [ruleslawyer-infra](https://github.com/geekwaytothewest/ruleslawyer-infra).
+- `LEGACY_ADMIN_URL`, `LEGACY_LIBRARIAN_URL`, `LEGACY_PLAY_PRIZE_ENTRY_URL` — links out to the legacy SPA frontends (admin / librarian / play-and-win) for the capabilities this dashboard doesn't cover yet. Locally these point at the SPAs' dev servers (e.g. `http://localhost:8081`–`8083/legacy/<app>`); in deployed environments they're the CloudFront paths (`/legacy/admin`, `/legacy/librarian`, `/legacy/playandwin`) and are set on the ECS task by [ruleslawyer-infra](https://github.com/rules-lawyer/ruleslawyer-infrastructure).
 
 `NEXT_PUBLIC_*` variables are inlined into the client bundle **at build time**, so the deploy workflow passes the per-environment value in as a Docker build arg.
 
@@ -74,6 +56,6 @@ Configured in `.env` (template: `env.template`). Key variables:
 
 ## Deployment
 
-Deployed to AWS ECS via the **Build and Deploy** GitHub Action (manual `workflow_dispatch`; choose `nonprod` or `prod`). It builds the Docker image (baking in `NEXT_PUBLIC_API_URL` as a build arg), pushes it to the `ruleslawyer-frontend` ECR repo, and updates the `ruleslawyer-frontend` ECS service on the `geekway-{env}` cluster using `.aws/taskdefinition-{env}.json`.
+Deployed to AWS ECS via the **Build and Deploy** GitHub Action (manual `workflow_dispatch`; choose `nonprod` or `prod`). It builds the Docker image (baking in `NEXT_PUBLIC_API_URL` as a build arg), pushes it to the `ruleslawyer-frontend` ECR repo, and updates the `ruleslawyer-frontend` ECS service on the `ruleslawyer-{env}` cluster using `.aws/taskdefinition-{env}.json`.
 
-See the full guide: [ruleslawyer-backend/DEPLOYMENT.md](https://github.com/geekwaytothewest/ruleslawyer-backend/blob/main/DEPLOYMENT.md).
+See the full guide: [ruleslawyer-backend/DEPLOYMENT.md](https://github.com/rules-lawyer/ruleslawyer-backend/blob/main/DEPLOYMENT.md).
