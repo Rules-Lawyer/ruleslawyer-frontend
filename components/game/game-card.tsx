@@ -86,10 +86,13 @@ function GameCard(props: GameCardProps) {
       : base;
   }, [game?.id, game?.lastBGGSync]);
 
-  // Reset the error flag when switching to a different game.
+  // Reset the error flag whenever the cover source changes — either switching
+  // to a different game or the same game getting new art (e.g. after a save/
+  // resync). Keying only on game.id left the placeholder stuck for a game that
+  // previously had no cover, since coverError stayed true across the refetch.
   useEffect(() => {
     setCoverError(false);
-  }, [game?.id]);
+  }, [coverArtSrc]);
 
   useEffect(() => {
     if (gameIn) {
