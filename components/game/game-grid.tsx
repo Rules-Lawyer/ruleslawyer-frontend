@@ -107,7 +107,7 @@ export default function GameGrid(props: GameGridProps) {
               "?orgId=" + organizationId +
               "&limit=" + maxResults +
               "&page=" + page +
-              "&filter=" + debouncedSearch,
+              "&filter=" + encodeURIComponent(debouncedSearch),
             null,
             token
           )
@@ -128,7 +128,7 @@ export default function GameGrid(props: GameGridProps) {
           "?orgId=" + organizationId +
           "&limit=" + maxResults +
           "&page=" + page +
-          "&filter=" + debouncedSearch,
+          "&filter=" + encodeURIComponent(debouncedSearch),
         null,
         token
       )
