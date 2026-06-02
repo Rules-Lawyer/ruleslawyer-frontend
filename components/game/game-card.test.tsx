@@ -95,6 +95,16 @@ describe("GameCard — rendering", () => {
     expect(img.getAttribute("src")).toMatch(/\/game\/42\/cover$/);
   });
 
+  it("busts the cover cache with a ?v= param keyed on lastBGGSync", async () => {
+    render(
+      <GameCard gameIn={makeGame({ id: 42, lastBGGSync: "2026-06-02T00:00:00Z" })} gameId={42} />
+    );
+    const img = await screen.findByRole("img", { name: "Catan" });
+    expect(img.getAttribute("src")).toMatch(
+      /\/game\/42\/cover\?v=2026-06-02T00%3A00%3A00Z$/
+    );
+  });
+
   it("falls back to the library icon when the cover image fails to load", async () => {
     render(<GameCard gameIn={makeGame()} gameId={1} />);
     const img = await screen.findByRole("img", { name: "Catan" });
@@ -105,5 +115,29 @@ describe("GameCard — rendering", () => {
     await waitFor(() =>
       expect(screen.queryByRole("img")).not.toBeInTheDocument()
     );
+  });
+
+  it("re-shows the cover when new art arrives for a game that previously had none", async () => {
+    // Game starts with no cover: the route 404s and we fall back to the icon.
+    const { rerender } = render(
+      <GameCard gameIn={makeGame({ id: 42 })} gameId={42} />
+    );
+    fireEvent.error(await screen.findByRole("img", { name: "Catan" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("img")).not.toBeInTheDocument()
+    );
+
+    // A BGG sync adds art and bumps lastBGGSync, changing the cover URL. The
+    // error flag must reset so the new art renders — keying the reset on the
+    // game id alone left the placeholder stuck since the id never changed.
+    rerender(
+      <GameCard
+        gameIn={makeGame({ id: 42, lastBGGSync: "2026-06-02T00:00:00Z" })}
+        gameId={42}
+      />
+    );
+
+    const img = await screen.findByRole("img", { name: "Catan" });
+    expect(img.getAttribute("src")).toMatch(/\?v=2026-06-02T00%3A00%3A00Z$/);
   });
 });
