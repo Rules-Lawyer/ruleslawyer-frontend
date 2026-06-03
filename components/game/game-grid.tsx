@@ -144,6 +144,7 @@ export default function GameGrid(props: GameGridProps) {
   }, [
     session?.data?.token,
     collectionId,
+    organizationId,
     maxResults,
     debouncedSearch,
     page,
@@ -230,7 +231,7 @@ export default function GameGrid(props: GameGridProps) {
           </Button>
         </div>
       ) : (
-        ""
+        null
       )}
 
       <div className="flex flex-wrap">
@@ -260,11 +261,11 @@ export default function GameGrid(props: GameGridProps) {
           </Button>
         </div>
       ) : (
-        ""
+        null
       )}
 
       {readOnly ? (
-        ""
+        null
       ) : (
         <Tooltip
           content="Create Game"

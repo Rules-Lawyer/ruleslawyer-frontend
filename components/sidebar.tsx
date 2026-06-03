@@ -273,7 +273,7 @@ export default function SideBar({
                     "text-4xl mx-auto",
                     !collapsed && "mb-2",
                     {
-                      "text-gwgreen group-hover:text-gwblue": pathname?.startsWith(
+                      "text-gwgreen group-hover:text-gwdarkgreen": pathname?.startsWith(
                         `/dashboard/organization/${permissions.organizations.data[0].organizationId}/games`
                       ),
                     },
@@ -344,7 +344,7 @@ export default function SideBar({
         )}
 
         {(!collapsed && user?.name) ?? ""}
-
+        <br/>
         <SignOut collapsed={collapsed} />
       </div>
     </div>

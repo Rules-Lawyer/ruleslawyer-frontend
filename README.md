@@ -1,10 +1,8 @@
 # ruleslawyer-frontend
 
-The web frontend for the **Rules Lawyer Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, and users, backed by the [ruleslawyer-backend](https://github.com/rules-lawyer/ruleslawyer-backend) API.
+The web frontend for the **Rules Lawyer Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, users and attendees, backed by the [ruleslawyer-backend](https://github.com/rules-lawyer/ruleslawyer-backend) API.
 
-This frontend is a **work in progress**. It already offers many capabilities the legacy board-game-admin frontend lacks, but it is not yet a complete replacement — most notably, attendee management is still missing.
-
-The end goal is a single unified experience for admins, geek guides, and attendees.
+This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees.
 ## Tech stack
 
 - [Next.js 15](https://nextjs.org/) (App Router, standalone output) with React 19

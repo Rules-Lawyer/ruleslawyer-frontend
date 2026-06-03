@@ -117,6 +117,8 @@ export interface Attendee {
   tteBadgeId: string | null;
   email: string | null;
   pronounsId: number | null;
+  // Populated by endpoints that include the relation (e.g. convention attendees).
+  pronouns?: { id: number; pronouns: string } | null;
   checkedIn: boolean;
   printed: boolean;
   registrationCode: string | null;

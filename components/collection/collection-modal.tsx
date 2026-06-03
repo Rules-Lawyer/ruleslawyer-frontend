@@ -317,19 +317,19 @@ export default function CollectionModal(props: CollectionModalProps) {
                     onChange={handleImportCSV}
                   />
                 ) : (
-                  ""
+                  null
                 )}
               </ModalBody>
               <ModalFooter>
                 {readOnly? (
-                  ""
+                  null
                 ) : (
                   <Button color="danger" onPress={onArchive}>
                     Archive
                   </Button>
                 )}
                 {readOnly && !collection?.archived ? (
-                  ""
+                  null
                 ) : (
                   <Button color="success" type="submit">
                     {importFile ? "Import" : "Save"}

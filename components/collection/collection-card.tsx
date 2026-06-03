@@ -245,7 +245,7 @@ export default function CollectionCard(props: CollectionCardProps) {
             </Tooltip>
           </div>
         ) : (
-          ""
+          null
         )}
         {!readOnly && !collection.archived ? (
           <div className="absolute top-5 right-10">
@@ -270,7 +270,7 @@ export default function CollectionCard(props: CollectionCardProps) {
             </Tooltip>
           </div>
         ) : (
-          ""
+          null
         )}
         {collection.archived ? (
           <div className="absolute top-5 right-10 text-gwdarkred">
@@ -286,7 +286,7 @@ export default function CollectionCard(props: CollectionCardProps) {
             </Tooltip>
           </div>
         ) : (
-          ""
+          null
         )}
         {collection.allowWinning ? (
           <div className="absolute top-10 right-10 text-gwgreen">
@@ -302,7 +302,7 @@ export default function CollectionCard(props: CollectionCardProps) {
             </Tooltip>
           </div>
         ) : (
-          ""
+          null
         )}
         {!readOnly &&
         collection._count.copies === 0 &&
@@ -326,7 +326,7 @@ export default function CollectionCard(props: CollectionCardProps) {
             </Tooltip>
           </div>
         ) : (
-          ""
+          null
         )}
       </div>
       <CollectionModal

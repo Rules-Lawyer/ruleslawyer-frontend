@@ -251,7 +251,7 @@ export default function GameModal(props: GameModalProps) {
                   isDisabled={readOnly}
                 />
               ) : (
-                ""
+                null
               )}
 
               <Input
@@ -278,17 +278,17 @@ export default function GameModal(props: GameModalProps) {
                   Delete
                 </Button>
               ) : (
-                ""
+                null
               )}
               {readOnly ? (
-                ""
+                null
               ) : (
                 <Button color="primary" onPress={onSyncWithBGG}>
                   Sync With BGG
                 </Button>
               )}
               {readOnly ? (
-                ""
+                null
               ) : (
                 <Button color="success" type="submit">
                   Save

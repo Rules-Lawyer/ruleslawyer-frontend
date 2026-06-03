@@ -314,7 +314,7 @@ export default function ConventionModal(props: ConventionModalProps) {
               </ModalBody>
               <ModalFooter>
                 {readOnly ? (
-                  ""
+                  null
                 ) : (
                   <Button color="success" type="submit">
                     Save

@@ -170,7 +170,7 @@ export default function ConventionList(props: ConventionListProps) {
       </Accordion>
 
       {readOnly ? (
-        ""
+        null
       ) : (
         <Tooltip
           content="Create Convention"
