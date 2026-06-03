@@ -70,7 +70,7 @@ export default function OrganizationLayout({
               {organization.name}
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {pathname?.includes("users") ? (
@@ -80,7 +80,7 @@ export default function OrganizationLayout({
               Users
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {pathname?.includes("convention") ? (
@@ -90,7 +90,7 @@ export default function OrganizationLayout({
               Conventions
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {params?.conId !== null && params?.conId !== undefined ? (
@@ -100,7 +100,7 @@ export default function OrganizationLayout({
               {convention?.name}
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {pathname?.includes("collection") ? (
@@ -110,7 +110,7 @@ export default function OrganizationLayout({
               Collections
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {params?.colId !== null && params?.colId !== undefined ? (
@@ -120,7 +120,7 @@ export default function OrganizationLayout({
               {collection?.name}
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {pathname?.includes("games") ? (
@@ -130,7 +130,7 @@ export default function OrganizationLayout({
               Games
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
         </Breadcrumbs>
       </div>
