@@ -238,7 +238,7 @@ export default function ConventionModal(props: ConventionModalProps) {
     return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
       <ModalContent>
         {(onClose) => (
           <form

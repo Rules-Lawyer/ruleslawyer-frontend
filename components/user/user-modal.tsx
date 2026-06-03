@@ -242,7 +242,7 @@ export default function UserModal(props: UserModalProps) {
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
       <ModalContent>
         {(onClose) => (
           <form
