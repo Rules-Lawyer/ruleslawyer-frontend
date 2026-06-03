@@ -18,44 +18,43 @@ import usePermissions from "@/utilities/swr/usePermissions";
 import { useDisclosure } from "@heroui/react";
 import { Attendee } from "@/types/models";
 
-interface AttendeeUpdate {
-  badgeName?: string;
-  badgeFirstName?: string;
-  badgeLastName?: string;
-  legalName?: string;
-  pronounsId?: number | null;
-  email?: string | null;
+interface AttendeeBadgeTransfer {
+  newBadgeNumber: string;
 }
 
-interface AttendeeModalProps {
-  attendeeIn?: Attendee;
+interface AttendeeBadgeTransferModalProps {
+  attendeeId?: number;
   disclosure: ReturnType<typeof useDisclosure>;
-  onSaved?: (updated: AttendeeUpdate) => void;
+  onSaved?: (updated: AttendeeBadgeTransfer) => void;
   conventionId?: number;
   pronounsIn?: { id: number; pronouns: string }[];
   organizationId?: number;
+  attendeeIn?: Attendee;
 }
 
-export default function AttendeeModal(props: AttendeeModalProps) {
+export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferModalProps) {
   const {
+    attendeeId,
     attendeeIn,
     disclosure,
     onSaved,
     conventionId,
-    pronounsIn,
     organizationId,
+    pronounsIn,
   } = props;
 
   const [attendee, setData] = useState<Attendee | null>(null);
+  const [pronouns, setPronouns] = useState<{ id: number; pronouns: string }[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const [readOnly, setReadOnly] = useState(true);
   const [attendeeBadgeName, setAttendeeBadgeName] = useState("");
   const [attendeeBadgeFirstName, setAttendeeBadgeFirstName] = useState("");
   const [attendeeBadgeLastName, setAttendeeBadgeLastName] = useState("");
   const [attendeeLegalName, setAttendeeLegalName] = useState("");
-  const [attendeePronounsId, setAttendeePronounsId] = useState<number | null>(null);
+  const [attendeePronounsId, setAttendeePronounsId] = useState<number | null>(
+    null,
+  );
   const [attendeeEmail, setAttendeeEmail] = useState<string | null>(null);
-  const [pronouns, setPronouns] = useState<{ id: number; pronouns: string }[]>(pronounsIn ?? []);
-  const [isLoading, setLoading] = useState(true);
-  const [readOnly, setReadOnly] = useState(true);
 
   const { permissions, isLoading: isLoadingPermissions } = usePermissions();
 
@@ -64,37 +63,30 @@ export default function AttendeeModal(props: AttendeeModalProps) {
   const { isOpen, onOpen, onClose } = disclosure;
 
   const onSave = () => {
-    if (attendeeIn) {
+    if (attendeeId) {
       frontendFetch(
         "PUT",
-        "/attendee/" + attendeeIn?.id,
+        "/attendee/" + attendeeId + "/transferBadge",
         {
-          badgeName: attendee?.badgeName,
-          badgeFirstName: attendee?.badgeFirstName,
-          badgeLastName: attendee?.badgeLastName,
-          legalName: attendee?.legalName,
-          pronounsId: attendee?.pronounsId,
-          email: attendee?.email,
+            fromBadgeNumber: attendee?.badgeNumber ?? "",
+            newBadgeFirstName: attendeeBadgeFirstName,
+            newBadgeLastName: attendeeBadgeLastName,
+            newBadgeLegalName: attendeeLegalName,
+            newBadgePronounsId: attendeePronounsId,
+            newBadgeEmail: attendeeEmail,
+            newPronounsId: attendeePronounsId,
         },
-        session?.data?.token
+        session?.data?.token,
       )
-      .then((res) => {
+        .then((res) => {
           if (!res.ok) {
-              toastSaveError(res);
-              return;
+            toastSaveError(res);
+            return;
           }
-          onSaved?.({
-            badgeName: attendee?.badgeName,
-            badgeFirstName: attendee?.badgeFirstName,
-            badgeLastName: attendee?.badgeLastName,
-            legalName: attendee?.legalName,
-            pronounsId: attendee?.pronounsId,
-            email: attendee?.email,
-          });
           onClose();
         })
         .catch(() => {
-            toastNetworkError();
+          toastNetworkError();
         });
     }
   };
@@ -109,7 +101,7 @@ export default function AttendeeModal(props: AttendeeModalProps) {
         "GET",
         "/attendee/" + attendee?.id,
         null,
-        session?.data?.token
+        session?.data?.token,
       )
         .then((res) => res.json())
         .then((data) => {
@@ -123,33 +115,22 @@ export default function AttendeeModal(props: AttendeeModalProps) {
   }, [attendeeIn, attendee?.id, session?.data?.token]);
 
   useEffect(() => {
-    if (attendee && isOpen) {
-      setAttendeeBadgeName(attendee.badgeName ?? "");
-      setAttendeeBadgeFirstName(attendee.badgeFirstName ?? "");
-      setAttendeeBadgeLastName(attendee.badgeLastName ?? "");
-      setAttendeeLegalName(attendee.legalName ?? "");
-      setAttendeePronounsId(attendee.pronounsId ?? null);
-      setAttendeeEmail(attendee.email ?? null);
-    }
-  }, [attendee, isOpen]);
-
-  useEffect(() => {
     if (permissions.user?.data) {
       if (permissions.user.data.superAdmin) {
         setReadOnly(false);
       } else if (conventionId) {
         if (
           permissions.conventions.data?.filter(
-            (d) =>
-              d.conventionId == conventionId && d.admin === true
+            (d) => d.conventionId == conventionId && d.admin === true,
           ).length > 0
         ) {
           setReadOnly(false);
         } else {
-          if (permissions.organizations.data?.filter(
-            (d) =>
-              d.organizationId == organizationId && d.admin === true
-          ).length > 0) {
+          if (
+            permissions.organizations.data?.filter(
+              (d) => d.organizationId == organizationId && d.admin === true,
+            ).length > 0
+          ) {
             setReadOnly(false);
           }
         }
@@ -159,7 +140,13 @@ export default function AttendeeModal(props: AttendeeModalProps) {
     } else {
       setReadOnly(true);
     }
-  }, [permissions.user?.data, permissions.conventions?.data, permissions.organizations?.data, conventionId, organizationId]);
+  }, [
+    permissions.user?.data,
+    permissions.conventions?.data,
+    permissions.organizations?.data,
+    conventionId,
+    organizationId,
+  ]);
 
   if (isLoading || isLoadingPermissions) return <div></div>;
 
@@ -174,10 +161,15 @@ export default function AttendeeModal(props: AttendeeModalProps) {
             }}
           >
             <div>
-              <ModalHeader>
-                User Editor - {attendee?.badgeName ?? "New User"}
-              </ModalHeader>
+              <ModalHeader>Badge Transfer - {attendee?.badgeName}</ModalHeader>
               <ModalBody>
+                <div>
+                    <p>Step 1: Charge the attendee in the Square payment device for a transfered badge.</p>
+                    <p>Step 2: Get the original attendee&apos;s badge from the badge station.</p>
+                    <p>Step 3: Enter the new attendee&apos;s name and pronouns in the boxes below.</p>
+                    <p>Step 4: Use the label printing software to print three stickers with the new attendee&apos;s name.</p>
+                    <p>Step 5: Put one sticker on each side of the badge, and the third on the badge&apos;s geeklet.</p>
+                </div>
                 <Input
                   label="Badge Name"
                   onValueChange={setAttendeeBadgeName}
@@ -219,9 +211,7 @@ export default function AttendeeModal(props: AttendeeModalProps) {
                   isDisabled={readOnly}
                   onSelectionChange={(keys) => {
                     const [first] = keys;
-                    setAttendeePronounsId(
-                      first != null ? Number(first) : null
-                    );
+                    setAttendeePronounsId(first != null ? Number(first) : null);
                   }}
                 >
                   {pronouns.map((p) => (
@@ -236,7 +226,7 @@ export default function AttendeeModal(props: AttendeeModalProps) {
                   ""
                 ) : (
                   <Button color="success" type="submit">
-                    Save
+                    Transfer Badge
                   </Button>
                 )}
                 <Button color="primary" onPress={onClose}>

@@ -344,7 +344,7 @@ export default function SideBar({
         )}
 
         {(!collapsed && user?.name) ?? ""}
-
+        <br/>
         <SignOut collapsed={collapsed} />
       </div>
     </div>

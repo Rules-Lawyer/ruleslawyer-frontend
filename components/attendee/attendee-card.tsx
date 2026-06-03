@@ -2,12 +2,16 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
-import { Skeleton, useDisclosure } from "@heroui/react";
+import { Skeleton, Tooltip, useDisclosure } from "@heroui/react";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { FaRegIdBadge } from "react-icons/fa6";
+import { FaMoneyBillTransfer, FaRegIdBadge } from "react-icons/fa6";
 import AttendeeModal from "./attendee-modal";
 import { Attendee } from "@/types/models";
+import { FaEdit } from "react-icons/fa";
+import { LuReplace } from "react-icons/lu";
+import AttendeeTransferModal from "./atttendee-transfer-badge-modal";
+import AttendeeLostBadgeModal from "./atttendee-lost-badge-modal";
 
 interface AttendeeCardProps {
   attendeeIn: Attendee;
@@ -81,6 +85,18 @@ export default function AttendeeCard(props: AttendeeCardProps) {
 
   const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = disclosure;
 
+  const transferDisclosure = useDisclosure({
+    onClose: onModalClose,
+  });
+
+  const { isOpen: isOpenTransfer, onOpen: onOpenBadgeTransfer, onClose: onCloseBadgeTransfer } = transferDisclosure;
+
+  const lostBadgeDisclosure = useDisclosure({
+    onClose: onModalClose,
+  });
+
+  const { isOpen: isOpenLostBadge, onOpen: onOpenLostBadge, onClose: onCloseLostBadge } = lostBadgeDisclosure;
+
   if (isLoading || isLoadingPermissions) {
     return (
       <div className="flex items-center border-2 w-80 h-32 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] border-slate-800">
@@ -114,43 +130,106 @@ export default function AttendeeCard(props: AttendeeCardProps) {
   }
 
   return (
-    <div>
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label={"Edit " + (attendee.badgeName !== "" ? attendee.badgeName : "attendee")}
-          onClick={onOpen}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              onOpen();
-            }
-          }}
-          className="relative flex items-center border-2 border-gwblue w-80 h-32 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] cursor-pointer"
-        >
+    <div className="w-100 mr-5">
+      <div className="relative flex items-center border-2 border-gwblue h-40 mr-5 mb-5 bg-gwdarkblue w-full">
         <div className="flex-col p-3 w-24">
             <FaRegIdBadge size={64} />
         </div>
-        <div className="flex-col pr-3 w-48">
-            <div className="inline-block align-middle h-full font-bold">
-              {attendee.badgeNumber}
+        <div className="flex-col pr-3 w-full">
+          <div className="align-middle h-full font-bold">
+            #{attendee.badgeNumber}
+          </div>
+          <div className="align-middle h-full">
+              {attendee.badgeName}
+          </div>
+          {attendee.pronounsId ?
+            <div className="align-middle h-full text-sm pt-3 text-slate-300">
+              {attendee.pronouns?.pronouns}
             </div>
-            <div className="inline-block align-middle h-full">
-                {attendee.badgeName}
+            : <div></div>
+          }
+          {attendee.email ?
+            <div className="align-middle h-full text-sm pt-3 text-slate-300">
+              {attendee.email}
             </div>
-            {attendee.pronounsId ?
-              <div className="inline-block align-middle h-full text-sm pt-3 text-slate-300">
-                {attendee.pronouns?.pronouns}
-              </div>
-              : <div></div>
-            }
-            {attendee.email ?
-              <div className="inline-block align-middle h-full text-sm pt-3 text-slate-300">
-                {attendee.email}
-              </div>
-              : <div></div>
-            }
+            : <div></div>
+          }
         </div>
+        {!readOnly ? (
+          <div className="absolute top-5 right-5">
+            <Tooltip
+              content={"Edit " + attendee.badgeName}
+              showArrow={true}
+              color="success"
+              delay={1000}
+            >
+              <button
+                type="button"
+                aria-label={"Edit " + attendee.badgeName}
+                className="hover:text-gwgreen hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpen();
+                }}
+              >
+                <FaEdit aria-hidden="true" className="text-2xl" />
+              </button>
+            </Tooltip>
+          </div>
+        ) : (
+          ""
+        )}
+        {!readOnly ? (
+          <div className="absolute top-15 right-5">
+            <Tooltip
+              content={"Transfer " + attendee.badgeName}
+              showArrow={true}
+              color="success"
+              delay={1000}
+            >
+              <button
+                type="button"
+                aria-label={"Transfer " + attendee.badgeName}
+                className="hover:text-gwgreen hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenBadgeTransfer();
+                }}
+              >
+                <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
+              </button>
+            </Tooltip>
+          </div>
+        ) : (
+          ""
+        )}
+        {!readOnly ? (
+          <div className="absolute top-25 right-5">
+            <Tooltip
+              content={"Report " + attendee.badgeName + "'s badge lost and replace"}
+              showArrow={true}
+              color="success"
+              delay={1000}
+            >
+              <button
+                type="button"
+                aria-label={"Report " + attendee.badgeName + "'s badge lost and replace"}
+                className="hover:text-gwgreen hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenLostBadge();
+                }}
+              >
+                <LuReplace aria-hidden="true" className="text-2xl" />
+              </button>
+            </Tooltip>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
 
       <AttendeeModal
@@ -162,6 +241,22 @@ export default function AttendeeCard(props: AttendeeCardProps) {
           onSaved={(updated) =>
               setData((prev) => (prev ? { ...prev, ...updated } : prev))
           }
+      />
+
+      <AttendeeTransferModal
+          attendeeIn={attendee}
+          conventionId={attendee.conventionId}
+          pronounsIn={pronounsIn}
+          disclosure={transferDisclosure}
+          organizationId={organizationId}
+      />
+
+      <AttendeeLostBadgeModal
+          attendeeIn={attendee}
+          conventionId={attendee.conventionId}
+          pronounsIn={pronounsIn}
+          disclosure={lostBadgeDisclosure}
+          organizationId={organizationId}
       />
     </div>
   );
