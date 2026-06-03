@@ -2,7 +2,8 @@
 
 The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, users and attendees, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
 
-This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees.
+This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees. Until then, the legacy `board-game-admin` SPA still covers some workflows this dashboard doesn't — see below.
+
 ## Tech stack
 
 - [Next.js 15](https://nextjs.org/) (App Router, standalone output) with React 19
@@ -62,3 +63,38 @@ Configured in `.env` (template: `env.template`). Key variables:
 Deployed to AWS ECS via the **Build and Deploy** GitHub Action (manual `workflow_dispatch`; choose `nonprod` or `prod`). It builds the Docker image (baking in `NEXT_PUBLIC_API_URL` as a build arg), pushes it to the `ruleslawyer-frontend` ECR repo, and updates the `ruleslawyer-frontend` ECS service on the `geekway-{env}` cluster using `.aws/taskdefinition-{env}.json`.
 
 See the full guide: [ruleslawyer-backend/DEPLOYMENT.md](https://github.com/geekwaytothewest/ruleslawyer-backend/blob/main/DEPLOYMENT.md).
+
+
+
+## Migration status (vs. legacy `board-game-admin`)
+
+The primary goal is to replace the board-game-admin frontend and then move onto librarian, play-prize-enty, and pnw-picker, in that order.
+
+The dashboard is at parity with the legacy admin SPA for core CRUD and adds several capabilities the legacy app lacks (collection archiving, copy deletion, BoardGameGeek sync, organization/user-permission management, pagination). The items below are still only available in the legacy SPA.
+
+### Not yet ported
+
+**Attendees**
+
+- **Manually add an attendee** — the attendee editor is edit-only; there is no "Add attendee" entry point in the attendee grid.
+- **Bulk-upload attendees from CSV** — no attendee file-upload path exists yet.
+- **Sync with Tabletop.Events (manual trigger)** — the convention editor stores a `tteConventionId`, but nothing in the UI triggers an actual attendee sync from Tabletop.Events.
+- **"Unable to find an attendee badge?" help dialog** — the step-by-step staff guidance (read TTE receipt → translate badge number → search → escalate) has no equivalent here.
+
+**Collections / Copies**
+
+- **Bulk-upload copies into an existing collection (CSV)** — CSV upload is supported only when importing a brand-new collection; copies must otherwise be added one at a time.
+- **Export Plays** — there is no way to export/download a collection's play data.
+
+### At parity
+
+| Feature                       | ruleslawyer-frontend          |
+| ----------------------------- | ----------------------------- |
+| Search/list attendees         | ✓ (+ pagination)              |
+| Edit attendee                 | ✓                             |
+| Replace lost badge            | ✓                             |
+| Transfer badge                | ✓                             |
+| List/create/update collection | ✓ (+ archive)                 |
+| Import collection (CSV)       | ✓                             |
+| Add/update copy               | ✓ (+ delete)                  |
+| List/add/rename game          | ✓ (+ BoardGameGeek sync)      |
