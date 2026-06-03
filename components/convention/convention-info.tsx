@@ -21,7 +21,7 @@ import { GrAttachment } from "react-icons/gr";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { useLegacyUrls } from "./legacy-urls-context";
 import ConventionModal from "./convention-modal";
-import { FaEdit, FaTrophy, FaUsersCog } from "react-icons/fa";
+import { FaEdit, FaRegIdBadge, FaTrophy, FaUsersCog } from "react-icons/fa";
 import { IoMdAddCircle } from "react-icons/io";
 import CollectionModal from "../collection/collection-modal";
 import { TbPackageImport } from "react-icons/tb";
@@ -244,6 +244,20 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                   </button>
                 </Tooltip>
               )}
+
+              <Tooltip
+                content={"Attendees"}
+                showArrow={true}
+                color="success"
+                delay={1000}
+                classNames={{
+                  content: "max-w-[125px] text-center"
+                }}
+              >
+                <span className="text-3xl inline-flex items-center hover:cursor-pointer">
+                  <Link aria-label="Attendees" className="text-white hover:text-gwgreen" href={`/dashboard/organization/${String(convention.organizationId)}/convention/${String(convention.id)}/attendees`}><FaRegIdBadge aria-hidden="true" className="h-8 w-auto" /></Link>
+                </span>
+              </Tooltip>
 
               <Tooltip
                 content={"User Permissions"}
