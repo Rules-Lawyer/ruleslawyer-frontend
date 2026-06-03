@@ -57,7 +57,7 @@ export default function ConventionLayout({
               {convention.name}
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {pathname?.includes("collection") ? (
@@ -67,7 +67,7 @@ export default function ConventionLayout({
               Collections
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
 
           {params?.colId !== null && params?.colId !== undefined ? (
@@ -77,7 +77,7 @@ export default function ConventionLayout({
               {collection?.name}
             </BreadcrumbItem>
           ) : (
-            ""
+            null
           )}
         </Breadcrumbs>
       </div>
