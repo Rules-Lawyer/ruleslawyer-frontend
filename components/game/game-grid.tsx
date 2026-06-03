@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import GameCard from "./game-card";
 import {
-  Button,
   CircularProgress,
   Input,
   Select,
@@ -17,6 +16,7 @@ import { IoMdAddCircle } from "react-icons/io";
 import CopyModal from "../copy/copy-modal";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { Collection, GameWithCopies } from "@/types/models";
+import Pagination from "../pagination";
 
 interface GameGridProps {
   collectionId?: number;
@@ -212,27 +212,13 @@ export default function GameGrid(props: GameGridProps) {
         </Select>
       </div>
 
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-center gap-4 my-6">
-          <Button
-            isDisabled={page <= 1}
-            onPress={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Previous
-          </Button>
-          <span>
-            Page {page} of {totalPages} ({total} games)
-          </span>
-          <Button
-            isDisabled={page >= totalPages}
-            onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Next
-          </Button>
-        </div>
-      ) : (
-        null
-      )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        noun="games"
+        onPageChange={setPage}
+      />
 
       <div className="flex flex-wrap">
         {games?.map(
@@ -242,27 +228,13 @@ export default function GameGrid(props: GameGridProps) {
         )}
       </div>
 
-      {totalPages > 1 ? (
-        <div className="flex items-center justify-center gap-4 my-6">
-          <Button
-            isDisabled={page <= 1}
-            onPress={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Previous
-          </Button>
-          <span>
-            Page {page} of {totalPages} ({total} games)
-          </span>
-          <Button
-            isDisabled={page >= totalPages}
-            onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Next
-          </Button>
-        </div>
-      ) : (
-        null
-      )}
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        total={total}
+        noun="games"
+        onPageChange={setPage}
+      />
 
       {readOnly ? (
         null
