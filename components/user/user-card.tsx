@@ -220,7 +220,7 @@ export default function UserCard(props: UserCardProps) {
                       .join(" | ")}
               </div>
             ) : (
-              <div></div>
+              null
             )}
             {userType === "convention" ? (
               <div className="align-middle h-full text-sm pt-3 text-slate-400">
@@ -234,7 +234,7 @@ export default function UserCard(props: UserCardProps) {
                       .join(" | ")}
               </div>
             ) : (
-              <div></div>
+              null
             )}
         </div>
         {!readOnly ? (
@@ -257,7 +257,7 @@ export default function UserCard(props: UserCardProps) {
             </Tooltip>
             </div>
         ) : (
-            ""
+            null
         )}
         </div>
 

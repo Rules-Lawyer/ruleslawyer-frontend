@@ -116,21 +116,21 @@ export default function CopyBubbles(props: CopyBubblesProps) {
         {availableCount > 0 ? (
           <div className="rounded-full bg-gwgreen p-1 mr-2 mt-2 text-sm text-gwdarkblue">{availableCount} Available</div>
         ) : (
-          <div></div>
+          null
         )}
         {checkedOutCount > 0 ? (
           <div className="rounded-full bg-gwdarkred p-1 mr-2 mt-2 text-sm text-gwdarkblue">
             {checkedOutCount} Checked Out
           </div>
         ) : (
-          <div></div>
+          null
         )}
         {archived ? (
           <div className="rounded-full bg-bggorange p-1 mr-2 mt-2 text-sm text-white">
             {copies.length} Archived
           </div>
         ) : (
-          <div></div>
+          null
         )}
       </div>
     );

@@ -156,7 +156,7 @@ export default function UserGrid(props: UserGridProps) {
       </div>
 
       {readOnly ? (
-        ""
+        null
       ) : (
         <Tooltip
           content="Add User"

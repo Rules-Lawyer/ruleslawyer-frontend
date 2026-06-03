@@ -55,7 +55,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
     CollectionWithCount[] | null
   >(null);
   const [readOnly, setReadOnly] = useState(true);
-  const [geekGuideOnly, setGeekGuideOnly] = useState(false);
+
   const { permissions, isLoading: isLoadingPermissions } = usePermissions();
 
   const session = useAuth();
@@ -73,7 +73,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         setData(data);
         setLoading(false);
       })
-      .catch((err) => {});
+      .catch(() => {});
   }, [id, session?.data?.token]);
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         .then((data) => {
           setCollections(data);
         })
-        .catch((err) => {});
+        .catch(() => {});
     }
   }, [convention, session?.data?.token, readOnly]);
 
@@ -150,7 +150,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
       .then((data) => {
         setData(data);
       })
-      .catch((err) => {});
+      .catch(() => {});
   };
 
   const onSave = () => {
@@ -227,7 +227,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         <div className="flex gap-2 mb-8 items-center">
           <div>
             {readOnly ? (
-              ""
+              null
             ) : (
               <div className="flex gap-2 items-center">
                 <div className="flex gap-2 items-center">
@@ -303,7 +303,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
           </div>
 
           {readOnly ? (
-            ""
+            null
           ) : (
             <Tooltip
               content={"Legacy Board Game Admin Frontend"}
@@ -390,7 +390,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             <b>Collections:</b>
           </span>{" "}
           {readOnly ? (
-            ""
+            null
           ) : (
             <div className="flex">
               <Tooltip
@@ -442,7 +442,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
           )}
         </h3>
         {readOnly ? (
-          ""
+          null
         ) : (
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalContent>
