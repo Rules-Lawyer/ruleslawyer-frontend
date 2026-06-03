@@ -344,7 +344,7 @@ export default function CopyModal(props: CopyModalProps) {
                     onValueChange={(value) => setNewGameName(value)}
                   />
                 ) : (
-                  ""
+                  null
                 )}
                 <Input
                   name="barcodeLabel"
@@ -389,10 +389,10 @@ export default function CopyModal(props: CopyModalProps) {
                     Delete
                   </Button>
                 ) : (
-                  ""
+                  null
                 )}
                 {readOnly ? (
-                  ""
+                  null
                 ) : (
                   <Button color="success" type="submit">
                     Save

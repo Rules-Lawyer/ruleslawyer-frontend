@@ -4,6 +4,23 @@ function toastError(title: string, description: string) {
   addToast({ title, description, color: "danger" });
 }
 
+// A 401 from the JwtAuthGuard means the request isn't authenticated: the Bearer
+// token was missing, malformed, expired, or failed signature/audience/issuer
+// validation (Auth0 RS256 via passport-jwt). The status alone can't tell us
+// which, but the remedy is the same in every case — sign in again. This is
+// distinct from a 403, where the user IS authenticated but lacks permission.
+const NOT_AUTHENTICATED =
+  "You're not signed in, or your session is no longer valid. Please sign in again.";
+
+// Shared status-to-copy mapping for the save/delete/detach toasts:
+// 401 -> session expired, 403 -> the action-specific forbidden message,
+// anything else -> the action-specific generic message.
+function describeStatus(res: Response, forbidden: string, generic: string) {
+  if (res.status === 401) return NOT_AUTHENTICATED;
+  if (res.status === 403) return forbidden;
+  return generic;
+}
+
 /**
  * Pull a human-readable reason out of a failed response body. NestJS error
  * responses carry `{ message: string | string[] }`; returns null when the body
@@ -30,9 +47,11 @@ async function readErrorMessage(res: Response): Promise<string | null> {
 export function toastSaveError(res: Response) {
   toastError(
     "Unable to save",
-    res.status === 403
-      ? "You don't have permission to make this change."
-      : "Something went wrong saving your changes."
+    describeStatus(
+      res,
+      "You don't have permission to make this change.",
+      "Something went wrong saving your changes."
+    )
   );
 }
 
@@ -53,9 +72,11 @@ export function toastNetworkError() {
 export function toastDeleteError(res: Response) {
   toastError(
     "Unable to delete",
-    res.status === 403
-      ? "You don't have permission to delete this."
-      : "Something went wrong deleting this item."
+    describeStatus(
+      res,
+      "You don't have permission to delete this.",
+      "Something went wrong deleting this item."
+    )
   );
 }
 
@@ -78,9 +99,11 @@ export function toastDeleteNetworkError() {
 export function toastDetachError(res: Response) {
   toastError(
     "Unable to detach",
-    res.status === 403
-      ? "You don't have permission to detach this collection."
-      : "Something went wrong detaching this collection."
+    describeStatus(
+      res,
+      "You don't have permission to detach this collection.",
+      "Something went wrong detaching this collection."
+    )
   );
 }
 
@@ -100,6 +123,11 @@ export function toastDetachNetworkError() {
  * server-provided reason (e.g. the game has no BoardGameGeek ID) when present.
  */
 export async function toastSyncError(res: Response) {
+  if (res.status === 401) {
+    toastError("Unable to sync", NOT_AUTHENTICATED);
+    return;
+  }
+
   if (res.status === 403) {
     toastError("Unable to sync", "You don't have permission to sync this game.");
     return;

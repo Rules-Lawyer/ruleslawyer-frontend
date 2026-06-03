@@ -262,7 +262,7 @@ export default function UserModal(props: UserModalProps) {
                     onValueChange={setUserEmail}
                   />
                 ) : (
-                  <div></div>
+                  null
                 )}
                 {userType === "organization" ? (
                   <div>
@@ -291,7 +291,7 @@ export default function UserModal(props: UserModalProps) {
                     </Checkbox>
                   </div>
                 ) : (
-                  <div></div>
+                  null
                 )}
 
                 {userType === "convention" ? (
@@ -321,12 +321,12 @@ export default function UserModal(props: UserModalProps) {
                     </Checkbox>
                   </div>
                 ) : (
-                  <div></div>
+                  null
                 )}
               </ModalBody>
               <ModalFooter>
                 {readOnly ? (
-                  ""
+                  null
                 ) : (
                   <Button color="success" type="submit">
                     Save

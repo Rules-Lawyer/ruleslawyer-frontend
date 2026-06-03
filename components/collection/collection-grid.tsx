@@ -120,7 +120,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
       </div>
 
       {readOnly ? (
-        ""
+        null
       ) : (
         <Tooltip
           content="Import Collection"
@@ -140,7 +140,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
       )}
 
       {readOnly ? (
-        ""
+        null
       ) : (
         <Tooltip
           content="Create Collection"
