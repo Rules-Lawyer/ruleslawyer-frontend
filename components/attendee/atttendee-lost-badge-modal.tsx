@@ -35,7 +35,6 @@ export default function AttendeeLostBadgeModal(props: AttendeeLostBadgeModalProp
     attendeeId,
     attendeeIn,
     disclosure,
-    onSaved,
     conventionId,
     organizationId,
   } = props;
@@ -49,13 +48,13 @@ export default function AttendeeLostBadgeModal(props: AttendeeLostBadgeModalProp
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { isOpen, onClose } = disclosure;
 
   const onSave = () => {
-    if (attendeeId) {
+    if (conventionId) {
       frontendFetch(
         "PUT",
-        "/attendee/" + attendeeId + "/replaceBadge",
+        "/con/" + conventionId + "/replaceBadge",
         {
             fromBadgeNumber: Number(attendee?.badgeNumber),
             toBadgeNumber: Number(toBadgeNumber)
@@ -162,9 +161,7 @@ export default function AttendeeLostBadgeModal(props: AttendeeLostBadgeModalProp
                 />
               </ModalBody>
               <ModalFooter>
-                {readOnly ? (
-                  ""
-                ) : (
+                {readOnly ? null : (
                   <Button color="success" type="submit">
                     Replace Badge
                   </Button>

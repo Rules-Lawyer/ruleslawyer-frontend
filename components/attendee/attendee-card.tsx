@@ -18,10 +18,19 @@ interface AttendeeCardProps {
   pronounsIn: { id: number; pronouns: string }[];
   conventionId?: number;
   organizationId?: number;
+  attendeeId: number;
+  onModalClose?: () => void;
 }
 
 export default function AttendeeCard(props: AttendeeCardProps) {
-  const { attendeeIn, pronounsIn, conventionId, organizationId } = props;
+  const { attendeeIn, pronounsIn, conventionId, organizationId, attendeeId, onModalClose } = props;
+  const disclosure = useDisclosure({ onClose: onModalClose });
+  const transferDisclosure = useDisclosure({ onClose: onModalClose });
+  const lostBadgeDisclosure = useDisclosure({ onClose: onModalClose });
+
+  const { isOpen, onOpen } = disclosure;
+  const { isOpen: isOpenTransfer, onOpen: onOpenBadgeTransfer } = transferDisclosure;
+  const { isOpen: isOpenLostBadge, onOpen: onOpenLostBadge } = lostBadgeDisclosure;
 
   const [attendee, setData] = useState<Attendee | null>(null);
   const [isLoading, setLoading] = useState(true);
@@ -37,7 +46,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
     } else {
       frontendFetch(
         "GET",
-        "/userConPerm/" + (attendeeIn as Attendee).id,
+        "/attendee/" + attendeeId,
         null,
         session?.data?.token
       )
@@ -46,7 +55,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
           setData(data);
           setLoading(false);
         })
-        .catch((err) => {});
+        .catch(() => {});
     }
   }, [attendeeIn, session?.data?.token]);
 
@@ -76,30 +85,10 @@ export default function AttendeeCard(props: AttendeeCardProps) {
     }
   }, [permissions.user?.data, permissions.organizations?.data, permissions.conventions?.data, conventionId, organizationId]);
 
-  const onModalClose = () => {
-  };
-
-  const disclosure = useDisclosure({
-    onClose: onModalClose,
-  });
-
-  const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = disclosure;
-
-  const transferDisclosure = useDisclosure({
-    onClose: onModalClose,
-  });
-
-  const { isOpen: isOpenTransfer, onOpen: onOpenBadgeTransfer, onClose: onCloseBadgeTransfer } = transferDisclosure;
-
-  const lostBadgeDisclosure = useDisclosure({
-    onClose: onModalClose,
-  });
-
-  const { isOpen: isOpenLostBadge, onOpen: onOpenLostBadge, onClose: onCloseLostBadge } = lostBadgeDisclosure;
 
   if (isLoading || isLoadingPermissions) {
     return (
-      <div className="flex items-center border-2 w-80 h-32 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] border-slate-800">
+      <div className="flex items-center border-2 w-100 h-40 mr-5 mb-5 bg-gwdarkblue border-slate-800">
         <div className="flex-col p-3 w-24">
           <FaRegIdBadge size={64} className="text-slate-800" />
         </div>
@@ -114,7 +103,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
 
   if (!attendee) {
     return (
-      <div className="flex items-center border-2 w-80 h-32 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] border-slate-800">
+      <div className="flex items-center border-2 w-100 h-40 mr-5 mb-5 bg-gwdarkblue border-slate-800">
         <div className="flex-col p-3 w-24">
           <BiSolidMessageAltError size={64} className="text-slate-500" />
         </div>
@@ -146,13 +135,13 @@ export default function AttendeeCard(props: AttendeeCardProps) {
             <div className="align-middle h-full text-sm pt-3 text-slate-300">
               {attendee.pronouns?.pronouns}
             </div>
-            : <div></div>
+            : null
           }
           {attendee.email ?
             <div className="align-middle h-full text-sm pt-3 text-slate-300">
               {attendee.email}
             </div>
-            : <div></div>
+            : null
           }
         </div>
         {!readOnly ? (
@@ -177,9 +166,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
               </button>
             </Tooltip>
           </div>
-        ) : (
-          ""
-        )}
+        ) : null}
         {!readOnly ? (
           <div className="absolute top-15 right-5">
             <Tooltip
@@ -202,9 +189,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
               </button>
             </Tooltip>
           </div>
-        ) : (
-          ""
-        )}
+        ) : null}
         {!readOnly ? (
           <div className="absolute top-25 right-5">
             <Tooltip
@@ -227,12 +212,11 @@ export default function AttendeeCard(props: AttendeeCardProps) {
               </button>
             </Tooltip>
           </div>
-        ) : (
-          ""
-        )}
+        ) : null}
       </div>
 
-      <AttendeeModal
+      {isOpen && (
+        <AttendeeModal
           attendeeIn={attendee}
           conventionId={attendee.conventionId}
           pronounsIn={pronounsIn}
@@ -241,23 +225,29 @@ export default function AttendeeCard(props: AttendeeCardProps) {
           onSaved={(updated) =>
               setData((prev) => (prev ? { ...prev, ...updated } : prev))
           }
-      />
+        />
+      )}
 
-      <AttendeeTransferModal
+      {isOpenTransfer && (
+        <AttendeeTransferModal
+          attendeeId={attendee.id}
           attendeeIn={attendee}
           conventionId={attendee.conventionId}
           pronounsIn={pronounsIn}
           disclosure={transferDisclosure}
           organizationId={organizationId}
-      />
+        />
+      )}
 
-      <AttendeeLostBadgeModal
+      {isOpenLostBadge && (
+        <AttendeeLostBadgeModal
+          attendeeId={attendee.id}
           attendeeIn={attendee}
           conventionId={attendee.conventionId}
-          pronounsIn={pronounsIn}
           disclosure={lostBadgeDisclosure}
           organizationId={organizationId}
-      />
+        />
+      )}
     </div>
   );
 }

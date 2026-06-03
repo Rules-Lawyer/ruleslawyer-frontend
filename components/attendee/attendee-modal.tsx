@@ -69,33 +69,33 @@ export default function AttendeeModal(props: AttendeeModalProps) {
         "PUT",
         "/attendee/" + attendeeIn?.id,
         {
-          badgeName: attendee?.badgeName,
-          badgeFirstName: attendee?.badgeFirstName,
-          badgeLastName: attendee?.badgeLastName,
-          legalName: attendee?.legalName,
-          pronounsId: attendee?.pronounsId,
-          email: attendee?.email,
+          badgeName: attendeeBadgeName,
+          badgeFirstName: attendeeBadgeFirstName,
+          badgeLastName: attendeeBadgeLastName,
+          legalName: attendeeLegalName,
+          pronounsId: attendeePronounsId,
+          email: attendeeEmail,
         },
         session?.data?.token
       )
       .then((res) => {
-          if (!res.ok) {
-              toastSaveError(res);
-              return;
-          }
-          onSaved?.({
-            badgeName: attendee?.badgeName,
-            badgeFirstName: attendee?.badgeFirstName,
-            badgeLastName: attendee?.badgeLastName,
-            legalName: attendee?.legalName,
-            pronounsId: attendee?.pronounsId,
-            email: attendee?.email,
-          });
-          onClose();
-        })
-        .catch(() => {
-            toastNetworkError();
+        if (!res.ok) {
+            toastSaveError(res);
+            return;
+        }
+        onSaved?.({
+          badgeName: attendeeBadgeName,
+          badgeFirstName: attendeeBadgeFirstName,
+          badgeLastName: attendeeBadgeLastName,
+          legalName: attendeeLegalName,
+          pronounsId: attendeePronounsId,
+          email: attendeeEmail,
         });
+        onClose();
+      })
+      .catch(() => {
+          toastNetworkError();
+      });
     }
   };
 
@@ -232,9 +232,7 @@ export default function AttendeeModal(props: AttendeeModalProps) {
                 </Select>
               </ModalBody>
               <ModalFooter>
-                {readOnly ? (
-                  ""
-                ) : (
+                {readOnly ? null : (
                   <Button color="success" type="submit">
                     Save
                   </Button>

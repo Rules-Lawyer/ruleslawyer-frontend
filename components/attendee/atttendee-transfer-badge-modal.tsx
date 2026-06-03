@@ -37,14 +37,12 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
     attendeeId,
     attendeeIn,
     disclosure,
-    onSaved,
     conventionId,
     organizationId,
     pronounsIn,
   } = props;
 
   const [attendee, setData] = useState<Attendee | null>(null);
-  const [pronouns, setPronouns] = useState<{ id: number; pronouns: string }[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [readOnly, setReadOnly] = useState(true);
   const [attendeeBadgeName, setAttendeeBadgeName] = useState("");
@@ -60,21 +58,21 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { isOpen, onClose } = disclosure;
 
   const onSave = () => {
-    if (attendeeId) {
+    if (conventionId) {
       frontendFetch(
         "PUT",
-        "/attendee/" + attendeeId + "/transferBadge",
+        "/con/" + conventionId + "/transferBadge",
         {
             fromBadgeNumber: attendee?.badgeNumber ?? "",
+            newBadgeName: attendeeBadgeName,
             newBadgeFirstName: attendeeBadgeFirstName,
             newBadgeLastName: attendeeBadgeLastName,
             newBadgeLegalName: attendeeLegalName,
             newBadgePronounsId: attendeePronounsId,
             newBadgeEmail: attendeeEmail,
-            newPronounsId: attendeePronounsId,
         },
         session?.data?.token,
       )
@@ -214,7 +212,7 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
                     setAttendeePronounsId(first != null ? Number(first) : null);
                   }}
                 >
-                  {pronouns.map((p) => (
+                  {(pronounsIn ?? []).map((p) => (
                     <SelectItem key={p.id} textValue={p.pronouns}>
                       {p.pronouns}
                     </SelectItem>
@@ -222,9 +220,7 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
                 </Select>
               </ModalBody>
               <ModalFooter>
-                {readOnly ? (
-                  ""
-                ) : (
+                {readOnly ? null : (
                   <Button color="success" type="submit">
                     Transfer Badge
                   </Button>
