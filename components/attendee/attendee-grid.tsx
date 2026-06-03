@@ -6,13 +6,13 @@ import usePermissions from "@/utilities/swr/usePermissions";
 import AttendeeCard from "./attendee-card";
 import { Attendee } from "@/types/models";
 import {
-  Button,
   CircularProgress,
   Input,
   Select,
   SelectItem,
 } from "@heroui/react";
 import { LuUserSearch } from "react-icons/lu";
+import Pagination from "../pagination";
 
 interface AttendeeGridProps {
   attendeesIn?: Attendee[];
@@ -142,26 +142,15 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
     );
   }
 
-  const pagination =
-    totalPages > 1 ? (
-      <div className="flex items-center justify-center gap-4 my-6">
-        <Button
-          isDisabled={page <= 1}
-          onPress={() => setPage((p) => Math.max(1, p - 1))}
-        >
-          Previous
-        </Button>
-        <span>
-          Page {page} of {totalPages} ({total} attendees)
-        </span>
-        <Button
-          isDisabled={page >= totalPages}
-          onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
-        >
-          Next
-        </Button>
-      </div>
-    ) : null;
+  const pagination = (
+    <Pagination
+      page={page}
+      totalPages={totalPages}
+      total={total}
+      noun="attendees"
+      onPageChange={setPage}
+    />
+  );
 
   return (
     <div>

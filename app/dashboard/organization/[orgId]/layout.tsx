@@ -132,6 +132,22 @@ export default function OrganizationLayout({
           ) : (
             null
           )}
+
+          {params?.conId !== null && params?.conId !== undefined && pathname?.endsWith('users') ? (
+            <BreadcrumbItem>
+              Users
+            </BreadcrumbItem>
+          ) : (
+            null
+          )}
+
+          {params?.conId !== null && params?.conId !== undefined && pathname?.endsWith('attendees') ? (
+            <BreadcrumbItem>
+              Attendees
+            </BreadcrumbItem>
+          ) : (
+            null
+          )}
         </Breadcrumbs>
       </div>
       <div>{children}</div>
