@@ -444,7 +444,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         {readOnly ? (
           null
         ) : (
-          <Modal isOpen={isOpen} onClose={onClose}>
+          <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
             <ModalContent>
               <form
                 onSubmit={(e) => {
