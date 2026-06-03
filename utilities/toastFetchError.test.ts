@@ -117,9 +117,21 @@ describe("toastSyncError", () => {
     expect(lastToast()).toMatchObject({ title: "Unable to sync", description: NOT_AUTHENTICATED });
   });
 
-  it("uses a permission message for 403 without reading the body", async () => {
+  it("uses the permission message for a 403 with an empty body", async () => {
     await toastSyncError(res(403));
     expect(lastToast().description).toBe("You don't have permission to sync this game.");
+  });
+
+  it("uses the permission message for a 403 with Nest's generic message", async () => {
+    await toastSyncError(res(403, JSON.stringify({ message: "Forbidden resource" })));
+    expect(lastToast().description).toBe("You don't have permission to sync this game.");
+  });
+
+  it("prefers an explicit ForbiddenException message on a 403", async () => {
+    await toastSyncError(
+      res(403, JSON.stringify({ message: "BGG support is not enabled for this organization." }))
+    );
+    expect(lastToast().description).toBe("BGG support is not enabled for this organization.");
   });
 
   it("prefers a string message from the response body", async () => {

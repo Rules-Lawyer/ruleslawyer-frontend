@@ -129,7 +129,18 @@ export async function toastSyncError(res: Response) {
   }
 
   if (res.status === 403) {
-    toastError("Unable to sync", "You don't have permission to sync this game.");
+    // A 403 here is either a plain role rejection (a guard returning `false`,
+    // which NestJS reports as the default "Forbidden resource") or an explicit
+    // ForbiddenException — e.g. OrganizationBggGuard's "BGG support is not
+    // enabled for this organization." Prefer the explicit message; fall back to
+    // the permission copy when the body carries only the generic default.
+    const message = await readErrorMessage(res);
+    toastError(
+      "Unable to sync",
+      message && message !== "Forbidden resource"
+        ? message
+        : "You don't have permission to sync this game."
+    );
     return;
   }
 
