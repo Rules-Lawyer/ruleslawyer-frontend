@@ -306,6 +306,7 @@ export default function CollectionModal(props: CollectionModalProps) {
                     label="Allow Winning"
                     aria-label="Allow Winning"
                   />
+                  <br/>
                   {importFile ? (
                     <input
                       name="importFile"
