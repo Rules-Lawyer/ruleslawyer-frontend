@@ -142,15 +142,15 @@ export default function ConventionList(props: ConventionListProps) {
         variant="surface"
         expandedKeys={selectedKeys}
         onExpandedChange={setSelectedKeys}
-        className={"bg-gwdarkgreen"}
+        className={"bg-transparent"}
       >
         {(conventions ?? []).filter((c) => c != null).map(
           (c) => {
             return (
               <Accordion.Item key={c.id} id={String(c.id)}>
                 <Accordion.Heading>
-                  <Accordion.Trigger>
-                    <span className="data-[open=true]:text-gwgreen hover:text-gwgreen mr-5">
+                  <Accordion.Trigger className={"hover:bg-gwdarkgreen "}>
+                    <span className="data-[open=true]:text-gwgreen mr-5">
                       {c.name}
                     </span>
                     <span className="text-gwlightblue">{c.theme}</span>
