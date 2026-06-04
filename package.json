@@ -50,5 +50,11 @@
   "overrides": {
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true,
+    "@heroui/shared-utils@2.1.12": true,
+    "@heroui/shared-utils@2.1.9": true
   }
 }
