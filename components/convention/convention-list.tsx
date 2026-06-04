@@ -148,7 +148,7 @@ export default function ConventionList(props: ConventionListProps) {
               <Accordion.Item key={c.id} id={String(c.id)}>
                 <Accordion.Heading>
                   <Accordion.Trigger>
-                    <span className="data-[open=true]:text-gwgreen hover:text-gwgreen">
+                    <span className="data-[open=true]:text-gwgreen hover:text-gwgreen mr-5">
                       {c.name}
                     </span>
                     <span className="text-gwblue">{c.theme}</span>

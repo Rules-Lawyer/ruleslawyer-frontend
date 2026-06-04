@@ -206,7 +206,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
   if (!convention) return <div>Loading...</div>;
 
   return (
-    <div className="relative flex flex-col sm:flex-row">
+    <div className="relative flex flex-col sm:flex-row m-5">
       <div className="flex-1">
         <div className="text-gwgreen" hidden={hideTitle && hideSubtitle}>
           <h1 hidden={hideTitle}>{convention.name}</h1>
