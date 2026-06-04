@@ -15,6 +15,7 @@ type CommonProps = {
   isRequired?: boolean;
   name?: string;
   className?: string;
+  inputClassName?: string;
 };
 
 export function SimpleTextField({
@@ -40,7 +41,7 @@ export function SimpleTextField({
       className={className}
     >
       <Label>{label}</Label>
-      <Input type={type} placeholder={placeholder} />
+      <Input className={"bg-gwdarkgreen mb-4"} type={type} placeholder={placeholder} />
     </TextField>
   );
 }

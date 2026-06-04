@@ -42,12 +42,12 @@ export function SimpleSelect({
       className={className}
     >
       {label ? <Label>{label}</Label> : null}
-      <Select.Trigger>
+      <Select.Trigger className={"bg-gwdarkgreen"}>
         <Select.Value />
         <Select.Indicator />
       </Select.Trigger>
       <Select.Popover>
-        <ListBox>{children}</ListBox>
+        <ListBox className={"bg-gwdarkgreen"}>{children}</ListBox>
       </Select.Popover>
     </Select>
   );
@@ -92,11 +92,11 @@ export function SimpleAutocomplete({
     >
       {label ? <Label>{label}</Label> : null}
       <ComboBox.InputGroup>
-        <Input placeholder={placeholder} />
+        <Input className={"bg-gwdarkgreen"} placeholder={placeholder} />
         <ComboBox.Trigger />
       </ComboBox.InputGroup>
       <ComboBox.Popover>
-        <ListBox>{children}</ListBox>
+        <ListBox className={"bg-gwdarkgreen"}>{children}</ListBox>
       </ComboBox.Popover>
     </ComboBox>
   );
