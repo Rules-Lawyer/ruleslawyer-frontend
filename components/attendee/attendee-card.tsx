@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
-import { Skeleton, Tooltip } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
 import { useDisclosure } from "@/utilities/useDisclosure";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import usePermissions from "@/utilities/swr/usePermissions";
@@ -147,74 +148,59 @@ export default function AttendeeCard(props: AttendeeCardProps) {
         </div>
         {!readOnly ? (
           <div className="absolute top-5 right-5">
-            <Tooltip delay={1000}>
-              <Tooltip.Trigger>
-                <button
-                  type="button"
-                  aria-label={"Edit " + attendee.badgeName}
-                  className="hover:text-gwgreen hover:cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpen();
-                  }}
-                >
-                  <FaEdit aria-hidden="true" className="text-2xl" />
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Content showArrow>
-                <Tooltip.Arrow />
-                Edit {attendee.badgeName}
-              </Tooltip.Content>
-            </Tooltip>
+            <SimpleTooltip content={`Edit ${attendee.badgeName}`} delay={1000}>
+              <button
+                type="button"
+                aria-label={"Edit " + attendee.badgeName}
+                className="hover:text-gwgreen hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpen();
+                }}
+              >
+                <FaEdit aria-hidden="true" className="text-2xl" />
+              </button>
+            </SimpleTooltip>
           </div>
         ) : null}
         {!readOnly ? (
           <div className="absolute top-15 right-5">
-            <Tooltip delay={1000}>
-              <Tooltip.Trigger>
-                <button
-                  type="button"
-                  aria-label={"Transfer " + attendee.badgeName}
-                  className="hover:text-gwgreen hover:cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenBadgeTransfer();
-                  }}
-                >
-                  <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Content showArrow>
-                <Tooltip.Arrow />
-                Transfer {attendee.badgeName}
-              </Tooltip.Content>
-            </Tooltip>
+            <SimpleTooltip content={`Transfer ${attendee.badgeName}`} delay={1000}>
+              <button
+                type="button"
+                aria-label={"Transfer " + attendee.badgeName}
+                className="hover:text-gwgreen hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenBadgeTransfer();
+                }}
+              >
+                <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
+              </button>
+            </SimpleTooltip>
           </div>
         ) : null}
         {!readOnly ? (
           <div className="absolute top-25 right-5">
-            <Tooltip delay={1000}>
-              <Tooltip.Trigger>
-                <button
-                  type="button"
-                  aria-label={"Report " + attendee.badgeName + "'s badge lost and replace"}
-                  className="hover:text-gwgreen hover:cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenLostBadge();
-                  }}
-                >
-                  <LuReplace aria-hidden="true" className="text-2xl" />
-                </button>
-              </Tooltip.Trigger>
-              <Tooltip.Content showArrow>
-                <Tooltip.Arrow />
-                Report {attendee.badgeName}&apos;s badge lost and replace
-              </Tooltip.Content>
-            </Tooltip>
+            <SimpleTooltip
+              content={`Report ${attendee.badgeName}'s badge lost and replace`}
+              delay={1000}
+            >
+              <button
+                type="button"
+                aria-label={"Report " + attendee.badgeName + "'s badge lost and replace"}
+                className="hover:text-gwgreen hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenLostBadge();
+                }}
+              >
+                <LuReplace aria-hidden="true" className="text-2xl" />
+              </button>
+            </SimpleTooltip>
           </div>
         ) : null}
       </div>
