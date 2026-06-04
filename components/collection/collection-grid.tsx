@@ -1,5 +1,6 @@
 "use client";
-import { Tooltip, useDisclosure } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import frontendFetch from "@/utilities/frontendFetch";
@@ -122,7 +123,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Import Collection"
           showArrow={true}
           color="success"
@@ -136,13 +137,13 @@ export default function CollectionGrid(props: CollectionGridProps) {
           >
             <TbPackageImport aria-hidden="true" />
           </button>
-        </Tooltip>
+        </SimpleTooltip>
       )}
 
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Create Collection"
           showArrow={true}
           color="success"
@@ -156,7 +157,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
           >
             <IoMdAddCircle aria-hidden="true" />
           </button>
-        </Tooltip>
+        </SimpleTooltip>
       )}
 
       <CollectionModal

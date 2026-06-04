@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import CopyBubbles from "@/components/copy/copy-bubbles";
 import frontendFetch from "@/utilities/frontendFetch";
 import type { GameCopy, GameWithCopies } from "@/types/models";

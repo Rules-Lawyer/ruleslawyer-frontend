@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Tooltip } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
 import { VscSignOut } from "react-icons/vsc";
 
 export function SignOut({ collapsed = false }: { collapsed?: boolean }) {
@@ -18,8 +18,8 @@ export function SignOut({ collapsed = false }: { collapsed?: boolean }) {
   }
 
   return (
-    <Tooltip content="Sign Out" showArrow={true} color="success" delay={1000}>
+    <SimpleTooltip content="Sign Out" delay={1000}>
       {button}
-    </Tooltip>
+    </SimpleTooltip>
   );
 }

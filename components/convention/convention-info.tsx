@@ -4,19 +4,10 @@ import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import CollectionCard from "../collection/collection-card";
-import {
-  Button,
-  Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-  Tooltip,
-  useDisclosure,
-} from "@heroui/react";
+import { Button, Link, Modal } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { GrAttachment } from "react-icons/gr";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { useLegacyUrls } from "./legacy-urls-context";
@@ -231,7 +222,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             ) : (
               <div className="flex gap-2 items-center">
                 <div className="flex gap-2 items-center">
-                  <Tooltip
+                  <SimpleTooltip
                     content={"Edit " + convention.name}
                     showArrow={true}
                     color="success"
@@ -251,9 +242,9 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                         className="h-8 w-auto text-white hover:text-gwgreen"
                       />
                     </button>
-                  </Tooltip>
+                  </SimpleTooltip>
 
-                  <Tooltip
+                  <SimpleTooltip
                     content={"Attendees"}
                     showArrow={true}
                     color="success"
@@ -274,9 +265,9 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                         />
                       </Link>
                     </span>
-                  </Tooltip>
+                  </SimpleTooltip>
 
-                  <Tooltip
+                  <SimpleTooltip
                     content={"User Permissions"}
                     showArrow={true}
                     color="success"
@@ -294,7 +285,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                         <FaUsersCog aria-hidden="true" className="h-8 w-auto" />
                       </Link>
                     </span>
-                  </Tooltip>
+                  </SimpleTooltip>
 
                   <div className="border-r border-gwblue mr-2 ml-2 self-stretch"></div>
                 </div>
@@ -305,7 +296,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
           {readOnly ? (
             null
           ) : (
-            <Tooltip
+            <SimpleTooltip
               content={"Legacy Board Game Admin Frontend"}
               showArrow={true}
               color="success"
@@ -327,10 +318,10 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                   />
                 </Link>
               </span>
-            </Tooltip>
+            </SimpleTooltip>
           )}
 
-          <Tooltip
+          <SimpleTooltip
             content={"Legacy Librarian Frontend"}
             showArrow={true}
             color="success"
@@ -352,9 +343,9 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 />
               </Link>
             </span>
-          </Tooltip>
+          </SimpleTooltip>
 
-          <Tooltip
+          <SimpleTooltip
             content={"Legacy Play Prize Entry Frontend"}
             showArrow={true}
             color="success"
@@ -373,7 +364,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 <FaTrophy aria-hidden="true" className="h-8 w-auto" />
               </Link>
             </span>
-          </Tooltip>
+          </SimpleTooltip>
         </div>
 
         <p>
@@ -393,7 +384,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             null
           ) : (
             <div className="flex">
-              <Tooltip
+              <SimpleTooltip
                 content="Create Collection"
                 showArrow={true}
                 color="success"
@@ -407,8 +398,8 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 >
                   <IoMdAddCircle aria-hidden="true" />
                 </button>
-              </Tooltip>
-              <Tooltip
+              </SimpleTooltip>
+              <SimpleTooltip
                 content="Import Collection"
                 showArrow={true}
                 color="success"
@@ -422,8 +413,8 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 >
                   <TbPackageImport aria-hidden="true" />
                 </button>
-              </Tooltip>
-              <Tooltip
+              </SimpleTooltip>
+              <SimpleTooltip
                 content="Attach Collection"
                 showArrow={true}
                 color="success"
@@ -437,50 +428,58 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 >
                   <GrAttachment aria-hidden="true" />
                 </button>
-              </Tooltip>
+              </SimpleTooltip>
             </div>
           )}
         </h3>
         {readOnly ? (
           null
         ) : (
-          <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-            <ModalContent>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  onSave();
-                }}
-              >
-                <ModalHeader>Attach Collection</ModalHeader>
-                <ModalBody>
-                  <Select
-                    name="collectionSelect"
-                    items={filteredCollections ?? []}
-                    label="Collection to Attach"
-                    placeholder="Select a collection"
-                    isRequired
-                    onChange={(event) => {
-                      setCollectionIdToAttach(Number(event.target.value));
+          <Modal state={disclosure}>
+            <Modal.Backdrop>
+              <Modal.Container scroll="outside">
+                <Modal.Dialog>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      onSave();
                     }}
                   >
-                    {(collection) => (
-                      <SelectItem key={collection.id}>
-                        {collection.name}
-                      </SelectItem>
-                    )}
-                  </Select>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="success" type="submit">
-                    Attach
-                  </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Cancel
-                  </Button>
-                </ModalFooter>
-              </form>
-            </ModalContent>
+                    <Modal.Header>
+                      <Modal.Heading>Attach Collection</Modal.Heading>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <SimpleSelect
+                        name="collectionSelect"
+                        label="Collection to Attach"
+                        placeholder="Select a collection"
+                        onSelectionChange={(key) => {
+                          setCollectionIdToAttach(
+                            key != null ? Number(key) : null
+                          );
+                        }}
+                      >
+                        {(filteredCollections ?? []).map((collection) => (
+                          <SimpleSelectItem
+                            key={collection.id}
+                            id={String(collection.id)}
+                            textValue={collection.name}
+                          />
+                        ))}
+                      </SimpleSelect>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="primary" type="submit">
+                        Attach
+                      </Button>
+                      <Button variant="secondary" onPress={onClose}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </form>
+                </Modal.Dialog>
+              </Modal.Container>
+            </Modal.Backdrop>
           </Modal>
         )}
         <div className="flex flex-wrap mr-8">

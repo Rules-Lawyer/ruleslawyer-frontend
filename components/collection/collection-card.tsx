@@ -8,7 +8,9 @@ import {
   toastDetachError,
   toastDetachNetworkError,
 } from "@/utilities/toastFetchError";
-import { Skeleton, Tooltip, useDisclosure } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import { IoLibrary } from "react-icons/io5";
 import { GrDetach } from "react-icons/gr";
@@ -228,7 +230,7 @@ export default function CollectionCard(props: CollectionCardProps) {
         {conventionId && !readOnly ? (
           <div className="absolute bottom-5 right-10">
             {" "}
-            <Tooltip
+            <SimpleTooltip
               content={"Detach " + collection.name}
               showArrow={true}
               color="success"
@@ -242,14 +244,14 @@ export default function CollectionCard(props: CollectionCardProps) {
               >
                 <GrDetach aria-hidden="true" />
               </button>
-            </Tooltip>
+            </SimpleTooltip>
           </div>
         ) : (
           null
         )}
         {!readOnly && !collection.archived ? (
           <div className="absolute top-5 right-10">
-            <Tooltip
+            <SimpleTooltip
               content={"Edit " + collection.name}
               showArrow={true}
               color="success"
@@ -267,14 +269,14 @@ export default function CollectionCard(props: CollectionCardProps) {
               >
                 <FaEdit aria-hidden="true" />
               </button>
-            </Tooltip>
+            </SimpleTooltip>
           </div>
         ) : (
           null
         )}
         {collection.archived ? (
           <div className="absolute top-5 right-10 text-gwdarkred">
-            <Tooltip
+            <SimpleTooltip
               content={"Archived collection"}
               showArrow={true}
               color="success"
@@ -283,14 +285,14 @@ export default function CollectionCard(props: CollectionCardProps) {
               <span>
                 <FaLock role="img" aria-label="Archived collection" />
               </span>
-            </Tooltip>
+            </SimpleTooltip>
           </div>
         ) : (
           null
         )}
         {collection.allowWinning ? (
           <div className="absolute top-10 right-10 text-gwgreen">
-            <Tooltip
+            <SimpleTooltip
               content={"Allows winning copies"}
               showArrow={true}
               color="success"
@@ -299,7 +301,7 @@ export default function CollectionCard(props: CollectionCardProps) {
               <span>
                 <FaTrophy role="img" aria-label="Allows winning copies" />
               </span>
-            </Tooltip>
+            </SimpleTooltip>
           </div>
         ) : (
           null
@@ -309,7 +311,7 @@ export default function CollectionCard(props: CollectionCardProps) {
         collection._count.conventions === 0 ? (
           <div className="absolute top-15 right-10">
             {" "}
-            <Tooltip
+            <SimpleTooltip
               content={"Delete " + collection.name}
               showArrow={true}
               color="success"
@@ -323,7 +325,7 @@ export default function CollectionCard(props: CollectionCardProps) {
               >
                 <FaTrashCan aria-hidden="true" />
               </button>
-            </Tooltip>
+            </SimpleTooltip>
           </div>
         ) : (
           null

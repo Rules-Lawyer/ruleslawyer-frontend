@@ -1,11 +1,7 @@
 "use client";
-import {
-  Accordion,
-  AccordionItem,
-  Selection,
-  Tooltip,
-  useDisclosure,
-} from "@heroui/react";
+import { Accordion, Selection } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import ConventionInfo from "./convention-info";
 import { IoMdAddCircle } from "react-icons/io";
@@ -142,28 +138,31 @@ export default function ConventionList(props: ConventionListProps) {
   return (
     <div>
       <Accordion
-        variant="bordered"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
+        variant="surface"
+        expandedKeys={selectedKeys}
+        onExpandedChange={setSelectedKeys}
       >
         {(conventions ?? []).filter((c) => c != null).map(
           (c) => {
             return (
-              <AccordionItem
-                classNames={{
-                  title: "data-[open=true]:text-gwgreen hover:text-gwgreen",
-                  subtitle: "text-gwblue",
-                }}
-                key={c.id}
-                title={c.name}
-                subtitle={c.theme}
-              >
-                <ConventionInfo
-                  id={c.id}
-                  hideTitle={true}
-                  hideSubtitle={true}
-                />
-              </AccordionItem>
+              <Accordion.Item key={c.id} id={String(c.id)}>
+                <Accordion.Heading>
+                  <Accordion.Trigger>
+                    <span className="data-[open=true]:text-gwgreen hover:text-gwgreen">
+                      {c.name}
+                    </span>
+                    <span className="text-gwblue">{c.theme}</span>
+                    <Accordion.Indicator />
+                  </Accordion.Trigger>
+                </Accordion.Heading>
+                <Accordion.Panel>
+                  <ConventionInfo
+                    id={c.id}
+                    hideTitle={true}
+                    hideSubtitle={true}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
             );
           }
         )}
@@ -172,7 +171,7 @@ export default function ConventionList(props: ConventionListProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Create Convention"
           showArrow={true}
           color="success"
@@ -186,7 +185,7 @@ export default function ConventionList(props: ConventionListProps) {
           >
             <IoMdAddCircle aria-hidden="true" />
           </button>
-        </Tooltip>
+        </SimpleTooltip>
       )}
 
       <ConventionModal

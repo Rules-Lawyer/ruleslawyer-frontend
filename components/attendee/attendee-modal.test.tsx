@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import AttendeeModal from "@/components/attendee/attendee-modal";
 import frontendFetch from "@/utilities/frontendFetch";
 import usePermissions from "@/utilities/swr/usePermissions";

@@ -1,5 +1,6 @@
 "use client";
-import { Tooltip, useDisclosure } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import frontendFetch from "@/utilities/frontendFetch";
@@ -158,7 +159,7 @@ export default function UserGrid(props: UserGridProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Add User"
           showArrow={true}
           color="success"
@@ -172,7 +173,7 @@ export default function UserGrid(props: UserGridProps) {
           >
             <IoMdAddCircle aria-hidden="true" />
           </button>
-        </Tooltip>
+        </SimpleTooltip>
       )}
 
       <UserModal

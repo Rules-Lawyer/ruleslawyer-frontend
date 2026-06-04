@@ -1,20 +1,12 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import {
-  Button,
-  Checkbox,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/react";
+import { Button, Checkbox, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { UserPermissionRow } from "@/types/models";
 
 interface UserPermissionUpdate {
@@ -58,7 +50,7 @@ export default function UserModal(props: UserModalProps) {
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { isOpen, onClose } = disclosure;
 
   const onSave = () => {
     if (userType === "organization") {
@@ -242,104 +234,105 @@ export default function UserModal(props: UserModalProps) {
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>
-                User Editor - {user?.user?.name ?? "New User"}
-              </ModalHeader>
-              <ModalBody>
-                {!user?.user?.name ? (
-                  <Input
-                    label="Email"
-                    onValueChange={setUserEmail}
-                  />
-                ) : (
-                  null
-                )}
-                {userType === "organization" ? (
-                  <div>
-                    <Checkbox
-                      isSelected={userAdmin}
-                      onValueChange={setUserAdmin}
-                      isDisabled={readOnly}
-                    >
-                      Admin
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userGeekGuide}
-                      onValueChange={setUserGeekGuide}
-                      isDisabled={readOnly}
-                    >
-                      Geek Guide
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userReadOnly}
-                      onValueChange={setUserReadOnly}
-                      isDisabled={readOnly}
-                    >
-                      Read Only
-                    </Checkbox>
-                  </div>
-                ) : (
-                  null
-                )}
+    <Modal state={disclosure}>
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>
+                    User Editor - {user?.user?.name ?? "New User"}
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  {!user?.user?.name ? (
+                    <SimpleTextField label="Email" onChange={setUserEmail} />
+                  ) : (
+                    null
+                  )}
+                  {userType === "organization" ? (
+                    <div>
+                      <Checkbox
+                        isSelected={userAdmin}
+                        onChange={setUserAdmin}
+                        isDisabled={readOnly}
+                      >
+                        Admin
+                      </Checkbox>
+                      <br/><br/>
+                      <Checkbox
+                        isSelected={userGeekGuide}
+                        onChange={setUserGeekGuide}
+                        isDisabled={readOnly}
+                      >
+                        Geek Guide
+                      </Checkbox>
+                      <br/><br/>
+                      <Checkbox
+                        isSelected={userReadOnly}
+                        onChange={setUserReadOnly}
+                        isDisabled={readOnly}
+                      >
+                        Read Only
+                      </Checkbox>
+                    </div>
+                  ) : (
+                    null
+                  )}
 
-                {userType === "convention" ? (
-                  <div>
-                    <Checkbox
-                      isSelected={userAdmin}
-                      onValueChange={setUserAdmin}
-                      isDisabled={readOnly}
-                    >
-                      Admin
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userGeekGuide}
-                      onValueChange={setUserGeekGuide}
-                      isDisabled={readOnly}
-                    >
-                      Geek Guide
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userAttendee}
-                      onValueChange={setUserAttendee}
-                      isDisabled={readOnly}
-                    >
-                      Attendee
-                    </Checkbox>
-                  </div>
-                ) : (
-                  null
-                )}
-              </ModalBody>
-              <ModalFooter>
-                {readOnly ? (
-                  null
-                ) : (
-                  <Button color="success" type="submit">
-                    Save
+                  {userType === "convention" ? (
+                    <div>
+                      <Checkbox
+                        isSelected={userAdmin}
+                        onChange={setUserAdmin}
+                        isDisabled={readOnly}
+                      >
+                        Admin
+                      </Checkbox>
+                      <br/><br/>
+                      <Checkbox
+                        isSelected={userGeekGuide}
+                        onChange={setUserGeekGuide}
+                        isDisabled={readOnly}
+                      >
+                        Geek Guide
+                      </Checkbox>
+                      <br/><br/>
+                      <Checkbox
+                        isSelected={userAttendee}
+                        onChange={setUserAttendee}
+                        isDisabled={readOnly}
+                      >
+                        Attendee
+                      </Checkbox>
+                    </div>
+                  ) : (
+                    null
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly ? (
+                    null
+                  ) : (
+                    <Button variant="primary" type="submit">
+                      Save
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

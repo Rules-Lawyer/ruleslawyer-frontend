@@ -1,6 +1,7 @@
 @import 'tailwindcss';
-@plugin './hero.ts';
-@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+/* HeroUI v3 ships its styles as a CSS package instead of the v2 tailwind
+   `heroui()` plugin. Import order matters: tailwindcss must come first. */
+@import '@heroui/styles';
 @custom-variant dark (&:is(.dark *));
 
 /* `static` forces Tailwind v4 to emit every theme variable to :root, even ones

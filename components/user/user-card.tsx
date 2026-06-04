@@ -6,7 +6,9 @@ import {
   toastDeleteError,
   toastDeleteNetworkError,
 } from "@/utilities/toastFetchError";
-import { Skeleton, Tooltip, useDisclosure } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import { IoLibrary } from "react-icons/io5";
 import usePermissions from "@/utilities/swr/usePermissions";
@@ -240,7 +242,7 @@ export default function UserCard(props: UserCardProps) {
         {!readOnly ? (
             <div className="absolute top-15 right-10">
             {" "}
-            <Tooltip
+            <SimpleTooltip
                 content={"Delete " + user.user.name}
                 showArrow={true}
                 color="success"
@@ -254,7 +256,7 @@ export default function UserCard(props: UserCardProps) {
                 >
                 <FaTrashCan aria-hidden="true" />
                 </button>
-            </Tooltip>
+            </SimpleTooltip>
             </div>
         ) : (
             null

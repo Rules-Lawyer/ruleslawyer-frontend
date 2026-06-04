@@ -5,7 +5,7 @@ import Image from "next/image";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
 import { SignOut } from "./auth/signout-client";
-import { CircularProgress } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { FaBuildingFlag, FaPeopleLine, FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
 import { IoLibrary } from "react-icons/io5";
@@ -58,8 +58,11 @@ export default function SideBar({
     return (
       <div className={containerClass}>
         <div className="text-center bg-gwdarkgreen h-48 rounded-br-lg">
-          <div className="flex justify-center w-full pt-10">
-            <CircularProgress isIndeterminate={true} label="Loading..." />
+          <div className="flex flex-col items-center w-full pt-10">
+            <Spinner aria-label="Loading..." />
+            {/* v2's CircularProgress rendered its `label` as visible text; v3's
+                Spinner only takes an aria-label, so keep the text alongside. */}
+            <span className="mt-2">Loading...</span>
           </div>
         </div>
       </div>
