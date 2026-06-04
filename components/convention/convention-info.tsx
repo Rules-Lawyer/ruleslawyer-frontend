@@ -368,16 +368,16 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         </div>
 
         <p>
-          <b className="text-gwgreen">Start Date: </b>
+          <b className="text-gwlightblue">Start Date: </b>
           {formatter.format(new Date(convention.startDate))}
         </p>
         <p className="mb-8">
-          <b className="text-gwgreen">End Date: </b>
+          <b className="text-gwlightblue">End Date: </b>
           {formatter.format(new Date(convention.endDate))}
         </p>
 
         <h3 className="flex">
-          <span className="text-gwgreen">
+          <span className="text-gwlightblue">
             <b>Collections:</b>
           </span>{" "}
           {readOnly ? (

@@ -138,9 +138,11 @@ export default function ConventionList(props: ConventionListProps) {
   return (
     <div>
       <Accordion
+        allowsMultipleExpanded
         variant="surface"
         expandedKeys={selectedKeys}
         onExpandedChange={setSelectedKeys}
+        className={"bg-gwdarkgreen"}
       >
         {(conventions ?? []).filter((c) => c != null).map(
           (c) => {
@@ -151,7 +153,7 @@ export default function ConventionList(props: ConventionListProps) {
                     <span className="data-[open=true]:text-gwgreen hover:text-gwgreen mr-5">
                       {c.name}
                     </span>
-                    <span className="text-gwblue">{c.theme}</span>
+                    <span className="text-gwlightblue">{c.theme}</span>
                     <Accordion.Indicator />
                   </Accordion.Trigger>
                 </Accordion.Heading>
