@@ -251,6 +251,7 @@ export default function ConventionModal(props: ConventionModalProps) {
                     name="conventionTypeSelect"
                     label="Convention Type"
                     placeholder="Select a convention type"
+                    className="mb-4"
                     selectedKey={
                       conventionTypeId != null
                         ? String(conventionTypeId)

@@ -182,10 +182,10 @@ export default function GameGrid(props: GameGridProps) {
           name="search"
           aria-label="Search Games"
           onChange={setSearchText}
-          className="mr-10"
+          className="mr-10 w-2/3"
         >
           <Label>Search Games</Label>
-          <Input placeholder="Type a game name" />
+          <Input className={"bg-gwdarkgreen"} placeholder="Type a game name" />
         </TextField>
         <SimpleSelect
           name="maxResults"

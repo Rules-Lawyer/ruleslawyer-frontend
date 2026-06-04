@@ -1,13 +1,14 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import { Button, Checkbox, Modal } from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
 import { SimpleTextField } from "@/components/ui/simple-field";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { useDisclosure } from "@/utilities/useDisclosure";
 import { UserPermissionRow } from "@/types/models";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 
 interface UserPermissionUpdate {
   admin: boolean;
@@ -258,29 +259,32 @@ export default function UserModal(props: UserModalProps) {
                   )}
                   {userType === "organization" ? (
                     <div>
-                      <Checkbox
+                      <SimpleCheckbox
                         isSelected={userAdmin}
                         onChange={setUserAdmin}
                         isDisabled={readOnly}
-                      >
-                        Admin
-                      </Checkbox>
-                      <br/><br/>
-                      <Checkbox
+                        label="Admin"
+                        aria-label="Admin"
+                        id="admin"
+                      />
+                      <br/>
+                      <SimpleCheckbox
                         isSelected={userGeekGuide}
                         onChange={setUserGeekGuide}
                         isDisabled={readOnly}
-                      >
-                        Geek Guide
-                      </Checkbox>
-                      <br/><br/>
-                      <Checkbox
+                        label="Geek Guide"
+                        aria-label="Geek Guide"
+                        id="geek-guide"
+                      />
+                      <br/>
+                      <SimpleCheckbox
                         isSelected={userReadOnly}
                         onChange={setUserReadOnly}
                         isDisabled={readOnly}
-                      >
-                        Read Only
-                      </Checkbox>
+                        label="Read Only"
+                        aria-label="Read Only"
+                        id="read-only"
+                      />
                     </div>
                   ) : (
                     null

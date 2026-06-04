@@ -1,8 +1,9 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import { Button, Checkbox, Modal } from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
 import { SimpleTextField } from "@/components/ui/simple-field";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
@@ -297,13 +298,14 @@ export default function CollectionModal(props: CollectionModalProps) {
                     onChange={(value) => setCollectionName(value)}
                     isDisabled={readOnly}
                   />
-                  <Checkbox
+                  <SimpleCheckbox
+                    id="allow-winning"
                     isSelected={allowWinning}
-                    onChange={setAllowWinning}
+                    onChange={(value) => setAllowWinning(value)}
                     isDisabled={readOnly}
-                  >
-                    Allow Winning
-                  </Checkbox>
+                    label="Allow Winning"
+                    aria-label="Allow Winning"
+                  />
                   {importFile ? (
                     <input
                       name="importFile"
