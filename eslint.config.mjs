@@ -18,4 +18,17 @@ export default [
   },
   ...nextCoreWebVitals,
   ...nextTypescript,
+  {
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_"
+        }
+      ],
+      "@next/next/no-img-element": "off"
+    },
+  },
 ];
