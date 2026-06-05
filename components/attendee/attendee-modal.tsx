@@ -1,21 +1,13 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-} from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { Attendee } from "@/types/models";
 
 interface AttendeeUpdate {
@@ -61,7 +53,7 @@ export default function AttendeeModal(props: AttendeeModalProps) {
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { isOpen, onClose } = disclosure;
 
   const onSave = () => {
     if (attendeeIn) {
@@ -161,90 +153,98 @@ export default function AttendeeModal(props: AttendeeModalProps) {
     }
   }, [permissions.user?.data, permissions.conventions?.data, permissions.organizations?.data, conventionId, organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>
-                User Editor - {attendee?.badgeName ?? "New User"}
-              </ModalHeader>
-              <ModalBody>
-                <Input
-                  label="Badge Name"
-                  onValueChange={setAttendeeBadgeName}
-                  value={attendeeBadgeName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Badge First Name"
-                  onValueChange={setAttendeeBadgeFirstName}
-                  value={attendeeBadgeFirstName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Badge Last Name"
-                  onValueChange={setAttendeeBadgeLastName}
-                  value={attendeeBadgeLastName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Legal Name"
-                  onValueChange={setAttendeeLegalName}
-                  value={attendeeLegalName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Email"
-                  onValueChange={setAttendeeEmail}
-                  value={attendeeEmail ?? ""}
-                  readOnly={readOnly}
-                />
-                <Select
-                  label="Pronouns"
-                  placeholder="Select Pronouns"
-                  selectedKeys={
-                    attendeePronounsId != null
-                      ? new Set([String(attendeePronounsId)])
-                      : new Set()
-                  }
-                  isDisabled={readOnly}
-                  onSelectionChange={(keys) => {
-                    const [first] = keys;
-                    setAttendeePronounsId(
-                      first != null ? Number(first) : null
-                    );
-                  }}
-                >
-                  {pronouns.map((p) => (
-                    <SelectItem key={p.id} textValue={p.pronouns}>
-                      {p.pronouns}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </ModalBody>
-              <ModalFooter>
-                {readOnly ? null : (
-                  <Button color="success" type="submit">
-                    Save
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>
+                    User Editor - {attendee?.badgeName ?? "New User"}
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <SimpleTextField
+                    label="Badge Name"
+                    onChange={setAttendeeBadgeName}
+                    value={attendeeBadgeName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Badge First Name"
+                    onChange={setAttendeeBadgeFirstName}
+                    value={attendeeBadgeFirstName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Badge Last Name"
+                    onChange={setAttendeeBadgeLastName}
+                    value={attendeeBadgeLastName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Legal Name"
+                    onChange={setAttendeeLegalName}
+                    value={attendeeLegalName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Email"
+                    onChange={setAttendeeEmail}
+                    value={attendeeEmail ?? ""}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleSelect
+                    label="Pronouns"
+                    placeholder="Select Pronouns"
+                    selectedKey={
+                      attendeePronounsId != null
+                        ? String(attendeePronounsId)
+                        : null
+                    }
+                    isDisabled={readOnly}
+                    onSelectionChange={(key) => {
+                      setAttendeePronounsId(key != null ? Number(key) : null);
+                    }}
+                  >
+                    {pronouns.map((p) => (
+                      <SimpleSelectItem
+                        key={p.id}
+                        id={String(p.id)}
+                        textValue={p.pronouns}
+                      />
+                    ))}
+                  </SimpleSelect>
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly ? null : (
+                    <Button variant="primary" type="submit">
+                      Save
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

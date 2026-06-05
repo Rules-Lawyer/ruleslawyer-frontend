@@ -1,20 +1,13 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import {
-  Button,
-  Checkbox,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { Collection } from "@/types/models";
 
 interface CollectionModalProps {
@@ -47,7 +40,7 @@ export default function CollectionModal(props: CollectionModalProps) {
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { onClose } = disclosure;
 
   const handleImportCSV = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -276,73 +269,83 @@ export default function CollectionModal(props: CollectionModalProps) {
     }
   }, [permissions.user?.data, permissions.organizations?.data, permissions.conventions?.data, collection, organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>
-                {collection ? "Edit" : importFile ? "Import" : "Create"}{" "}
-                Collection
-              </ModalHeader>
-              <ModalBody>
-                <Input
-                  name="name"
-                  type="text"
-                  isRequired
-                  label="Name"
-                  value={collectionName}
-                  onValueChange={(value) => setCollectionName(value)}
-                  isDisabled={readOnly}
-                />
-                <Checkbox
-                  isSelected={allowWinning}
-                  onValueChange={setAllowWinning}
-                  isDisabled={readOnly}
-                >
-                  Allow Winning
-                </Checkbox>
-                {importFile ? (
-                  <input
-                    name="importFile"
-                    type="file"
-                    onChange={handleImportCSV}
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>
+                    {collection ? "Edit" : importFile ? "Import" : "Create"}{" "}
+                    Collection
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <SimpleTextField
+                    name="name"
+                    isRequired
+                    label="Name"
+                    value={collectionName}
+                    onChange={(value) => setCollectionName(value)}
+                    isDisabled={readOnly}
                   />
-                ) : (
-                  null
-                )}
-              </ModalBody>
-              <ModalFooter>
-                {readOnly? (
-                  null
-                ) : (
-                  <Button color="danger" onPress={onArchive}>
-                    Archive
+                  <SimpleCheckbox
+                    id="allow-winning"
+                    isSelected={allowWinning}
+                    onChange={(value) => setAllowWinning(value)}
+                    isDisabled={readOnly}
+                    label="Allow Winning"
+                    aria-label="Allow Winning"
+                  />
+                  <br/>
+                  {importFile ? (
+                    <input
+                      name="importFile"
+                      type="file"
+                      onChange={handleImportCSV}
+                    />
+                  ) : (
+                    null
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly? (
+                    null
+                  ) : (
+                    <Button variant="danger" onPress={onArchive}>
+                      Archive
+                    </Button>
+                  )}
+                  {readOnly && !collection?.archived ? (
+                    null
+                  ) : (
+                    <Button variant="primary" type="submit">
+                      {importFile ? "Import" : "Save"}
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                {readOnly && !collection?.archived ? (
-                  null
-                ) : (
-                  <Button color="success" type="submit">
-                    {importFile ? "Import" : "Save"}
-                  </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

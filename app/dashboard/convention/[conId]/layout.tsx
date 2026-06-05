@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
-import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
+import { BreadcrumbsItem, Breadcrumbs } from "@heroui/react";
 import { useParams, usePathname } from "next/navigation";
 import { Collection, Convention } from "@/types/models";
 
@@ -51,31 +51,31 @@ export default function ConventionLayout({
   return (
     <div>
       <div className="mb-5">
-        <Breadcrumbs size="lg" color="success" underline="hover">
+        <Breadcrumbs>
           {params?.conId !== null && params?.conId !== undefined ? (
-            <BreadcrumbItem href={`/dashboard/convention/${convention.id}`}>
+            <BreadcrumbsItem href={`/dashboard/convention/${convention.id}`}>
               {convention.name}
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {pathname?.includes("collection") ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/convention/${convention.id}/collections`}
             >
               Collections
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {params?.colId !== null && params?.colId !== undefined ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${convention.id}/collection/${params?.colId}`}
             >
               {collection?.name}
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}

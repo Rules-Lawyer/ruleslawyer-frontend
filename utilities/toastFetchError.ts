@@ -1,7 +1,8 @@
-import { addToast } from "@heroui/react";
+import { toast } from "@heroui/react";
 
 function toastError(title: string, description: string) {
-  addToast({ title, description, color: "danger" });
+  // HeroUI v3: addToast({title, description, color}) -> toast(title, {description, variant}).
+  toast(title, { description, variant: "danger" });
 }
 
 // A 401 from the JwtAuthGuard means the request isn't authenticated: the Bearer

@@ -6,22 +6,15 @@ import {
   toastNetworkError,
   toastSaveError,
 } from "@/utilities/toastFetchError";
+import { Button, Modal } from "@heroui/react";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
+import { SimpleTextField, SimpleTextArea } from "@/components/ui/simple-field";
 import {
-  Button,
-  Checkbox,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-  Textarea,
-  Autocomplete,
-  AutocompleteItem,
-  useDisclosure
-} from "@heroui/react";
+  SimpleSelect,
+  SimpleSelectItem,
+  SimpleAutocomplete,
+} from "@/components/ui/simple-select";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import { useAsyncList } from "@react-stately/data";
@@ -60,7 +53,7 @@ export default function CopyModal(props: CopyModalProps) {
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { onClose } = disclosure;
 
   const onDelete = () => {
     if (copy) {
@@ -273,139 +266,146 @@ export default function CopyModal(props: CopyModalProps) {
     }
   }, [orgIdForCollections, session?.data?.token]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                onSave();
-              }}
-            >
-              <ModalHeader>
-                {copy
-                  ? copy.game.name + " (" + copy.barcodeLabel + ")"
-                  : "Create Copy"}
-              </ModalHeader>
-              <ModalBody>
-                <Select
-                  name="collectionSelect"
-                  items={collections ?? []}
-                  label="Collection"
-                  placeholder="Select a collection"
-                  defaultSelectedKeys={copy ? [String(copy.collectionId)] : []}
-                  isDisabled={readOnly}
-                  isRequired
-                  onChange={(event) => {
-                    setCopyCollectionId(Number(event.target.value));
-                  }}
-                >
-                  {(collection) => (
-                    <SelectItem key={collection.id}>
-                      {collection.name}
-                    </SelectItem>
-                  )}
-                </Select>
-                <Autocomplete
-                  name="gameAutocomplete"
-                  label="Select a game"
-                  placeholder="Type to search..."
-                  inputValue={gameList.filterText}
-                  isLoading={gameList.isLoading}
-                  items={gameList.items}
-                  onInputChange={gameList.setFilterText}
-                  isDisabled={readOnly}
-                  isRequired
-                  onSelectionChange={(key) =>
-                    setGameId(
-                      typeof key === "string" || typeof key === "number"
-                        ? key
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  onSave();
+                }}
+              >
+                <Modal.Header>
+                  <Modal.Heading>
+                    {copy
+                      ? copy.game.name + " (" + copy.barcodeLabel + ")"
+                      : "Create Copy"}
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <SimpleSelect
+                    name="collectionSelect"
+                    label="Collection"
+                    placeholder="Select a collection"
+                    selectedKey={
+                      copyCollectionId != null
+                        ? String(copyCollectionId)
                         : null
-                    )
-                  }
-                >
-                  {(item) => (
-                    <AutocompleteItem key={item.id}>
-                      {item.name}
-                    </AutocompleteItem>
-                  )}
-                </Autocomplete>
-                {gameId === "0" ? (
-                  <Input
-                    name="newGameName"
-                    type="text"
-                    label="New Game Name"
-                    value={newGameName ?? ""}
-                    isRequired
-                    onValueChange={(value) => setNewGameName(value)}
-                  />
-                ) : (
-                  null
-                )}
-                <Input
-                  name="barcodeLabel"
-                  type="text"
-                  isRequired
-                  label="Barcode Label"
-                  value={copyBarcodeLabel}
-                  onValueChange={(value) => setCopyBarcodeLabel(value)}
-                  isDisabled={readOnly}
-                />
-                <Input
-                  name="barcode"
-                  type="text"
-                  isRequired
-                  label="Barcode"
-                  value={copyBarcode}
-                  onValueChange={(value) => setCopyBarcode(value)}
-                  isDisabled={readOnly}
-                />
-                <Textarea
-                  name="comments"
-                  label="Comments"
-                  placeholder="Enter your comments"
-                  value={copyComments ?? ""}
-                  onValueChange={(value) => setCopyComments(value)}
-                  isDisabled={readOnly}
-                />
-                {copy?.collection?.allowWinning && (
-                  <Checkbox
-                    name="allowWinning"
-                    defaultSelected={copy.winnable}
-                    onValueChange={(isSelected) => setCopyWinnable(isSelected)}
+                    }
                     isDisabled={readOnly}
+                    onSelectionChange={(key) => {
+                      setCopyCollectionId(key != null ? Number(key) : null);
+                    }}
+                    className="mb-4"
                   >
-                    Winnable
-                  </Checkbox>
-                )}
-              </ModalBody>
-              <ModalFooter>
-                {!readOnly && copy ? (
-                  <Button color="danger" onPress={onDelete}>
-                    Delete
+                    {(collections ?? []).map((collection) => (
+                      <SimpleSelectItem
+                        key={collection.id}
+                        id={String(collection.id)}
+                        textValue={collection.name}
+                      />
+                    ))}
+                  </SimpleSelect>
+                  <SimpleAutocomplete
+                    name="gameAutocomplete"
+                    label="Select a game"
+                    placeholder="Type to search..."
+                    inputValue={gameList.filterText}
+                    onInputChange={gameList.setFilterText}
+                    isDisabled={readOnly}
+                    isRequired
+                    selectedKey={gameId != null ? String(gameId) : null}
+                    onSelectionChange={(key) => setGameId(key)}
+                    className="mb-4"
+                  >
+                    {gameList.items.map((item) => (
+                      <SimpleSelectItem
+                        key={item.id}
+                        id={String(item.id)}
+                        textValue={item.name}
+                      />
+                    ))}
+                  </SimpleAutocomplete>
+                  {gameId === "0" ? (
+                    <SimpleTextField
+                      name="newGameName"
+                      label="New Game Name"
+                      value={newGameName ?? ""}
+                      isRequired
+                      onChange={(value) => setNewGameName(value)}
+                    />
+                  ) : (
+                    null
+                  )}
+                  <SimpleTextField
+                    name="barcodeLabel"
+                    isRequired
+                    label="Barcode Label"
+                    value={copyBarcodeLabel}
+                    onChange={(value) => setCopyBarcodeLabel(value)}
+                    isDisabled={readOnly}
+                  />
+                  <SimpleTextField
+                    name="barcode"
+                    isRequired
+                    label="Barcode"
+                    value={copyBarcode}
+                    onChange={(value) => setCopyBarcode(value)}
+                    isDisabled={readOnly}
+                  />
+                  <SimpleTextArea
+                    name="comments"
+                    label="Comments"
+                    placeholder="Enter your comments"
+                    value={copyComments ?? ""}
+                    onChange={(value) => setCopyComments(value)}
+                    isDisabled={readOnly}
+                  />
+                  {copy?.collection?.allowWinning && (
+                    <SimpleCheckbox
+                      isSelected={copyWinnable}
+                      onChange={(isSelected) => setCopyWinnable(isSelected)}
+                      isDisabled={readOnly}
+                      label="Winnable"
+                      aria-label="Winnable"
+                      id="allowWinning"
+                    />
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  {!readOnly && copy ? (
+                    <Button variant="danger" onPress={onDelete}>
+                      Delete
+                    </Button>
+                  ) : (
+                    null
+                  )}
+                  {readOnly ? (
+                    null
+                  ) : (
+                    <Button variant="primary" type="submit">
+                      Save
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                ) : (
-                  null
-                )}
-                {readOnly ? (
-                  null
-                ) : (
-                  <Button color="success" type="submit">
-                    Save
-                  </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </form>
-          </div>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </form>
+            </div>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

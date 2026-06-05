@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
-import { Skeleton, Tooltip, useDisclosure } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { BiSolidMessageAltError } from "react-icons/bi";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { FaMoneyBillTransfer, FaRegIdBadge } from "react-icons/fa6";
@@ -146,71 +148,41 @@ export default function AttendeeCard(props: AttendeeCardProps) {
         </div>
         {!readOnly ? (
           <div className="absolute top-5 right-5">
-            <Tooltip
-              content={"Edit " + attendee.badgeName}
-              showArrow={true}
-              color="success"
+            <SimpleTooltip
+              content={`Edit ${attendee.badgeName}`}
               delay={1000}
+              ariaLabel={"Edit " + attendee.badgeName}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpen}
             >
-              <button
-                type="button"
-                aria-label={"Edit " + attendee.badgeName}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpen();
-                }}
-              >
-                <FaEdit aria-hidden="true" className="text-2xl" />
-              </button>
-            </Tooltip>
+              <FaEdit aria-hidden="true" className="text-2xl" />
+            </SimpleTooltip>
           </div>
         ) : null}
         {!readOnly ? (
           <div className="absolute top-15 right-5">
-            <Tooltip
-              content={"Transfer " + attendee.badgeName}
-              showArrow={true}
-              color="success"
+            <SimpleTooltip
+              content={`Transfer ${attendee.badgeName}`}
               delay={1000}
+              ariaLabel={"Transfer " + attendee.badgeName}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpenBadgeTransfer}
             >
-              <button
-                type="button"
-                aria-label={"Transfer " + attendee.badgeName}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpenBadgeTransfer();
-                }}
-              >
-                <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
-              </button>
-            </Tooltip>
+              <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
+            </SimpleTooltip>
           </div>
         ) : null}
         {!readOnly ? (
           <div className="absolute top-25 right-5">
-            <Tooltip
-              content={"Report " + attendee.badgeName + "'s badge lost and replace"}
-              showArrow={true}
-              color="success"
+            <SimpleTooltip
+              content={`Report ${attendee.badgeName}'s badge lost and replace`}
               delay={1000}
+              ariaLabel={"Report " + attendee.badgeName + "'s badge lost and replace"}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpenLostBadge}
             >
-              <button
-                type="button"
-                aria-label={"Report " + attendee.badgeName + "'s badge lost and replace"}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpenLostBadge();
-                }}
-              >
-                <LuReplace aria-hidden="true" className="text-2xl" />
-              </button>
-            </Tooltip>
+              <LuReplace aria-hidden="true" className="text-2xl" />
+            </SimpleTooltip>
           </div>
         ) : null}
       </div>

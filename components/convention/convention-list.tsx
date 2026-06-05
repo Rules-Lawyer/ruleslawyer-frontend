@@ -1,11 +1,7 @@
 "use client";
-import {
-  Accordion,
-  AccordionItem,
-  Selection,
-  Tooltip,
-  useDisclosure,
-} from "@heroui/react";
+import { Accordion, Selection } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import ConventionInfo from "./convention-info";
 import { IoMdAddCircle } from "react-icons/io";
@@ -142,28 +138,38 @@ export default function ConventionList(props: ConventionListProps) {
   return (
     <div>
       <Accordion
-        variant="bordered"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
+        allowsMultipleExpanded
+        expandedKeys={selectedKeys}
+        onExpandedChange={setSelectedKeys}
       >
         {(conventions ?? []).filter((c) => c != null).map(
           (c) => {
             return (
-              <AccordionItem
-                classNames={{
-                  title: "data-[open=true]:text-gwgreen hover:text-gwgreen",
-                  subtitle: "text-gwblue",
-                }}
-                key={c.id}
-                title={c.name}
-                subtitle={c.theme}
-              >
-                <ConventionInfo
-                  id={c.id}
-                  hideTitle={true}
-                  hideSubtitle={true}
-                />
-              </AccordionItem>
+              <Accordion.Item key={c.id} id={String(c.id)}>
+                <Accordion.Heading>
+                  <Accordion.Trigger className={"hover:bg-gwdarkgreen "}>
+                    <span className="data-[open=true]:text-gwgreen mr-5">
+                      {c.name}
+                    </span>
+                    <span className="text-gwlightblue">{c.theme}</span>
+                    <Accordion.Indicator />
+                  </Accordion.Trigger>
+                </Accordion.Heading>
+                <Accordion.Panel>
+                  {/* Render the (heavy, modal/tooltip-laden) ConventionInfo only
+                      while expanded. Accordion panels keep collapsed content in
+                      the DOM but display:none, where react-aria triggers can't be
+                      focusable and spam warnings — and it's wasteful. */}
+                  {(selectedKeys === "all" ||
+                    selectedKeys.has(String(c.id))) && (
+                    <ConventionInfo
+                      id={c.id}
+                      hideTitle={true}
+                      hideSubtitle={true}
+                    />
+                  )}
+                </Accordion.Panel>
+              </Accordion.Item>
             );
           }
         )}
@@ -172,21 +178,15 @@ export default function ConventionList(props: ConventionListProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Create Convention"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Create Convention"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Create Convention"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
-        </Tooltip>
+          <IoMdAddCircle aria-hidden="true" />
+        </SimpleTooltip>
       )}
 
       <ConventionModal
