@@ -125,18 +125,12 @@ export default function CollectionGrid(props: CollectionGridProps) {
       ) : (
         <SimpleTooltip
           content="Import Collection"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Import Collection"
+          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenImport}
         >
-          <button
-            type="button"
-            aria-label="Import Collection"
-            onClick={onOpenImport}
-            className="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <TbPackageImport aria-hidden="true" />
-          </button>
+          <TbPackageImport aria-hidden="true" />
         </SimpleTooltip>
       )}
 
@@ -145,18 +139,12 @@ export default function CollectionGrid(props: CollectionGridProps) {
       ) : (
         <SimpleTooltip
           content="Create Collection"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Create Collection"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Create Collection"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
+          <IoMdAddCircle aria-hidden="true" />
         </SimpleTooltip>
       )}
 

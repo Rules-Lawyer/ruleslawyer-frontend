@@ -148,37 +148,27 @@ export default function AttendeeCard(props: AttendeeCardProps) {
         </div>
         {!readOnly ? (
           <div className="absolute top-5 right-5">
-            <SimpleTooltip content={`Edit ${attendee.badgeName}`} delay={1000}>
-              <button
-                type="button"
-                aria-label={"Edit " + attendee.badgeName}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpen();
-                }}
-              >
-                <FaEdit aria-hidden="true" className="text-2xl" />
-              </button>
+            <SimpleTooltip
+              content={`Edit ${attendee.badgeName}`}
+              delay={1000}
+              ariaLabel={"Edit " + attendee.badgeName}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpen}
+            >
+              <FaEdit aria-hidden="true" className="text-2xl" />
             </SimpleTooltip>
           </div>
         ) : null}
         {!readOnly ? (
           <div className="absolute top-15 right-5">
-            <SimpleTooltip content={`Transfer ${attendee.badgeName}`} delay={1000}>
-              <button
-                type="button"
-                aria-label={"Transfer " + attendee.badgeName}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpenBadgeTransfer();
-                }}
-              >
-                <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
-              </button>
+            <SimpleTooltip
+              content={`Transfer ${attendee.badgeName}`}
+              delay={1000}
+              ariaLabel={"Transfer " + attendee.badgeName}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpenBadgeTransfer}
+            >
+              <FaMoneyBillTransfer aria-hidden="true" className="text-2xl" />
             </SimpleTooltip>
           </div>
         ) : null}
@@ -187,19 +177,11 @@ export default function AttendeeCard(props: AttendeeCardProps) {
             <SimpleTooltip
               content={`Report ${attendee.badgeName}'s badge lost and replace`}
               delay={1000}
+              ariaLabel={"Report " + attendee.badgeName + "'s badge lost and replace"}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpenLostBadge}
             >
-              <button
-                type="button"
-                aria-label={"Report " + attendee.badgeName + "'s badge lost and replace"}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpenLostBadge();
-                }}
-              >
-                <LuReplace aria-hidden="true" className="text-2xl" />
-              </button>
+              <LuReplace aria-hidden="true" className="text-2xl" />
             </SimpleTooltip>
           </div>
         ) : null}

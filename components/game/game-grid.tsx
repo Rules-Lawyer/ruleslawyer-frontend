@@ -233,18 +233,12 @@ export default function GameGrid(props: GameGridProps) {
       ) : (
         <SimpleTooltip
           content="Create Game"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Create Game"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Create Game"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
+          <IoMdAddCircle aria-hidden="true" />
         </SimpleTooltip>
       )}
 

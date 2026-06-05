@@ -68,7 +68,7 @@ export function SimpleTextArea({
       className={className}
     >
       <Label>{label}</Label>
-      <TextArea placeholder={placeholder} />
+      <TextArea className={"bg-gwdarkgreen mb-4"} placeholder={placeholder} />
     </TextField>
   );
 }

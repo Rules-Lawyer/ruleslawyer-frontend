@@ -139,10 +139,8 @@ export default function ConventionList(props: ConventionListProps) {
     <div>
       <Accordion
         allowsMultipleExpanded
-        variant="surface"
         expandedKeys={selectedKeys}
         onExpandedChange={setSelectedKeys}
-        className={"bg-transparent"}
       >
         {(conventions ?? []).filter((c) => c != null).map(
           (c) => {
@@ -158,11 +156,18 @@ export default function ConventionList(props: ConventionListProps) {
                   </Accordion.Trigger>
                 </Accordion.Heading>
                 <Accordion.Panel>
-                  <ConventionInfo
-                    id={c.id}
-                    hideTitle={true}
-                    hideSubtitle={true}
-                  />
+                  {/* Render the (heavy, modal/tooltip-laden) ConventionInfo only
+                      while expanded. Accordion panels keep collapsed content in
+                      the DOM but display:none, where react-aria triggers can't be
+                      focusable and spam warnings — and it's wasteful. */}
+                  {(selectedKeys === "all" ||
+                    selectedKeys.has(String(c.id))) && (
+                    <ConventionInfo
+                      id={c.id}
+                      hideTitle={true}
+                      hideSubtitle={true}
+                    />
+                  )}
                 </Accordion.Panel>
               </Accordion.Item>
             );
@@ -175,18 +180,12 @@ export default function ConventionList(props: ConventionListProps) {
       ) : (
         <SimpleTooltip
           content="Create Convention"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Create Convention"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Create Convention"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
+          <IoMdAddCircle aria-hidden="true" />
         </SimpleTooltip>
       )}
 

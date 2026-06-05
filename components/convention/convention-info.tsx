@@ -2,7 +2,7 @@
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import { useAuth } from "@/utilities/swr/useAuth";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CollectionCard from "../collection/collection-card";
 import { Button, Link, Modal } from "@heroui/react";
 import { SimpleTooltip } from "@/components/ui/simple-tooltip";
@@ -51,11 +51,15 @@ export default function ConventionInfo(props: ConventionInfoProps) {
 
   const session = useAuth();
   const legacyUrls = useLegacyUrls();
-  const formatter = new DateFormatter("en-US", {
-    dateStyle: "full",
-    timeStyle: "full",
-    timeZone: "America/Chicago",
-  });
+  const formatter = useMemo(
+    () =>
+      new DateFormatter("en-US", {
+        dateStyle: "full",
+        timeStyle: "full",
+        timeZone: "America/Chicago",
+      }),
+    [],
+  );
 
   useEffect(() => {
     frontendFetch("GET", "/con/" + id, null, session?.data?.token)
@@ -224,24 +228,18 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 <div className="flex gap-2 items-center">
                   <SimpleTooltip
                     content={"Edit " + convention.name}
-                    showArrow={true}
-                    color="success"
                     delay={1000}
                     classNames={{
                       content: "max-w-[125px] text-center",
                     }}
+                    ariaLabel={"Edit " + convention.name}
+                    triggerClassName="text-3xl inline-flex items-center hover:cursor-pointer"
+                    onPress={onOpenEdit}
                   >
-                    <button
-                      type="button"
-                      onClick={onOpenEdit}
-                      aria-label={"Edit " + convention.name}
-                      className="text-3xl inline-flex items-center hover:cursor-pointer"
-                    >
-                      <FaEdit
-                        aria-hidden="true"
-                        className="h-8 w-auto text-white hover:text-gwgreen"
-                      />
-                    </button>
+                    <FaEdit
+                      aria-hidden="true"
+                      className="h-8 w-auto text-white hover:text-gwgreen"
+                    />
                   </SimpleTooltip>
 
                   <SimpleTooltip
@@ -386,56 +384,40 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             <div className="flex">
               <SimpleTooltip
                 content="Create Collection"
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel="Create Collection"
+                triggerClassName="ml-2 hover:cursor-pointer hover:text-gwgreen"
+                onPress={onOpenCreate}
               >
-                <button
-                  type="button"
-                  aria-label="Create Collection"
-                  onClick={onOpenCreate}
-                  className="ml-2 hover:cursor-pointer hover:text-gwgreen"
-                >
-                  <IoMdAddCircle aria-hidden="true" />
-                </button>
+                <IoMdAddCircle aria-hidden="true" />
               </SimpleTooltip>
               <SimpleTooltip
                 content="Import Collection"
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel="Import Collection"
+                triggerClassName="ml-2 hover:cursor-pointer hover:text-gwgreen"
+                onPress={onOpenImport}
               >
-                <button
-                  type="button"
-                  aria-label="Import Collection"
-                  onClick={onOpenImport}
-                  className="ml-2 hover:cursor-pointer hover:text-gwgreen"
-                >
-                  <TbPackageImport aria-hidden="true" />
-                </button>
+                <TbPackageImport aria-hidden="true" />
               </SimpleTooltip>
               <SimpleTooltip
                 content="Attach Collection"
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel="Attach Collection"
+                triggerClassName="ml-2 hover:cursor-pointer hover:text-gwgreen"
+                onPress={onOpen}
               >
-                <button
-                  type="button"
-                  aria-label="Attach Collection"
-                  onClick={onOpen}
-                  className="ml-2 hover:cursor-pointer hover:text-gwgreen"
-                >
-                  <GrAttachment aria-hidden="true" />
-                </button>
+                <GrAttachment aria-hidden="true" />
               </SimpleTooltip>
             </div>
           )}
         </h3>
-        {readOnly ? (
+        {readOnly || !isOpen ? (
           null
         ) : (
           <Modal state={disclosure}>
+            {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+            <Modal.Trigger tabIndex={-1} />
             <Modal.Backdrop>
               <Modal.Container scroll="outside">
                 <Modal.Dialog>
@@ -490,6 +472,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                   collectionIn={c.collection}
                   conventionId={convention.id}
                   onDeleted={onClose}
+                  readOnly={readOnly}
                 />
               </div>
             );
@@ -497,23 +480,34 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         </div>
       </div>
 
-      <ConventionModal
-        conventionIn={convention}
-        conventionId={id}
-        organizationId={convention.organizationId}
-        disclosure={editDisclosure}
-      />
-      <CollectionModal
-        disclosure={createCollectionDisclosure}
-        conventionId={convention.id}
-        organizationId={convention.organizationId}
-      />
-      <CollectionModal
-        disclosure={importCollectionDisclosure}
-        conventionId={convention.id}
-        organizationId={convention.organizationId}
-        importFile={true}
-      />
+      {/* Only render modals while open. ConventionInfo lives inside an Accordion
+          panel, which keeps collapsed content in the DOM but display:none — and a
+          modal's (DialogTrigger) hidden trigger can't be focusable while hidden,
+          which spams react-aria warnings. Gating on isOpen means closed/collapsed
+          panels render no modal at all. */}
+      {isOpenEdit && (
+        <ConventionModal
+          conventionIn={convention}
+          conventionId={id}
+          organizationId={convention.organizationId}
+          disclosure={editDisclosure}
+        />
+      )}
+      {isOpenCreate && (
+        <CollectionModal
+          disclosure={createCollectionDisclosure}
+          conventionId={convention.id}
+          organizationId={convention.organizationId}
+        />
+      )}
+      {isOpenImport && (
+        <CollectionModal
+          disclosure={importCollectionDisclosure}
+          conventionId={convention.id}
+          organizationId={convention.organizationId}
+          importFile={true}
+        />
+      )}
     </div>
   );
 }

@@ -1,20 +1,21 @@
 "use client";
 import { Tooltip } from "@heroui/react";
-import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
+import { Button } from "react-aria-components";
+import type { ReactNode } from "react";
 
 // HeroUI v3 replaced the v2 prop-based <Tooltip content="..."> with a compound
-// component. This wrapper preserves the old ergonomics for the app's many simple
-// tooltips. v2's `color` prop was removed in v3 (style with Tailwind instead).
+// component. This wrapper preserves the old ergonomics. v2's `color` prop was
+// removed in v3 (style with Tailwind instead).
 //
-// HeroUI's Tooltip.Trigger renders a `<div role="button">` (wrapped in react-aria
-// <Focusable>) and spreads its props onto that div. For an icon-button tooltip,
-// pass `onPress` (+ optional aria-label / triggerClassName) so the TRIGGER itself
-// is the interactive, focusable button and `children` is just the icon — this
-// avoids nesting a real <button> inside the trigger (which produced both the
-// "<Focusable> child must be focusable" warning and a duplicate tab stop).
-// For non-button triggers (e.g. a <Link>), omit `onPress` and pass the element
-// as children; tabIndex still makes the trigger focusable so the warning stays
-// quiet.
+// react-aria's TooltipTrigger (the HeroUI <Tooltip> root) sets up BOTH a Focusable
+// and a PressResponder around its trigger, so the trigger must be a real pressable
+// + focusable element. HeroUI's <Tooltip.Trigger> only provides Focusable (no
+// Pressable), which spams "<Focusable> child must be focusable" and "PressResponder
+// without a pressable child" on every render. So for an interactive tooltip pass
+// `onPress` (+ optional aria-label / triggerClassName) and we render an UNSTYLED
+// react-aria <Button> as the trigger — it consumes both contexts cleanly, with no
+// nested <button> and a single tab stop. `children` is just the icon/content.
+// Non-interactive triggers (a <Link>) omit `onPress` and render via Tooltip.Trigger.
 export function SimpleTooltip({
   content,
   delay = 0,
@@ -33,36 +34,34 @@ export function SimpleTooltip({
   color?: string;
   /** v2 `classNames={{ content }}` — the content slot maps to Tooltip.Content. */
   classNames?: { content?: string };
-  /** When set, the trigger itself becomes the interactive button. */
+  /** When set, the trigger is an unstyled react-aria Button carrying this handler. */
   onPress?: () => void;
   ariaLabel?: string;
   triggerClassName?: string;
 }) {
-  const interactive = onPress
-    ? {
-        onClick: (e: MouseEvent) => {
-          e.stopPropagation();
-          onPress();
-        },
-        onKeyDown: (e: KeyboardEvent) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onPress();
-          }
-        },
-      }
-    : {};
-
   return (
     <Tooltip delay={delay}>
-      <Tooltip.Trigger
-        tabIndex={0}
-        aria-label={ariaLabel}
-        className={triggerClassName}
-        {...interactive}
-      >
-        {children}
-      </Tooltip.Trigger>
+      {onPress !== undefined ? (
+        <Button
+          type="button"
+          aria-label={ariaLabel}
+          className={triggerClassName}
+          onPress={onPress}
+          // Stop the click from bubbling to a clickable ancestor (e.g. a <Link>
+          // card) and suppress default navigation — preserves the behavior the
+          // old inline button onClick handlers had via e.stopPropagation().
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          {children}
+        </Button>
+      ) : (
+        <Tooltip.Trigger tabIndex={0} aria-label={ariaLabel} className={triggerClassName}>
+          {children}
+        </Tooltip.Trigger>
+      )}
       <Tooltip.Content showArrow={showArrow} className={classNames?.content}>
         {showArrow && <Tooltip.Arrow />}
         {content}

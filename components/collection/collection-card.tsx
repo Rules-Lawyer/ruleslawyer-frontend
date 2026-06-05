@@ -25,15 +25,26 @@ interface CollectionCardProps {
   collectionIn: CollectionWithCount;
   conventionId?: number;
   onDeleted: () => void;
+  /**
+   * When the parent already knows the permission state for these collections
+   * (e.g. ConventionInfo, where every card shares one convention/org), pass it in.
+   * The card then skips its own usePermissions subscription — avoiding N duplicate
+   * /permissions fetches + re-renders across a list.
+   */
+  readOnly?: boolean;
 }
 
-export default function CollectionCard(props: CollectionCardProps) {
+function CollectionCard(props: CollectionCardProps) {
   const { collectionIn, conventionId, onDeleted } = props;
+  const readOnlyOverride = props.readOnly;
+  const hasReadOnlyOverride = readOnlyOverride !== undefined;
 
   const [collection, setData] = useState<CollectionWithCount | null>(null);
   const [isLoading, setLoading] = useState(true);
-  const [readOnly, setReadOnly] = useState(true);
-  const { permissions, isLoading: isLoadingPermissions } = usePermissions();
+  const [readOnly, setReadOnly] = useState(readOnlyOverride ?? true);
+  const { permissions, isLoading: isLoadingPermissions } = usePermissions({
+    enabled: !hasReadOnlyOverride,
+  });
 
   const session = useAuth();
 
@@ -59,6 +70,12 @@ export default function CollectionCard(props: CollectionCardProps) {
   }, [collectionIn, session?.data?.token]);
 
   useEffect(() => {
+    // Parent supplied the permission state — mirror it and skip the per-card
+    // computation entirely (usePermissions is disabled in this case anyway).
+    if (hasReadOnlyOverride) {
+      setReadOnly(readOnlyOverride ?? true);
+      return;
+    }
     if (permissions.user?.data) {
       if (permissions.user.data.superAdmin) {
         setReadOnly(false);
@@ -92,7 +109,7 @@ export default function CollectionCard(props: CollectionCardProps) {
     } else {
       setReadOnly(true);
     }
-  }, [permissions.user?.data, permissions.organizations?.data, permissions.conventions?.data, collection]);
+  }, [permissions.user?.data, permissions.organizations?.data, permissions.conventions?.data, collection, hasReadOnlyOverride, readOnlyOverride]);
 
   const onModalClose = () => {
     frontendFetch(
@@ -115,13 +132,7 @@ export default function CollectionCard(props: CollectionCardProps) {
 
   const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = disclosure;
 
-  const detachCollection = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    collectionId: number
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
+  const detachCollection = (collectionId: number) => {
     if (confirm("Are you sure you want to detach this collection?")) {
       frontendFetch(
         "DELETE",
@@ -142,13 +153,7 @@ export default function CollectionCard(props: CollectionCardProps) {
     }
   };
 
-  const deleteCollection = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    collectionId: number
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
+  const deleteCollection = (collectionId: number) => {
     if (confirm("Are you sure you want to delete this collection?")) {
       frontendFetch(
         "DELETE",
@@ -232,18 +237,12 @@ export default function CollectionCard(props: CollectionCardProps) {
             {" "}
             <SimpleTooltip
               content={"Detach " + collection.name}
-              showArrow={true}
-              color="success"
               delay={1000}
+              ariaLabel={"Detach " + collection.name}
+              triggerClassName="hover:text-gwlightblue hover:cursor-pointer"
+              onPress={() => detachCollection(collection.id)}
             >
-              <button
-                type="button"
-                aria-label={"Detach " + collection.name}
-                className="hover:text-gwlightblue hover:cursor-pointer"
-                onClick={(e) => detachCollection(e, collection.id)}
-              >
-                <GrDetach aria-hidden="true" />
-              </button>
+              <GrDetach aria-hidden="true" />
             </SimpleTooltip>
           </div>
         ) : (
@@ -253,22 +252,12 @@ export default function CollectionCard(props: CollectionCardProps) {
           <div className="absolute top-5 right-10">
             <SimpleTooltip
               content={"Edit " + collection.name}
-              showArrow={true}
-              color="success"
               delay={1000}
+              ariaLabel={"Edit " + collection.name}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={onOpen}
             >
-              <button
-                type="button"
-                aria-label={"Edit " + collection.name}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onOpen();
-                }}
-              >
-                <FaEdit aria-hidden="true" />
-              </button>
+              <FaEdit aria-hidden="true" />
             </SimpleTooltip>
           </div>
         ) : (
@@ -313,18 +302,12 @@ export default function CollectionCard(props: CollectionCardProps) {
             {" "}
             <SimpleTooltip
               content={"Delete " + collection.name}
-              showArrow={true}
-              color="success"
               delay={1000}
+              ariaLabel={"Delete " + collection.name}
+              triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+              onPress={() => deleteCollection(collection.id)}
             >
-              <button
-                type="button"
-                aria-label={"Delete " + collection.name}
-                className="hover:text-gwgreen hover:cursor-pointer"
-                onClick={(e) => deleteCollection(e, collection.id)}
-              >
-                <FaTrashCan aria-hidden="true" />
-              </button>
+              <FaTrashCan aria-hidden="true" />
             </SimpleTooltip>
           </div>
         ) : (
@@ -339,3 +322,8 @@ export default function CollectionCard(props: CollectionCardProps) {
     </Link>
   );
 }
+
+// Memoized: a CollectionCard's props (collectionIn, conventionId, onDeleted) are
+// stable between parent renders, so opening a modal (or any other state change) in
+// the parent grid/ConventionInfo no longer re-renders every card in the list.
+export default React.memo(CollectionCard);

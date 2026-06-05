@@ -161,18 +161,12 @@ export default function UserGrid(props: UserGridProps) {
       ) : (
         <SimpleTooltip
           content="Add User"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Add User"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Add User"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
+          <IoMdAddCircle aria-hidden="true" />
         </SimpleTooltip>
       )}
 

@@ -232,10 +232,15 @@ export default function UserModal(props: UserModalProps) {
     }
   }, [permissions.user?.data, permissions.organizations?.data, user, organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
     <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
       <Modal.Backdrop>
         <Modal.Container scroll="outside">
           <Modal.Dialog>
@@ -292,29 +297,32 @@ export default function UserModal(props: UserModalProps) {
 
                   {userType === "convention" ? (
                     <div>
-                      <Checkbox
+                      <SimpleCheckbox
                         isSelected={userAdmin}
                         onChange={setUserAdmin}
                         isDisabled={readOnly}
-                      >
-                        Admin
-                      </Checkbox>
-                      <br/><br/>
-                      <Checkbox
+                        label="Admin"
+                        aria-label="Admin"
+                        id="con-admin"
+                      />
+                      <br/>
+                      <SimpleCheckbox
                         isSelected={userGeekGuide}
                         onChange={setUserGeekGuide}
                         isDisabled={readOnly}
-                      >
-                        Geek Guide
-                      </Checkbox>
-                      <br/><br/>
-                      <Checkbox
+                        label="Geek Guide"
+                        aria-label="Geek Guide"
+                        id="con-geek-guide"
+                      />
+                      <br/>
+                      <SimpleCheckbox
                         isSelected={userAttendee}
                         onChange={setUserAttendee}
                         isDisabled={readOnly}
-                      >
-                        Attendee
-                      </Checkbox>
+                        label="Attendee"
+                        aria-label="Attendee"
+                        id="attendee"
+                      />
                     </div>
                   ) : (
                     null

@@ -153,10 +153,15 @@ export default function AttendeeModal(props: AttendeeModalProps) {
     }
   }, [permissions.user?.data, permissions.conventions?.data, permissions.organizations?.data, conventionId, organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
     <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
       <Modal.Backdrop>
         <Modal.Container scroll="outside">
           <Modal.Dialog>

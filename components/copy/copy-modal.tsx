@@ -6,7 +6,8 @@ import {
   toastNetworkError,
   toastSaveError,
 } from "@/utilities/toastFetchError";
-import { Button, Checkbox, Modal } from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 import { SimpleTextField, SimpleTextArea } from "@/components/ui/simple-field";
 import {
   SimpleSelect,
@@ -265,10 +266,15 @@ export default function CopyModal(props: CopyModalProps) {
     }
   }, [orgIdForCollections, session?.data?.token]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
     <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
       <Modal.Backdrop>
         <Modal.Container scroll="outside">
           <Modal.Dialog>
@@ -300,6 +306,7 @@ export default function CopyModal(props: CopyModalProps) {
                     onSelectionChange={(key) => {
                       setCopyCollectionId(key != null ? Number(key) : null);
                     }}
+                    className="mb-4"
                   >
                     {(collections ?? []).map((collection) => (
                       <SimpleSelectItem
@@ -319,6 +326,7 @@ export default function CopyModal(props: CopyModalProps) {
                     isRequired
                     selectedKey={gameId != null ? String(gameId) : null}
                     onSelectionChange={(key) => setGameId(key)}
+                    className="mb-4"
                   >
                     {gameList.items.map((item) => (
                       <SimpleSelectItem
@@ -364,14 +372,14 @@ export default function CopyModal(props: CopyModalProps) {
                     isDisabled={readOnly}
                   />
                   {copy?.collection?.allowWinning && (
-                    <Checkbox
-                      name="allowWinning"
-                      defaultSelected={copy.winnable}
+                    <SimpleCheckbox
+                      isSelected={copyWinnable}
                       onChange={(isSelected) => setCopyWinnable(isSelected)}
                       isDisabled={readOnly}
-                    >
-                      Winnable
-                    </Checkbox>
+                      label="Winnable"
+                      aria-label="Winnable"
+                      id="allowWinning"
+                    />
                   )}
                 </Modal.Body>
                 <Modal.Footer>

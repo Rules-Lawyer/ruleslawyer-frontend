@@ -216,11 +216,20 @@ export default function GameModal(props: GameModalProps) {
     }
   }, [permissions.user?.data, permissions.organizations?.data, game?.organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div>Loading...</div>;
   if (!game) return <div>No game data</div>;
 
   return (
     <Modal state={disclosure}>
+      {/* HeroUI's Modal wraps everything in react-aria's DialogTrigger, which
+          needs a focusable+pressable trigger as its first child. These modals are
+          opened remotely via `state`, so this empty Modal.Trigger (a Pressable)
+          satisfies it. tabIndex=-1 keeps it focusable (so Pressable is happy) but
+          out of the tab order; with no children it renders invisibly. */}
+      <Modal.Trigger tabIndex={-1} />
       <Modal.Backdrop>
         <Modal.Container scroll="outside">
           <Modal.Dialog>

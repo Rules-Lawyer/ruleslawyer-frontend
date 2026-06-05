@@ -68,6 +68,7 @@ export function SimpleAutocomplete({
   isDisabled,
   isRequired,
   children,
+  className
 }: {
   label?: ReactNode;
   placeholder?: string;
@@ -79,6 +80,7 @@ export function SimpleAutocomplete({
   isDisabled?: boolean;
   isRequired?: boolean;
   children: ReactNode;
+  className: string;
 }) {
   return (
     <ComboBox
@@ -89,6 +91,7 @@ export function SimpleAutocomplete({
       onSelectionChange={onSelectionChange}
       isDisabled={isDisabled}
       isRequired={isRequired}
+      className={className}
     >
       {label ? <Label>{label}</Label> : null}
       <ComboBox.InputGroup>

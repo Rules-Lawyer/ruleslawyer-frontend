@@ -99,12 +99,7 @@ export default function UserCard(props: UserCardProps) {
   const { isOpen: isOpen, onOpen: onOpen, onClose: onClose } = disclosure;
 
 
-  const deleteUser = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
+  const deleteUser = () => {
     if (userType === 'organization') {
       if (confirm("Are you sure you want to delete this user?")) {
         frontendFetch(
@@ -244,18 +239,12 @@ export default function UserCard(props: UserCardProps) {
             {" "}
             <SimpleTooltip
                 content={"Delete " + user.user.name}
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel={"Delete " + (user.user.name !== "" ? user.user.name : "user")}
+                triggerClassName="hover:text-gwgreen hover:cursor-pointer"
+                onPress={deleteUser}
             >
-                <button
-                    type="button"
-                    aria-label={"Delete " + (user.user.name !== "" ? user.user.name : "user")}
-                    className="hover:text-gwgreen hover:cursor-pointer"
-                    onClick={(e) => deleteUser(e)}
-                >
                 <FaTrashCan aria-hidden="true" />
-                </button>
             </SimpleTooltip>
             </div>
         ) : (
