@@ -1,21 +1,14 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import {
-  Button,
-  Checkbox,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { UserPermissionRow } from "@/types/models";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 
 interface UserPermissionUpdate {
   admin: boolean;
@@ -58,7 +51,7 @@ export default function UserModal(props: UserModalProps) {
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { isOpen, onClose } = disclosure;
 
   const onSave = () => {
     if (userType === "organization") {
@@ -239,107 +232,119 @@ export default function UserModal(props: UserModalProps) {
     }
   }, [permissions.user?.data, permissions.organizations?.data, user, organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>
-                User Editor - {user?.user?.name ?? "New User"}
-              </ModalHeader>
-              <ModalBody>
-                {!user?.user?.name ? (
-                  <Input
-                    label="Email"
-                    onValueChange={setUserEmail}
-                  />
-                ) : (
-                  null
-                )}
-                {userType === "organization" ? (
-                  <div>
-                    <Checkbox
-                      isSelected={userAdmin}
-                      onValueChange={setUserAdmin}
-                      isDisabled={readOnly}
-                    >
-                      Admin
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userGeekGuide}
-                      onValueChange={setUserGeekGuide}
-                      isDisabled={readOnly}
-                    >
-                      Geek Guide
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userReadOnly}
-                      onValueChange={setUserReadOnly}
-                      isDisabled={readOnly}
-                    >
-                      Read Only
-                    </Checkbox>
-                  </div>
-                ) : (
-                  null
-                )}
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>
+                    User Editor - {user?.user?.name ?? "New User"}
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  {!user?.user?.name ? (
+                    <SimpleTextField label="Email" onChange={setUserEmail} />
+                  ) : (
+                    null
+                  )}
+                  {userType === "organization" ? (
+                    <div>
+                      <SimpleCheckbox
+                        isSelected={userAdmin}
+                        onChange={setUserAdmin}
+                        isDisabled={readOnly}
+                        label="Admin"
+                        aria-label="Admin"
+                        id="admin"
+                      />
+                      <br/>
+                      <SimpleCheckbox
+                        isSelected={userGeekGuide}
+                        onChange={setUserGeekGuide}
+                        isDisabled={readOnly}
+                        label="Geek Guide"
+                        aria-label="Geek Guide"
+                        id="geek-guide"
+                      />
+                      <br/>
+                      <SimpleCheckbox
+                        isSelected={userReadOnly}
+                        onChange={setUserReadOnly}
+                        isDisabled={readOnly}
+                        label="Read Only"
+                        aria-label="Read Only"
+                        id="read-only"
+                      />
+                    </div>
+                  ) : (
+                    null
+                  )}
 
-                {userType === "convention" ? (
-                  <div>
-                    <Checkbox
-                      isSelected={userAdmin}
-                      onValueChange={setUserAdmin}
-                      isDisabled={readOnly}
-                    >
-                      Admin
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userGeekGuide}
-                      onValueChange={setUserGeekGuide}
-                      isDisabled={readOnly}
-                    >
-                      Geek Guide
-                    </Checkbox>
-                    <br/><br/>
-                    <Checkbox
-                      isSelected={userAttendee}
-                      onValueChange={setUserAttendee}
-                      isDisabled={readOnly}
-                    >
-                      Attendee
-                    </Checkbox>
-                  </div>
-                ) : (
-                  null
-                )}
-              </ModalBody>
-              <ModalFooter>
-                {readOnly ? (
-                  null
-                ) : (
-                  <Button color="success" type="submit">
-                    Save
+                  {userType === "convention" ? (
+                    <div>
+                      <SimpleCheckbox
+                        isSelected={userAdmin}
+                        onChange={setUserAdmin}
+                        isDisabled={readOnly}
+                        label="Admin"
+                        aria-label="Admin"
+                        id="con-admin"
+                      />
+                      <br/>
+                      <SimpleCheckbox
+                        isSelected={userGeekGuide}
+                        onChange={setUserGeekGuide}
+                        isDisabled={readOnly}
+                        label="Geek Guide"
+                        aria-label="Geek Guide"
+                        id="con-geek-guide"
+                      />
+                      <br/>
+                      <SimpleCheckbox
+                        isSelected={userAttendee}
+                        onChange={setUserAttendee}
+                        isDisabled={readOnly}
+                        label="Attendee"
+                        aria-label="Attendee"
+                        id="attendee"
+                      />
+                    </div>
+                  ) : (
+                    null
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly ? (
+                    null
+                  ) : (
+                    <Button variant="primary" type="submit">
+                      Save
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

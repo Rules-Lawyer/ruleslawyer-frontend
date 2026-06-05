@@ -7,16 +7,9 @@ import {
   toastSaveError,
   toastSyncError,
 } from "@/utilities/toastFetchError";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { useAuth } from "@/utilities/swr/useAuth";
 import { useEffect, useState } from "react";
 import CopyBubbles from "../copy/copy-bubbles";
@@ -223,84 +216,94 @@ export default function GameModal(props: GameModalProps) {
     }
   }, [permissions.user?.data, permissions.organizations?.data, game?.organizationId]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div>Loading...</div>;
   if (!game) return <div>No game data</div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <ModalHeader>
-              {game.name !== "" ? game.name : "[unknown name]"}
-            </ModalHeader>
-            <ModalBody>
-              {game.name != "" ? (
-                <Input
-                  name="gameName"
-                  type="text"
-                  isRequired
-                  label="Game Name"
-                  value={gameName}
-                  onValueChange={(value) => setGameName(value)}
-                  isDisabled={readOnly}
+    <Modal state={disclosure}>
+      {/* HeroUI's Modal wraps everything in react-aria's DialogTrigger, which
+          needs a focusable+pressable trigger as its first child. These modals are
+          opened remotely via `state`, so this empty Modal.Trigger (a Pressable)
+          satisfies it. tabIndex=-1 keeps it focusable (so Pressable is happy) but
+          out of the tab order; with no children it renders invisibly. */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <Modal.Header>
+                <Modal.Heading>
+                  {game.name !== "" ? game.name : "[unknown name]"}
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                {game.name != "" ? (
+                  <SimpleTextField
+                    name="gameName"
+                    isRequired
+                    label="Game Name"
+                    value={gameName}
+                    onChange={(value) => setGameName(value)}
+                    isDisabled={readOnly}
+                  />
+                ) : (
+                  null
+                )}
+
+                <SimpleTextField
+                  name="bggId"
+                  label="BoardGameGeek ID"
+                  value={bggId == null ? "" : String(bggId)}
+                  onChange={(value) => setBggId(value)}
                 />
-              ) : (
-                null
-              )}
 
-              <Input
-                name="bggId"
-                type="text"
-                label="BoardGameGeek ID"
-                value={bggId == null ? "" : String(bggId)}
-                onValueChange={(value) => setBggId(value)}
-              />
+                <SimpleTextField
+                  name="bggVersionId"
+                  label="BoardGameGeek Version ID"
+                  value={bggVersionId == null ? "" : String(bggVersionId)}
+                  onChange={(value) => setBggVersionId(value)}
+                />
 
-              <Input
-                name="bggVersionId"
-                type="text"
-                label="BoardGameGeek Version ID"
-                value={bggVersionId == null ? "" : String(bggVersionId)}
-                onValueChange={(value) => setBggVersionId(value)}
-              />
-
-              <CopyBubbles game={game} disclosure={copyDisclosure} />
-            </ModalBody>
-            <ModalFooter>
-              {!readOnly && copyCount === 0 ? (
-                <Button color="danger" onPress={onDelete}>
-                  Delete
+                <CopyBubbles game={game} disclosure={copyDisclosure} />
+              </Modal.Body>
+              <Modal.Footer>
+                {!readOnly && copyCount === 0 ? (
+                  <Button variant="danger" onPress={onDelete}>
+                    Delete
+                  </Button>
+                ) : (
+                  null
+                )}
+                {readOnly ? (
+                  null
+                ) : (
+                  <Button variant="tertiary" onPress={onSyncWithBGG}>
+                    Sync With BGG
+                  </Button>
+                )}
+                {readOnly ? (
+                  null
+                ) : (
+                  <Button variant="primary" type="submit">
+                    Save
+                  </Button>
+                )}
+                <Button variant="secondary" onPress={onClose}>
+                  Close
                 </Button>
-              ) : (
-                null
-              )}
-              {readOnly ? (
-                null
-              ) : (
-                <Button color="primary" onPress={onSyncWithBGG}>
-                  Sync With BGG
-                </Button>
-              )}
-              {readOnly ? (
-                null
-              ) : (
-                <Button color="success" type="submit">
-                  Save
-                </Button>
-              )}
-              <Button color="primary" onPress={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </form>
-        )}
-      </ModalContent>
+              </Modal.Footer>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

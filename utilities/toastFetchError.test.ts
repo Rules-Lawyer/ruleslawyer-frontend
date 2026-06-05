@@ -1,4 +1,4 @@
-import { addToast } from "@heroui/react";
+import { toast } from "@heroui/react";
 import {
   toastSaveError,
   toastNetworkError,
@@ -9,13 +9,20 @@ import {
   toastSyncError,
 } from "@/utilities/toastFetchError";
 
-jest.mock("@heroui/react", () => ({ addToast: jest.fn() }));
+jest.mock("@heroui/react", () => ({ toast: jest.fn() }));
 
-const addToastMock = addToast as jest.Mock;
+const toastMock = toast as unknown as jest.Mock;
 
-// Each helper forwards a danger-colored toast to heroui; assert the copy and
-// that the 403 branch differs from the generic branch.
-const lastToast = () => addToastMock.mock.calls.at(-1)?.[0];
+// HeroUI v3's toast(title, { description, variant }) replaced v2's
+// addToast({ title, description, color }). Reshape the recorded call back into a
+// single object so the existing copy/branch assertions read naturally.
+const lastToast = () => {
+  const [title, options] = toastMock.mock.calls.at(-1) as [
+    string,
+    { description?: string; variant?: string },
+  ];
+  return { title, description: options?.description, variant: options?.variant };
+};
 
 function res(status: number, body?: string): Response {
   return {
@@ -24,7 +31,7 @@ function res(status: number, body?: string): Response {
   } as unknown as Response;
 }
 
-beforeEach(() => addToastMock.mockReset());
+beforeEach(() => toastMock.mockReset());
 
 const NOT_AUTHENTICATED =
   "You're not signed in, or your session is no longer valid. Please sign in again.";
@@ -35,7 +42,7 @@ describe("toastSaveError", () => {
     expect(lastToast()).toEqual({
       title: "Unable to save",
       description: NOT_AUTHENTICATED,
-      color: "danger",
+      variant: "danger",
     });
   });
 
@@ -44,7 +51,7 @@ describe("toastSaveError", () => {
     expect(lastToast()).toEqual({
       title: "Unable to save",
       description: "You don't have permission to make this change.",
-      color: "danger",
+      variant: "danger",
     });
   });
 

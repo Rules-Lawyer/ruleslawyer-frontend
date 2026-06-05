@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
-import { useDisclosure } from "@heroui/modal";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import GameModal from "./game-modal";
 import { Skeleton } from "@heroui/react";
 import { BiSolidMessageAltError } from "react-icons/bi";

@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from "react";
 import GameCard from "./game-card";
 import {
-  CircularProgress,
+  Spinner,
   Input,
-  Select,
-  SelectItem,
-  Tooltip,
-  useDisclosure,
+  Label,
+  TextField,
 } from "@heroui/react";
-import { LuPackageSearch } from "react-icons/lu";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
 import { IoMdAddCircle } from "react-icons/io";
@@ -169,7 +169,7 @@ export default function GameGrid(props: GameGridProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center w-full pt-10">
-        <CircularProgress isIndeterminate={true} label="Loading..." />
+        <Spinner aria-label="Loading..." />
       </div>
     );
   }
@@ -178,38 +178,30 @@ export default function GameGrid(props: GameGridProps) {
     <div>
       {showHeader ? <h1>{header}</h1> : ""}
       <div className="flex m-10">
-        <Input
+        <TextField
           name="search"
-          type="text"
-          label="Search Games"
-          placeholder="Type a game name"
-          startContent={<LuPackageSearch />}
-          onValueChange={setSearchText}
-          className="mr-10"
-        />
-        <Select
+          aria-label="Search Games"
+          onChange={setSearchText}
+          className="mr-10 w-2/3"
+        >
+          <Label>Search Games</Label>
+          <Input className={"bg-gwdarkgreen"} placeholder="Type a game name" />
+        </TextField>
+        <SimpleSelect
           name="maxResults"
           label="Max Results"
-          onSelectionChange={(keys) => {
-            const [first] = keys;
-
-            if (first !== undefined) {
-              setMaxResults(String(first));
+          selectedKey={maxResults}
+          onSelectionChange={(key) => {
+            if (key != null) {
+              setMaxResults(String(key));
             }
           }}
-          selectedKeys={new Set([maxResults])}
           className="w-1/3"
         >
-          <SelectItem key={50}>
-            50 Games
-          </SelectItem>
-          <SelectItem key={100}>
-            100 Games
-          </SelectItem>
-          <SelectItem key={500}>
-            500 Games
-          </SelectItem>
-        </Select>
+          <SimpleSelectItem id="50" textValue="50 Games" />
+          <SimpleSelectItem id="100" textValue="100 Games" />
+          <SimpleSelectItem id="500" textValue="500 Games" />
+        </SimpleSelect>
       </div>
 
       <Pagination
@@ -239,21 +231,15 @@ export default function GameGrid(props: GameGridProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Create Game"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Create Game"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Create Game"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
-        </Tooltip>
+          <IoMdAddCircle aria-hidden="true" />
+        </SimpleTooltip>
       )}
 
       <CopyModal

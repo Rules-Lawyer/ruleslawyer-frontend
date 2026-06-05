@@ -4,16 +4,14 @@ import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import {
   Button,
   Input,
+  Label,
   Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
+  TextField,
 } from "@heroui/react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { Attendee } from "@/types/models";
 
 interface AttendeeLostBadgeUpdate {
@@ -48,7 +46,7 @@ export default function AttendeeLostBadgeModal(props: AttendeeLostBadgeModalProp
 
   const session = useAuth();
 
-  const { isOpen, onClose } = disclosure;
+  const { onClose } = disclosure;
 
   const onSave = () => {
     if (conventionId) {
@@ -131,49 +129,60 @@ export default function AttendeeLostBadgeModal(props: AttendeeLostBadgeModalProp
     organizationId,
   ]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>Replace Badge - {attendee?.badgeName}</ModalHeader>
-              <ModalBody>
-                <div>
-                  <p>Step 1: Charge the attendee in the Square payment device for a replacement badge.</p>
-                  <p>Step 2: Get a blank badge from the badge station and enter the badge number in the box below.</p>
-                  <p>Step 3: Use the label printing software to print two stickers with the attendee&apos;s name.</p>
-                  <p>Step 4: Put one sticker on each side of the badge.</p>
-                  <p>Step 5: Remove the geeklet and throw it away.</p>
-                </div>
-                <Input
-                  label="New Badge Number"
-                  onValueChange={setToBadgeNumber}
-                  value={toBadgeNumber}
-                  readOnly={readOnly}
-                />
-              </ModalBody>
-              <ModalFooter>
-                {readOnly ? null : (
-                  <Button color="success" type="submit">
-                    Replace Badge
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>Replace Badge - {attendee?.badgeName}</Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <div>
+                    <p>Step 1: Charge the attendee in the Square payment device for a replacement badge.</p>
+                    <p>Step 2: Get a blank badge from the badge station and enter the badge number in the box below.</p>
+                    <p>Step 3: Use the label printing software to print two stickers with the attendee&apos;s name.</p>
+                    <p>Step 4: Put one sticker on each side of the badge.</p>
+                    <p>Step 5: Remove the geeklet and throw it away.</p>
+                  </div>
+                  <TextField
+                    value={toBadgeNumber}
+                    onChange={setToBadgeNumber}
+                    isReadOnly={readOnly}
+                  >
+                    <Label>New Badge Number</Label>
+                    <Input />
+                  </TextField>
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly ? null : (
+                    <Button variant="primary" type="submit">
+                      Replace Badge
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

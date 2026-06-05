@@ -2,21 +2,12 @@
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import { useAuth } from "@/utilities/swr/useAuth";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CollectionCard from "../collection/collection-card";
-import {
-  Button,
-  Link,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-  Tooltip,
-  useDisclosure,
-} from "@heroui/react";
+import { Button, Link, Modal } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { GrAttachment } from "react-icons/gr";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { useLegacyUrls } from "./legacy-urls-context";
@@ -60,11 +51,15 @@ export default function ConventionInfo(props: ConventionInfoProps) {
 
   const session = useAuth();
   const legacyUrls = useLegacyUrls();
-  const formatter = new DateFormatter("en-US", {
-    dateStyle: "full",
-    timeStyle: "full",
-    timeZone: "America/Chicago",
-  });
+  const formatter = useMemo(
+    () =>
+      new DateFormatter("en-US", {
+        dateStyle: "full",
+        timeStyle: "full",
+        timeZone: "America/Chicago",
+      }),
+    [],
+  );
 
   useEffect(() => {
     frontendFetch("GET", "/con/" + id, null, session?.data?.token)
@@ -215,7 +210,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
   if (!convention) return <div>Loading...</div>;
 
   return (
-    <div className="relative flex flex-col sm:flex-row">
+    <div className="relative flex flex-col sm:flex-row m-5">
       <div className="flex-1">
         <div className="text-gwgreen" hidden={hideTitle && hideSubtitle}>
           <h1 hidden={hideTitle}>{convention.name}</h1>
@@ -231,29 +226,23 @@ export default function ConventionInfo(props: ConventionInfoProps) {
             ) : (
               <div className="flex gap-2 items-center">
                 <div className="flex gap-2 items-center">
-                  <Tooltip
+                  <SimpleTooltip
                     content={"Edit " + convention.name}
-                    showArrow={true}
-                    color="success"
                     delay={1000}
                     classNames={{
                       content: "max-w-[125px] text-center",
                     }}
+                    ariaLabel={"Edit " + convention.name}
+                    triggerClassName="text-3xl inline-flex items-center hover:cursor-pointer"
+                    onPress={onOpenEdit}
                   >
-                    <button
-                      type="button"
-                      onClick={onOpenEdit}
-                      aria-label={"Edit " + convention.name}
-                      className="text-3xl inline-flex items-center hover:cursor-pointer"
-                    >
-                      <FaEdit
-                        aria-hidden="true"
-                        className="h-8 w-auto text-white hover:text-gwgreen"
-                      />
-                    </button>
-                  </Tooltip>
+                    <FaEdit
+                      aria-hidden="true"
+                      className="h-8 w-auto text-white hover:text-gwgreen"
+                    />
+                  </SimpleTooltip>
 
-                  <Tooltip
+                  <SimpleTooltip
                     content={"Attendees"}
                     showArrow={true}
                     color="success"
@@ -274,9 +263,9 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                         />
                       </Link>
                     </span>
-                  </Tooltip>
+                  </SimpleTooltip>
 
-                  <Tooltip
+                  <SimpleTooltip
                     content={"User Permissions"}
                     showArrow={true}
                     color="success"
@@ -294,7 +283,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                         <FaUsersCog aria-hidden="true" className="h-8 w-auto" />
                       </Link>
                     </span>
-                  </Tooltip>
+                  </SimpleTooltip>
 
                   <div className="border-r border-gwblue mr-2 ml-2 self-stretch"></div>
                 </div>
@@ -305,7 +294,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
           {readOnly ? (
             null
           ) : (
-            <Tooltip
+            <SimpleTooltip
               content={"Legacy Board Game Admin Frontend"}
               showArrow={true}
               color="success"
@@ -327,10 +316,10 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                   />
                 </Link>
               </span>
-            </Tooltip>
+            </SimpleTooltip>
           )}
 
-          <Tooltip
+          <SimpleTooltip
             content={"Legacy Librarian Frontend"}
             showArrow={true}
             color="success"
@@ -352,9 +341,9 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 />
               </Link>
             </span>
-          </Tooltip>
+          </SimpleTooltip>
 
-          <Tooltip
+          <SimpleTooltip
             content={"Legacy Play Prize Entry Frontend"}
             showArrow={true}
             color="success"
@@ -373,114 +362,106 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                 <FaTrophy aria-hidden="true" className="h-8 w-auto" />
               </Link>
             </span>
-          </Tooltip>
+          </SimpleTooltip>
         </div>
 
         <p>
-          <b className="text-gwgreen">Start Date: </b>
+          <b className="text-gwlightblue">Start Date: </b>
           {formatter.format(new Date(convention.startDate))}
         </p>
         <p className="mb-8">
-          <b className="text-gwgreen">End Date: </b>
+          <b className="text-gwlightblue">End Date: </b>
           {formatter.format(new Date(convention.endDate))}
         </p>
 
         <h3 className="flex">
-          <span className="text-gwgreen">
+          <span className="text-gwlightblue">
             <b>Collections:</b>
           </span>{" "}
           {readOnly ? (
             null
           ) : (
             <div className="flex">
-              <Tooltip
+              <SimpleTooltip
                 content="Create Collection"
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel="Create Collection"
+                triggerClassName="ml-2 hover:cursor-pointer hover:text-gwgreen"
+                onPress={onOpenCreate}
               >
-                <button
-                  type="button"
-                  aria-label="Create Collection"
-                  onClick={onOpenCreate}
-                  className="ml-2 hover:cursor-pointer hover:text-gwgreen"
-                >
-                  <IoMdAddCircle aria-hidden="true" />
-                </button>
-              </Tooltip>
-              <Tooltip
+                <IoMdAddCircle aria-hidden="true" />
+              </SimpleTooltip>
+              <SimpleTooltip
                 content="Import Collection"
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel="Import Collection"
+                triggerClassName="ml-2 hover:cursor-pointer hover:text-gwgreen"
+                onPress={onOpenImport}
               >
-                <button
-                  type="button"
-                  aria-label="Import Collection"
-                  onClick={onOpenImport}
-                  className="ml-2 hover:cursor-pointer hover:text-gwgreen"
-                >
-                  <TbPackageImport aria-hidden="true" />
-                </button>
-              </Tooltip>
-              <Tooltip
+                <TbPackageImport aria-hidden="true" />
+              </SimpleTooltip>
+              <SimpleTooltip
                 content="Attach Collection"
-                showArrow={true}
-                color="success"
                 delay={1000}
+                ariaLabel="Attach Collection"
+                triggerClassName="ml-2 hover:cursor-pointer hover:text-gwgreen"
+                onPress={onOpen}
               >
-                <button
-                  type="button"
-                  aria-label="Attach Collection"
-                  onClick={onOpen}
-                  className="ml-2 hover:cursor-pointer hover:text-gwgreen"
-                >
-                  <GrAttachment aria-hidden="true" />
-                </button>
-              </Tooltip>
+                <GrAttachment aria-hidden="true" />
+              </SimpleTooltip>
             </div>
           )}
         </h3>
-        {readOnly ? (
+        {readOnly || !isOpen ? (
           null
         ) : (
-          <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-            <ModalContent>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  onSave();
-                }}
-              >
-                <ModalHeader>Attach Collection</ModalHeader>
-                <ModalBody>
-                  <Select
-                    name="collectionSelect"
-                    items={filteredCollections ?? []}
-                    label="Collection to Attach"
-                    placeholder="Select a collection"
-                    isRequired
-                    onChange={(event) => {
-                      setCollectionIdToAttach(Number(event.target.value));
+          <Modal state={disclosure}>
+            {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+            <Modal.Trigger tabIndex={-1} />
+            <Modal.Backdrop>
+              <Modal.Container scroll="outside">
+                <Modal.Dialog>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      onSave();
                     }}
                   >
-                    {(collection) => (
-                      <SelectItem key={collection.id}>
-                        {collection.name}
-                      </SelectItem>
-                    )}
-                  </Select>
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="success" type="submit">
-                    Attach
-                  </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Cancel
-                  </Button>
-                </ModalFooter>
-              </form>
-            </ModalContent>
+                    <Modal.Header>
+                      <Modal.Heading>Attach Collection</Modal.Heading>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <SimpleSelect
+                        name="collectionSelect"
+                        label="Collection to Attach"
+                        placeholder="Select a collection"
+                        onSelectionChange={(key) => {
+                          setCollectionIdToAttach(
+                            key != null ? Number(key) : null
+                          );
+                        }}
+                      >
+                        {(filteredCollections ?? []).map((collection) => (
+                          <SimpleSelectItem
+                            key={collection.id}
+                            id={String(collection.id)}
+                            textValue={collection.name}
+                          />
+                        ))}
+                      </SimpleSelect>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button variant="primary" type="submit">
+                        Attach
+                      </Button>
+                      <Button variant="secondary" onPress={onClose}>
+                        Cancel
+                      </Button>
+                    </Modal.Footer>
+                  </form>
+                </Modal.Dialog>
+              </Modal.Container>
+            </Modal.Backdrop>
           </Modal>
         )}
         <div className="flex flex-wrap mr-8">
@@ -491,6 +472,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                   collectionIn={c.collection}
                   conventionId={convention.id}
                   onDeleted={onClose}
+                  readOnly={readOnly}
                 />
               </div>
             );
@@ -498,23 +480,34 @@ export default function ConventionInfo(props: ConventionInfoProps) {
         </div>
       </div>
 
-      <ConventionModal
-        conventionIn={convention}
-        conventionId={id}
-        organizationId={convention.organizationId}
-        disclosure={editDisclosure}
-      />
-      <CollectionModal
-        disclosure={createCollectionDisclosure}
-        conventionId={convention.id}
-        organizationId={convention.organizationId}
-      />
-      <CollectionModal
-        disclosure={importCollectionDisclosure}
-        conventionId={convention.id}
-        organizationId={convention.organizationId}
-        importFile={true}
-      />
+      {/* Only render modals while open. ConventionInfo lives inside an Accordion
+          panel, which keeps collapsed content in the DOM but display:none — and a
+          modal's (DialogTrigger) hidden trigger can't be focusable while hidden,
+          which spams react-aria warnings. Gating on isOpen means closed/collapsed
+          panels render no modal at all. */}
+      {isOpenEdit && (
+        <ConventionModal
+          conventionIn={convention}
+          conventionId={id}
+          organizationId={convention.organizationId}
+          disclosure={editDisclosure}
+        />
+      )}
+      {isOpenCreate && (
+        <CollectionModal
+          disclosure={createCollectionDisclosure}
+          conventionId={convention.id}
+          organizationId={convention.organizationId}
+        />
+      )}
+      {isOpenImport && (
+        <CollectionModal
+          disclosure={importCollectionDisclosure}
+          conventionId={convention.id}
+          organizationId={convention.organizationId}
+          importFile={true}
+        />
+      )}
     </div>
   );
 }

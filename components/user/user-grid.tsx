@@ -1,5 +1,6 @@
 "use client";
-import { Tooltip, useDisclosure } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import frontendFetch from "@/utilities/frontendFetch";
@@ -158,21 +159,15 @@ export default function UserGrid(props: UserGridProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Add User"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Add User"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Add User"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
-        </Tooltip>
+          <IoMdAddCircle aria-hidden="true" />
+        </SimpleTooltip>
       )}
 
       <UserModal

@@ -1,21 +1,13 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem,
-} from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { Attendee } from "@/types/models";
 
 interface AttendeeBadgeTransfer {
@@ -58,7 +50,7 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
 
   const session = useAuth();
 
-  const { isOpen, onClose } = disclosure;
+  const { onClose } = disclosure;
 
   const onSave = () => {
     if (conventionId) {
@@ -146,93 +138,103 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
     organizationId,
   ]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions) return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>Badge Transfer - {attendee?.badgeName}</ModalHeader>
-              <ModalBody>
-                <div>
-                    <p>Step 1: Charge the attendee in the Square payment device for a transfered badge.</p>
-                    <p>Step 2: Get the original attendee&apos;s badge from the badge station.</p>
-                    <p>Step 3: Enter the new attendee&apos;s name and pronouns in the boxes below.</p>
-                    <p>Step 4: Use the label printing software to print three stickers with the new attendee&apos;s name.</p>
-                    <p>Step 5: Put one sticker on each side of the badge, and the third on the badge&apos;s geeklet.</p>
-                </div>
-                <Input
-                  label="Badge Name"
-                  onValueChange={setAttendeeBadgeName}
-                  value={attendeeBadgeName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Badge First Name"
-                  onValueChange={setAttendeeBadgeFirstName}
-                  value={attendeeBadgeFirstName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Badge Last Name"
-                  onValueChange={setAttendeeBadgeLastName}
-                  value={attendeeBadgeLastName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Legal Name"
-                  onValueChange={setAttendeeLegalName}
-                  value={attendeeLegalName}
-                  readOnly={readOnly}
-                />
-                <Input
-                  label="Email"
-                  onValueChange={setAttendeeEmail}
-                  value={attendeeEmail ?? ""}
-                  readOnly={readOnly}
-                />
-                <Select
-                  label="Pronouns"
-                  placeholder="Select Pronouns"
-                  selectedKeys={
-                    attendeePronounsId != null
-                      ? new Set([String(attendeePronounsId)])
-                      : new Set()
-                  }
-                  isDisabled={readOnly}
-                  onSelectionChange={(keys) => {
-                    const [first] = keys;
-                    setAttendeePronounsId(first != null ? Number(first) : null);
-                  }}
-                >
-                  {(pronounsIn ?? []).map((p) => (
-                    <SelectItem key={p.id} textValue={p.pronouns}>
-                      {p.pronouns}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </ModalBody>
-              <ModalFooter>
-                {readOnly ? null : (
-                  <Button color="success" type="submit">
-                    Transfer Badge
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>Badge Transfer - {attendee?.badgeName}</Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <div>
+                      <p>Step 1: Charge the attendee in the Square payment device for a transfered badge.</p>
+                      <p>Step 2: Get the original attendee&apos;s badge from the badge station.</p>
+                      <p>Step 3: Enter the new attendee&apos;s name and pronouns in the boxes below.</p>
+                      <p>Step 4: Use the label printing software to print three stickers with the new attendee&apos;s name.</p>
+                      <p>Step 5: Put one sticker on each side of the badge, and the third on the badge&apos;s geeklet.</p>
+                  </div>
+                  <SimpleTextField
+                    label="Badge Name"
+                    onChange={setAttendeeBadgeName}
+                    value={attendeeBadgeName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Badge First Name"
+                    onChange={setAttendeeBadgeFirstName}
+                    value={attendeeBadgeFirstName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Badge Last Name"
+                    onChange={setAttendeeBadgeLastName}
+                    value={attendeeBadgeLastName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Legal Name"
+                    onChange={setAttendeeLegalName}
+                    value={attendeeLegalName}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Email"
+                    onChange={setAttendeeEmail}
+                    value={attendeeEmail ?? ""}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleSelect
+                    label="Pronouns"
+                    placeholder="Select Pronouns"
+                    selectedKey={
+                      attendeePronounsId != null
+                        ? String(attendeePronounsId)
+                        : null
+                    }
+                    isDisabled={readOnly}
+                    onSelectionChange={(key) => {
+                      setAttendeePronounsId(key != null ? Number(key) : null);
+                    }}
+                  >
+                    {(pronounsIn ?? []).map((p) => (
+                      <SimpleSelectItem
+                        key={p.id}
+                        id={String(p.id)}
+                        textValue={p.pronouns}
+                      />
+                    ))}
+                  </SimpleSelect>
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly ? null : (
+                    <Button variant="primary" type="submit">
+                      Transfer Badge
+                    </Button>
+                  )}
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
-import { Tooltip, useDisclosure } from "@heroui/react";
+import { SimpleTooltip } from "@/components/ui/simple-tooltip";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
 import frontendFetch from "@/utilities/frontendFetch";
@@ -122,41 +123,29 @@ export default function CollectionGrid(props: CollectionGridProps) {
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Import Collection"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Import Collection"
+          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenImport}
         >
-          <button
-            type="button"
-            aria-label="Import Collection"
-            onClick={onOpenImport}
-            className="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <TbPackageImport aria-hidden="true" />
-          </button>
-        </Tooltip>
+          <TbPackageImport aria-hidden="true" />
+        </SimpleTooltip>
       )}
 
       {readOnly ? (
         null
       ) : (
-        <Tooltip
+        <SimpleTooltip
           content="Create Collection"
-          showArrow={true}
-          color="success"
           delay={1000}
+          ariaLabel="Create Collection"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreate}
         >
-          <button
-            type="button"
-            aria-label="Create Collection"
-            onClick={onOpenCreate}
-            className="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
-          >
-            <IoMdAddCircle aria-hidden="true" />
-          </button>
-        </Tooltip>
+          <IoMdAddCircle aria-hidden="true" />
+        </SimpleTooltip>
       )}
 
       <CollectionModal
