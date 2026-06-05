@@ -1,18 +1,10 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import {
-  Button,
-  DatePicker,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Select,
-  SelectItem
-} from "@heroui/react";
+import { Button, Modal } from "@heroui/react";
+import { SimpleTextField } from "@/components/ui/simple-field";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
+import { SimpleDatePicker } from "@/components/ui/simple-datepicker";
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useEffect, useState } from "react";
 import usePermissions from "@/utilities/swr/usePermissions";
@@ -22,7 +14,7 @@ import {
   parseAbsoluteToLocal,
   ZonedDateTime,
 } from "@internationalized/date";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { Convention, ConventionType } from "@/types/models";
 
 interface ConventionModalProps {
@@ -57,7 +49,7 @@ export default function ConventionModal(props: ConventionModalProps) {
 
   const session = useAuth();
 
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { onClose } = disclosure;
 
   const onSave = () => {
     if (convention) {
@@ -234,100 +226,113 @@ export default function ConventionModal(props: ConventionModalProps) {
     }
   }, [organizationId, session?.data?.token]);
 
+  // Render nothing while closed so HeroUI Modal/DialogTrigger does not mount
+  // a (hidden, thus non-focusable) trigger — e.g. inside collapsed Accordion panels.
+  if (!disclosure.isOpen) return null;
   if (isLoading || isLoadingPermissions || isLoadingConventionTypes)
     return <div></div>;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
-      <ModalContent>
-        {(onClose) => (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onSave();
-            }}
-          >
-            <div>
-              <ModalHeader>
-                {conventionId ? "Edit" : "Create"} Convention
-              </ModalHeader>
-              <ModalBody>
-                <Select
-                  name="conventionTypeSelect"
-                  items={conventionTypes ?? []}
-                  label="Convention Type"
-                  placeholder="Select a convention type"
-                  defaultSelectedKeys={conventionTypeId != null ? [String(conventionTypeId)] : []}
-                  isDisabled={readOnly}
-                  onChange={(event) => {
-                    setConventionTypeId(Number(event.target.value));
-                  }}
-                >
-                  {(conventionType) => (
-                    <SelectItem
-                      key={conventionType.id}
-                    >
-                      {conventionType.name}
-                    </SelectItem>
+    <Modal state={disclosure}>
+      {/* hidden trigger so HeroUI DialogTrigger has a pressable child; see game-modal.tsx */}
+      <Modal.Trigger tabIndex={-1} />
+      <Modal.Backdrop>
+        <Modal.Container scroll="outside">
+          <Modal.Dialog>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSave();
+              }}
+            >
+              <div>
+                <Modal.Header>
+                  <Modal.Heading>
+                    {conventionId ? "Edit" : "Create"} Convention
+                  </Modal.Heading>
+                </Modal.Header>
+                <Modal.Body>
+                  <SimpleSelect
+                    name="conventionTypeSelect"
+                    label="Convention Type"
+                    placeholder="Select a convention type"
+                    className="mb-4"
+                    selectedKey={
+                      conventionTypeId != null
+                        ? String(conventionTypeId)
+                        : null
+                    }
+                    isDisabled={readOnly}
+                    onSelectionChange={(key) => {
+                      setConventionTypeId(
+                        key != null ? Number(key) : undefined
+                      );
+                    }}
+                  >
+                    {(conventionTypes ?? []).map((conventionType) => (
+                      <SimpleSelectItem
+                        key={conventionType.id}
+                        id={String(conventionType.id)}
+                        textValue={conventionType.name}
+                      />
+                    ))}
+                  </SimpleSelect>
+                  <SimpleTextField
+                    name="name"
+                    isRequired
+                    label="Name"
+                    value={conventionName}
+                    onChange={(value) => setConventionName(value)}
+                    isDisabled={readOnly}
+                  />
+                  <SimpleTextField
+                    name="theme"
+                    label="Theme"
+                    value={conventionTheme}
+                    onChange={(value) => setConventionTheme(value)}
+                    isDisabled={readOnly}
+                  />
+                  <SimpleTextField
+                    name="tteConventionId"
+                    label="TTE Convention Id"
+                    value={tteConventionId ?? ""}
+                    onChange={(value) => setTTEConventionId(value)}
+                    isDisabled={readOnly}
+                  />
+                  <SimpleDatePicker
+                    label="Start Date"
+                    isRequired
+                    onChange={(value) =>
+                      setStartDate(value as ZonedDateTime | null)
+                    }
+                    defaultValue={startDate}
+                  />
+                  <SimpleDatePicker
+                    label="End Date"
+                    isRequired
+                    onChange={(value) =>
+                      setEndDate(value as ZonedDateTime | null)
+                    }
+                    defaultValue={endDate}
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  {readOnly ? (
+                    null
+                  ) : (
+                    <Button variant="primary" type="submit">
+                      Save
+                    </Button>
                   )}
-                </Select>
-                <Input
-                  name="name"
-                  type="text"
-                  isRequired
-                  label="Name"
-                  value={conventionName}
-                  onValueChange={(value) => setConventionName(value)}
-                  isDisabled={readOnly}
-                />
-                <Input
-                  name="theme"
-                  type="text"
-                  label="Theme"
-                  value={conventionTheme}
-                  onValueChange={(value) => setConventionTheme(value)}
-                  isDisabled={readOnly}
-                />
-                <Input
-                  name="tteConventionId"
-                  type="text"
-                  label="TTE Convention Id"
-                  placeholder="Enter the convention id from Tabletop.Events"
-                  value={tteConventionId ?? ""}
-                  onValueChange={(value) => setTTEConventionId(value)}
-                  isDisabled={readOnly}
-                />
-                <DatePicker
-                  label="Start Date"
-                  isRequired
-                  showMonthAndYearPickers
-                  onChange={(value) => setStartDate(value)}
-                  defaultValue={startDate}
-                />
-                <DatePicker
-                  label="End Date"
-                  isRequired
-                  showMonthAndYearPickers
-                  onChange={(value) => setEndDate(value)}
-                  defaultValue={endDate}
-                />
-              </ModalBody>
-              <ModalFooter>
-                {readOnly ? (
-                  null
-                ) : (
-                  <Button color="success" type="submit">
-                    Save
+                  <Button variant="secondary" onPress={onClose}>
+                    Close
                   </Button>
-                )}
-                <Button color="primary" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-            </div>
-          </form>
-        )}
-      </ModalContent>
+                </Modal.Footer>
+              </div>
+            </form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </Modal>
   );
 }

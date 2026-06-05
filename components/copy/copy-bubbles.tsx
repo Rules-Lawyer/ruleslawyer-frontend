@@ -3,7 +3,7 @@ import frontendFetch from "@/utilities/frontendFetch";
 import { useAuth } from "@/utilities/swr/useAuth";
 import { useCallback, useEffect, useState } from "react";
 import CopyModal from "./copy-modal";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@/utilities/useDisclosure";
 import { BsBox2Heart } from "react-icons/bs";
 import { GameCopy, GameWithCopies } from "@/types/models";
 

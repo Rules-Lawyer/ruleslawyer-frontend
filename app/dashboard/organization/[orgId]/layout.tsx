@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
-import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
+import { BreadcrumbsItem, Breadcrumbs } from "@heroui/react";
 import { useParams, usePathname } from "next/navigation";
 import { Collection, Convention, Organization } from "@/types/models";
 
@@ -64,87 +64,87 @@ export default function OrganizationLayout({
   return (
     <div>
       <div className="mb-5">
-        <Breadcrumbs size="lg" color="success" underline="hover">
+        <Breadcrumbs>
           {params?.orgId !== null && params?.orgId !== undefined ? (
-            <BreadcrumbItem href={`/dashboard/organization/${organization.id}`}>
+            <BreadcrumbsItem href={`/dashboard/organization/${organization.id}`}>
               {organization.name}
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {pathname?.includes("users") ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/users`}
             >
               Users
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {pathname?.includes("convention") ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/conventions`}
             >
               Conventions
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {params?.conId !== null && params?.conId !== undefined ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/convention/${convention?.id}`}
             >
               {convention?.name}
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {pathname?.includes("collection") ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/collections`}
             >
               Collections
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {params?.colId !== null && params?.colId !== undefined ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/collection/${params.colId}`}
             >
               {collection?.name}
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {pathname?.includes("games") ? (
-            <BreadcrumbItem
+            <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/games`}
             >
               Games
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {params?.conId !== null && params?.conId !== undefined && pathname?.endsWith('users') ? (
-            <BreadcrumbItem>
+            <BreadcrumbsItem>
               Users
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}
 
           {params?.conId !== null && params?.conId !== undefined && pathname?.endsWith('attendees') ? (
-            <BreadcrumbItem>
+            <BreadcrumbsItem>
               Attendees
-            </BreadcrumbItem>
+            </BreadcrumbsItem>
           ) : (
             null
           )}

@@ -6,12 +6,12 @@ import usePermissions from "@/utilities/swr/usePermissions";
 import AttendeeCard from "./attendee-card";
 import { Attendee } from "@/types/models";
 import {
-  CircularProgress,
+  Spinner,
   Input,
-  Select,
-  SelectItem,
+  Label,
+  TextField,
 } from "@heroui/react";
-import { LuUserSearch } from "react-icons/lu";
+import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
 import Pagination from "../pagination";
 
 interface AttendeeGridProps {
@@ -137,7 +137,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center w-full pt-10">
-        <CircularProgress isIndeterminate={true} label="Loading..." />
+        <Spinner aria-label="Loading..." />
       </div>
     );
   }
@@ -155,32 +155,30 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
   return (
     <div>
       <div className="flex m-10">
-        <Input
+        <TextField
           name="search"
-          type="text"
-          label="Search Attendees"
-          placeholder="Type a name"
-          startContent={<LuUserSearch />}
-          onValueChange={setSearchText}
+          aria-label="Search Attendees"
+          onChange={setSearchText}
           className="mr-10"
-        />
-        <Select
+        >
+          <Label>Search Attendees</Label>
+          <Input placeholder="Type a name" />
+        </TextField>
+        <SimpleSelect
           name="maxResults"
           label="Max Results"
-          onSelectionChange={(keys) => {
-            const [first] = keys;
-
-            if (first !== undefined) {
-              setMaxResults(String(first));
+          selectedKey={maxResults}
+          onSelectionChange={(key) => {
+            if (key != null) {
+              setMaxResults(String(key));
             }
           }}
-          selectedKeys={new Set([maxResults])}
           className="w-1/3"
         >
-          <SelectItem key={50}>50 Attendees</SelectItem>
-          <SelectItem key={100}>100 Attendees</SelectItem>
-          <SelectItem key={500}>500 Attendees</SelectItem>
-        </Select>
+          <SimpleSelectItem id="50" textValue="50 Attendees" />
+          <SimpleSelectItem id="100" textValue="100 Attendees" />
+          <SimpleSelectItem id="500" textValue="500 Attendees" />
+        </SimpleSelect>
       </div>
 
       {pagination}

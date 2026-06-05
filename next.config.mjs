@@ -6,9 +6,8 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
+    // Next 16 no longer runs ESLint during `next build`, so the former
+    // `eslint.ignoreDuringBuilds` option was dropped (it now warns as unknown).
     basePath,
     env: {
         NEXT_PUBLIC_BASE_PATH: basePath,
