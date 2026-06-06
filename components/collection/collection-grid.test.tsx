@@ -1,8 +1,18 @@
 import { render, screen } from "@testing-library/react";
+import { SWRConfig } from "swr";
 import CollectionGrid from "@/components/collection/collection-grid";
 import frontendFetch from "@/utilities/frontendFetch";
 import usePermissions from "@/utilities/swr/usePermissions";
 import type { CollectionWithCount } from "@/types/models";
+
+// CollectionGrid now loads via SWR (useOrgCollections). Give every render its own
+// cache so one test's seeded/fetched list can't be served to the next from SWR's
+// dedupe window.
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+    {children}
+  </SWRConfig>
+);
 
 jest.mock("@/utilities/swr/useAuth", () => ({
   useAuth: () => ({ data: { token: "tok", user: { email: "u@test.dev" } } }),
@@ -62,7 +72,7 @@ describe("CollectionGrid", () => {
       makeCollection({ id: 1, name: "Alpha" }),
       makeCollection({ id: 2, name: "Beta" }),
     ];
-    render(<CollectionGrid collectionsIn={collections} organizationId={7} />);
+    render(<CollectionGrid collectionsIn={collections} organizationId={7} />, { wrapper });
 
     const names = (await screen.findAllByTestId("collection-card")).map(
       (n) => n.textContent
@@ -75,7 +85,7 @@ describe("CollectionGrid", () => {
     fetchMock.mockResolvedValue({
       json: async () => [makeCollection({ id: 3, name: "Fetched" })],
     });
-    render(<CollectionGrid organizationId={7} />);
+    render(<CollectionGrid organizationId={7} />, { wrapper });
 
     expect(await screen.findByTestId("collection-card")).toHaveTextContent("Fetched");
     expect(fetchMock).toHaveBeenCalledWith(
@@ -88,7 +98,7 @@ describe("CollectionGrid", () => {
 
   it("hides the create/import controls from read-only viewers", () => {
     mockPermissions({ superAdmin: false });
-    render(<CollectionGrid collectionsIn={[]} organizationId={7} />);
+    render(<CollectionGrid collectionsIn={[]} organizationId={7} />, { wrapper });
     expect(
       screen.queryByRole("button", { name: "Create Collection" })
     ).not.toBeInTheDocument();
@@ -99,7 +109,7 @@ describe("CollectionGrid", () => {
 
   it("shows the create/import controls to super admins", () => {
     mockPermissions({ superAdmin: true });
-    render(<CollectionGrid collectionsIn={[]} organizationId={7} />);
+    render(<CollectionGrid collectionsIn={[]} organizationId={7} />, { wrapper });
     expect(
       screen.getByRole("button", { name: "Create Collection" })
     ).toBeInTheDocument();
@@ -110,7 +120,7 @@ describe("CollectionGrid", () => {
 
   it("shows the controls to an admin of the grid's organization", () => {
     mockPermissions({ orgAdmin: [{ organizationId: 7, admin: true }] });
-    render(<CollectionGrid collectionsIn={[]} organizationId={7} />);
+    render(<CollectionGrid collectionsIn={[]} organizationId={7} />, { wrapper });
     expect(
       screen.getByRole("button", { name: "Create Collection" })
     ).toBeInTheDocument();
@@ -118,7 +128,7 @@ describe("CollectionGrid", () => {
 
   it("keeps read-only for a non-admin of the grid's organization", () => {
     mockPermissions({ orgAdmin: [{ organizationId: 7, admin: false }] });
-    render(<CollectionGrid collectionsIn={[]} organizationId={7} />);
+    render(<CollectionGrid collectionsIn={[]} organizationId={7} />, { wrapper });
     expect(
       screen.queryByRole("button", { name: "Create Collection" })
     ).not.toBeInTheDocument();

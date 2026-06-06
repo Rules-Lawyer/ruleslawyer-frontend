@@ -3,12 +3,11 @@ import { SimpleTooltip } from "@/components/ui/simple-tooltip";
 import { useDisclosure } from "@/utilities/useDisclosure";
 import React, { useEffect, useState } from "react";
 import { IoMdAddCircle } from "react-icons/io";
-import frontendFetch from "@/utilities/frontendFetch";
-import { useAuth } from "@/utilities/swr/useAuth";
 import CollectionCard from "./collection-card";
 import CollectionModal from "./collection-modal";
 import { TbPackageImport } from "react-icons/tb";
 import usePermissions from "@/utilities/swr/usePermissions";
+import { useOrgCollections } from "@/utilities/swr/useOrgCollections";
 import { CollectionWithCount } from "@/types/models";
 
 interface CollectionGridProps {
@@ -19,12 +18,12 @@ interface CollectionGridProps {
 export default function CollectionGrid(props: CollectionGridProps) {
   const { collectionsIn, organizationId } = props;
 
-  const [collections, setData] = useState<CollectionWithCount[] | null>(null);
-  const [isLoading, setLoading] = useState(true);
+  const { collections, isLoading, mutate } = useOrgCollections(
+    organizationId,
+    collectionsIn
+  );
   const [readOnly, setReadOnly] = useState(true);
   const { permissions, isLoading: isLoadingPermissions } = usePermissions();
-
-  const session = useAuth();
 
   useEffect(() => {
     if (permissions.user?.data) {
@@ -48,38 +47,15 @@ export default function CollectionGrid(props: CollectionGridProps) {
   }, [permissions.user?.data, permissions.organizations?.data, organizationId]);
 
   useEffect(() => {
-    if (collectionsIn) {
-      setData(collectionsIn);
-      setLoading(false);
-    } else {
-      frontendFetch(
-        "GET",
-        "/org/" + organizationId + "/collections",
-        null,
-        session?.data?.token
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setData(data);
-          setLoading(false);
-        })
-        .catch((err) => {});
+    // Keep the grid in sync when the parent hands down a fresh list without
+    // firing a request — the prop stays the source of truth when provided.
+    if (collectionsIn !== undefined) {
+      mutate(collectionsIn, { revalidate: false });
     }
-  }, [collectionsIn, organizationId, session?.data?.token]);
+  }, [collectionsIn, mutate]);
 
   const onModalClose = () => {
-    frontendFetch(
-      "GET",
-      "/org/" + organizationId + "/collections",
-      null,
-      session?.data?.token
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {});
+    mutate();
   };
 
   const createDisclosure = useDisclosure({
@@ -148,16 +124,22 @@ export default function CollectionGrid(props: CollectionGridProps) {
         </SimpleTooltip>
       )}
 
-      <CollectionModal
-        disclosure={createDisclosure}
-        organizationId={organizationId}
-      ></CollectionModal>
+      {/* Only mount modals while open — avoids needless mounts (incl. for
+          read-only viewers) and the react-aria hidden-trigger warnings. */}
+      {isOpenCreate && (
+        <CollectionModal
+          disclosure={createDisclosure}
+          organizationId={organizationId}
+        />
+      )}
 
-      <CollectionModal
-        disclosure={importDisclosure}
-        organizationId={organizationId}
-        importFile={true}
-      ></CollectionModal>
+      {isOpenImport && (
+        <CollectionModal
+          disclosure={importDisclosure}
+          organizationId={organizationId}
+          importFile={true}
+        />
+      )}
     </div>
   );
 }

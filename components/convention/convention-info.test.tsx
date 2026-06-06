@@ -1,8 +1,18 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import { SWRConfig } from "swr";
 import ConventionInfo from "@/components/convention/convention-info";
 import frontendFetch from "@/utilities/frontendFetch";
 import usePermissions from "@/utilities/swr/usePermissions";
 import type { ConventionWithCollections } from "@/types/models";
+
+// ConventionInfo now loads via SWR (useConvention). Give every render its own
+// cache so one test's /con/:id response can't be served to the next from SWR's
+// dedupe window.
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 0 }}>
+    {children}
+  </SWRConfig>
+);
 
 jest.mock("@/utilities/swr/useAuth", () => ({
   useAuth: () => ({ data: { token: "tok", user: { email: "u@test.dev" } } }),
@@ -77,7 +87,7 @@ describe("ConventionInfo", () => {
   it("fetches and renders the convention name, theme, and dates", async () => {
     mockPermissions();
     routeFetch(makeConvention());
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     expect(await screen.findByText("GeekWay 2026")).toBeInTheDocument();
     expect(screen.getByText("Board Games Galore")).toBeInTheDocument();
@@ -97,7 +107,7 @@ describe("ConventionInfo", () => {
         ],
       } as unknown as Partial<ConventionWithCollections>)
     );
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     const names = (await screen.findAllByTestId("collection-card")).map(
       (n) => n.textContent
@@ -108,7 +118,7 @@ describe("ConventionInfo", () => {
   it("hides edit/attach controls from read-only viewers", async () => {
     mockPermissions(); // no admin anywhere
     routeFetch(makeConvention());
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     await screen.findByText("GeekWay 2026");
     expect(
@@ -122,7 +132,7 @@ describe("ConventionInfo", () => {
   it("shows edit + attach/create/import controls to a super admin", async () => {
     mockPermissions({ superAdmin: true });
     routeFetch(makeConvention());
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     expect(
       await screen.findByRole("button", { name: "Edit GeekWay 2026" })
@@ -135,7 +145,7 @@ describe("ConventionInfo", () => {
   it("unlocks editing for an admin of the convention's organization", async () => {
     mockPermissions({ orgAdmin: [{ organizationId: 7, admin: true }] });
     routeFetch(makeConvention({ organizationId: 7 }));
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     expect(
       await screen.findByRole("button", { name: "Edit GeekWay 2026" })
@@ -145,7 +155,7 @@ describe("ConventionInfo", () => {
   it("unlocks editing for an admin of the convention itself", async () => {
     mockPermissions({ conAdmin: [{ conventionId: 5, admin: true }] });
     routeFetch(makeConvention({ id: 5 }));
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     expect(
       await screen.findByRole("button", { name: "Edit GeekWay 2026" })
@@ -157,7 +167,7 @@ describe("ConventionInfo", () => {
     routeFetch(makeConvention({ organizationId: 7 }), [
       { id: 99, name: "Available" },
     ]);
-    render(<ConventionInfo id={5} />);
+    render(<ConventionInfo id={5} />, { wrapper });
 
     await screen.findByText("GeekWay 2026");
     await waitFor(() =>
