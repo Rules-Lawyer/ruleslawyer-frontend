@@ -8,6 +8,7 @@ import { FaPeopleLine } from "react-icons/fa6";
 import { FaUsersCog } from "react-icons/fa";
 import { GiPawn } from "react-icons/gi";
 import { IoLibrary } from "react-icons/io5";
+import { PiTreeViewBold } from "react-icons/pi";
 
 type Params = Promise<{ orgId: string }>;
 
@@ -68,6 +69,15 @@ export default function OrgView(props: { params: Params }) {
         >
           <FaUsersCog className="text-8xl" />
           Users
+        </Link>
+      </div>
+      <div>
+        <Link
+          href={`/dashboard/organization/${params.orgId}/convention-types`}
+          className="hover:text-gwgreen"
+        >
+          <PiTreeViewBold className="text-8xl" />
+          Convention Types
         </Link>
       </div>
     </div>

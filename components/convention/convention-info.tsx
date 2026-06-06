@@ -208,7 +208,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
       <div className="flex-1">
         <div className="text-gwgreen" hidden={hideTitle && hideSubtitle}>
           <h1 hidden={hideTitle}>{convention.name}</h1>
-          <h2 className="mb-8" hidden={hideSubtitle}>
+          <h2 className="mb-8 text-gwlightblue" hidden={hideSubtitle}>
             {convention.theme}
           </h2>
         </div>
@@ -359,6 +359,10 @@ export default function ConventionInfo(props: ConventionInfoProps) {
           </SimpleTooltip>
         </div>
 
+        <p hidden={!convention.type}>
+          <b className="text-gwlightblue">Convention Type: </b>
+          {convention.type?.name}
+        </p>
         <p>
           <b className="text-gwlightblue">Start Date: </b>
           {formatter.format(new Date(convention.startDate))}

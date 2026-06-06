@@ -140,6 +140,9 @@ export interface Convention {
   endDate: string;
   registrationUrl: string | null;
   typeId: number;
+  /** Resolved convention type — included by the list endpoints
+   * (GET /con, GET /org/:id/conventions), absent on single-convention reads. */
+  type?: ConventionType;
   annual: string;
   size: number | null;
   cancelled: boolean;
