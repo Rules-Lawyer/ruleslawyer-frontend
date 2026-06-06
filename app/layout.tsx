@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Geekway to the West - Library Management System",
+  title: "The Rules Lawyer Convention and Library Management Platform",
   description:
     "A library management/Play and Win event system designed for and by Geekway to the West.",
 };
