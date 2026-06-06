@@ -66,7 +66,7 @@ describe("ConventionModal", () => {
     expect(await screen.findByText("Create Convention")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       "GET",
-      "/org/7/conventionType",
+      "/org/7/conventionTypes",
       null,
       "tok"
     );

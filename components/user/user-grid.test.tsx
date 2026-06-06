@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import UserGrid from "@/components/user/user-grid";
 import frontendFetch from "@/utilities/frontendFetch";
 import usePermissions from "@/utilities/swr/usePermissions";
@@ -11,21 +12,34 @@ jest.mock("@/utilities/frontendFetch", () => jest.fn());
 jest.mock("@/utilities/swr/usePermissions");
 jest.mock("@/components/user/user-modal", () => ({ __esModule: true, default: () => null }));
 // Stub UserCard so we can observe order without its own fetch/permission logic.
+// The delete button lets us drive the grid's onDeleted -> onModalClose refetch.
 jest.mock("@/components/user/user-card", () => ({
   __esModule: true,
-  default: ({ userIn }: { userIn: UserPermissionRow }) => (
-    <div data-testid="user-card">{userIn.user.name}</div>
+  default: ({
+    userIn,
+    onDeleted,
+  }: {
+    userIn: UserPermissionRow;
+    onDeleted: () => void;
+  }) => (
+    <>
+      <span data-testid="user-card">{userIn.user.name}</span>
+      <button onClick={onDeleted}>delete-{userIn.user.name}</button>
+    </>
   ),
 }));
 
 const fetchMock = frontendFetch as jest.Mock;
 const usePermissionsMock = usePermissions as jest.Mock;
 
-function mockPermissions(opts: { superAdmin?: boolean } = {}) {
+function mockPermissions(opts: {
+  superAdmin?: boolean;
+  orgAdmin?: { organizationId: number; admin: boolean }[];
+} = {}) {
   usePermissionsMock.mockReturnValue({
     permissions: {
       user: { data: { superAdmin: opts.superAdmin ?? false } },
-      organizations: { data: [] },
+      organizations: { data: opts.orgAdmin ?? [] },
       conventions: { data: [] },
     },
     isLoading: false,
@@ -87,6 +101,69 @@ describe("UserGrid", () => {
       "/userOrgPerm/organization/7",
       null,
       "tok"
+    );
+  });
+
+  it("fetches convention users when only a conventionId is passed in", async () => {
+    fetchMock.mockResolvedValue({ json: async () => [makeUser(1, "Alice")] });
+    render(<UserGrid conventionId={42} userType="convention" />);
+
+    expect(await screen.findByTestId("user-card")).toHaveTextContent("Alice");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "GET",
+      "/userConPerm/convention/42",
+      null,
+      "tok"
+    );
+  });
+
+  it("shows the add-user button to an admin of the grid's organization", () => {
+    mockPermissions({ orgAdmin: [{ organizationId: 7, admin: true }] });
+    render(<UserGrid usersIn={[]} organizationId={7} userType="organization" />);
+    expect(screen.getByRole("button", { name: "Add User" })).toBeInTheDocument();
+  });
+
+  it("keeps read-only for a non-admin of the grid's organization", () => {
+    mockPermissions({ orgAdmin: [{ organizationId: 7, admin: false }] });
+    render(<UserGrid usersIn={[]} organizationId={7} userType="organization" />);
+    expect(screen.queryByRole("button", { name: "Add User" })).not.toBeInTheDocument();
+  });
+
+  it("refetches organization users after a card is deleted", async () => {
+    mockPermissions({ superAdmin: true });
+    render(
+      <UserGrid usersIn={[makeUser(1, "Alice")]} organizationId={7} userType="organization" />
+    );
+
+    fetchMock.mockResolvedValue({ json: async () => [makeUser(2, "Bob")] });
+    await userEvent.click(screen.getByRole("button", { name: "delete-Alice" }));
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        "GET",
+        "/userOrgPerm/organization/7",
+        null,
+        "tok"
+      )
+    );
+  });
+
+  it("refetches convention users after a card is deleted", async () => {
+    mockPermissions({ superAdmin: true });
+    render(
+      <UserGrid usersIn={[makeUser(1, "Alice")]} conventionId={42} userType="convention" />
+    );
+
+    fetchMock.mockResolvedValue({ json: async () => [makeUser(2, "Bob")] });
+    await userEvent.click(screen.getByRole("button", { name: "delete-Alice" }));
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        "GET",
+        "/userConPerm/convention/42",
+        null,
+        "tok"
+      )
     );
   });
 });

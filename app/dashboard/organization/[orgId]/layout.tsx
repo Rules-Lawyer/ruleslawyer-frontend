@@ -83,7 +83,15 @@ export default function OrganizationLayout({
             null
           )}
 
-          {pathname?.includes("convention") ? (
+          {params?.orgId !== null && params?.orgId !== undefined && pathname?.endsWith('convention-types') ? (
+            <BreadcrumbsItem>
+              Convention Types
+            </BreadcrumbsItem>
+          ) : (
+            null
+          )}
+
+          {pathname?.includes("convention") && !pathname?.endsWith('convention-types') ? (
             <BreadcrumbsItem
               href={`/dashboard/organization/${organization.id}/conventions`}
             >

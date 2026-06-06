@@ -15,6 +15,7 @@ import { BiSolidMessageAltError } from "react-icons/bi";
 import { IoLibrary } from "react-icons/io5";
 import { GrDetach } from "react-icons/gr";
 import usePermissions from "@/utilities/swr/usePermissions";
+import { useCollection } from "@/utilities/swr/useCollection";
 import { FaEdit, FaLock } from "react-icons/fa";
 import CollectionModal from "./collection-modal";
 import { FaTrashCan, FaTrophy } from "react-icons/fa6";
@@ -39,8 +40,15 @@ function CollectionCard(props: CollectionCardProps) {
   const readOnlyOverride = props.readOnly;
   const hasReadOnlyOverride = readOnlyOverride !== undefined;
 
-  const [collection, setData] = useState<CollectionWithCount | null>(null);
-  const [isLoading, setLoading] = useState(true);
+  // collectionIn is always supplied by callers, so seed the SWR cache from it as
+  // fallbackData (no fetch on mount — see useCollection). This avoids the skeleton
+  // flash + second render per card that landed in the accordion-expand commit and
+  // dropped animation frames, and gives onModalClose a single SWR-consistent
+  // refresh path (mutate) instead of a raw frontendFetch.
+  const { collection, isLoading, mutate } = useCollection(
+    collectionIn.id,
+    collectionIn
+  );
   const [readOnly, setReadOnly] = useState(readOnlyOverride ?? true);
   const { permissions, isLoading: isLoadingPermissions } = usePermissions({
     enabled: !hasReadOnlyOverride,
@@ -49,25 +57,10 @@ function CollectionCard(props: CollectionCardProps) {
   const session = useAuth();
 
   useEffect(() => {
-    if (collectionIn) {
-      setData(collectionIn);
-      setLoading(false);
-    } else {
-      // Dead branch: collectionIn is always provided by callers. Kept as-is.
-      frontendFetch(
-        "GET",
-        "/collection/" + (collectionIn as CollectionWithCount).id,
-        null,
-        session?.data?.token
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          setData(data);
-          setLoading(false);
-        })
-        .catch((err) => {});
-    }
-  }, [collectionIn, session?.data?.token]);
+    // Keep the card in sync when the parent hands down fresh data (e.g. after its
+    // own refresh) without firing a request — the prop stays the source of truth.
+    mutate(collectionIn, { revalidate: false });
+  }, [collectionIn, mutate]);
 
   useEffect(() => {
     // Parent supplied the permission state — mirror it and skip the per-card
@@ -92,7 +85,8 @@ function CollectionCard(props: CollectionCardProps) {
             permissions.conventions.data?.filter(
               (d) =>
                 collection?.conventions?.some(
-                  (c) => d.conventionId == c.conventionId
+                  (c: { conventionId: number }) =>
+                    d.conventionId == c.conventionId
                 ) && d.admin === true
             ).length > 0
           ) {
@@ -100,11 +94,7 @@ function CollectionCard(props: CollectionCardProps) {
           } else {
             setReadOnly(true);
           }
-
-          setLoading(false);
         }
-
-        setLoading(false);
       }
     } else {
       setReadOnly(true);
@@ -112,18 +102,7 @@ function CollectionCard(props: CollectionCardProps) {
   }, [permissions.user?.data, permissions.organizations?.data, permissions.conventions?.data, collection, hasReadOnlyOverride, readOnlyOverride]);
 
   const onModalClose = () => {
-    frontendFetch(
-      "GET",
-      "/collection/" + collection?.id,
-      null,
-      session?.data?.token
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {});
+    mutate();
   };
 
   const disclosure = useDisclosure({
@@ -314,11 +293,16 @@ function CollectionCard(props: CollectionCardProps) {
           null
         )}
       </div>
-      <CollectionModal
-        collectionIn={collection}
-        organizationId={collection.organizationId}
-        disclosure={disclosure}
-      />
+      {/* Only mount the modal while open. Rendering one per card unconditionally
+          is wasted mount work across a grid and, like the modals in ConventionInfo,
+          spams react-aria warnings from its hidden trigger when closed. */}
+      {isOpen && (
+        <CollectionModal
+          collectionIn={collection}
+          organizationId={collection.organizationId}
+          disclosure={disclosure}
+        />
+      )}
     </Link>
   );
 }
