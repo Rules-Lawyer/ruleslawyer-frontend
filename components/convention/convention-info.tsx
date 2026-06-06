@@ -10,6 +10,7 @@ import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
 import { useDisclosure } from "@/utilities/useDisclosure";
 import { GrAttachment } from "react-icons/gr";
 import usePermissions from "@/utilities/swr/usePermissions";
+import { useConvention } from "@/utilities/swr/useConvention";
 import { useLegacyUrls } from "./legacy-urls-context";
 import ConventionModal from "./convention-modal";
 import { FaEdit, FaRegIdBadge, FaTrophy, FaUsersCog } from "react-icons/fa";
@@ -21,21 +22,33 @@ import {
   MdAdminPanelSettings,
   MdOutlineShoppingCartCheckout,
 } from "react-icons/md";
-import { CollectionWithCount, ConventionWithCollections } from "@/types/models";
+import {
+  CollectionWithCount,
+  Convention,
+  ConventionWithCollections,
+} from "@/types/models";
 
 interface ConventionInfoProps {
   id: number;
+  // The parent list already has the convention header (name/theme/dates). Passing
+  // it lets the panel paint instantly instead of showing a blank "Loading…" while
+  // /con/:id fetches — only the collection cards stream in.
+  conventionIn?: Convention;
   hideTitle?: boolean;
   hideSubtitle?: boolean;
 }
 
 export default function ConventionInfo(props: ConventionInfoProps) {
-  const { id, hideTitle, hideSubtitle } = props;
+  const { id, conventionIn, hideTitle, hideSubtitle } = props;
 
-  const [convention, setData] = useState<ConventionWithCollections | null>(
-    null,
+  const fallback = useMemo(
+    () =>
+      conventionIn
+        ? ({ ...conventionIn, collections: [] } as ConventionWithCollections)
+        : undefined,
+    [conventionIn]
   );
-  const [isLoading, setLoading] = useState(true);
+  const { convention, isLoading, mutate } = useConvention(id, fallback);
   const [collectionIdToAttach, setCollectionIdToAttach] = useState<
     number | null
   >(null);
@@ -62,16 +75,6 @@ export default function ConventionInfo(props: ConventionInfoProps) {
   );
 
   useEffect(() => {
-    frontendFetch("GET", "/con/" + id, null, session?.data?.token)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch(() => {});
-  }, [id, session?.data?.token]);
-
-  useEffect(() => {
     if (permissions.user?.data) {
       if (permissions.user.data.superAdmin) {
         setReadOnly(false);
@@ -93,11 +96,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
           } else {
             setReadOnly(true);
           }
-
-          setLoading(false);
         }
-
-        setLoading(false);
       } else {
         setReadOnly(true);
       }
@@ -140,12 +139,7 @@ export default function ConventionInfo(props: ConventionInfoProps) {
   }, [collections, convention]);
 
   const onModalClose = () => {
-    frontendFetch("GET", "/con/" + id, null, session?.data?.token)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-      })
-      .catch(() => {});
+    mutate();
   };
 
   const onSave = () => {

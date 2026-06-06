@@ -9,6 +9,7 @@ import ConventionModal from "./convention-modal";
 import frontendFetch from "@/utilities/frontendFetch";
 import { useAuth } from "@/utilities/swr/useAuth";
 import usePermissions from "@/utilities/swr/usePermissions";
+import { preloadConvention } from "@/utilities/swr/useConvention";
 import { Convention } from "@/types/models";
 
 interface ConventionListProps {
@@ -147,7 +148,15 @@ export default function ConventionList(props: ConventionListProps) {
             return (
               <Accordion.Item key={c.id} id={String(c.id)}>
                 <Accordion.Heading>
-                  <Accordion.Trigger className={"hover:bg-gwdarkgreen "}>
+                  <Accordion.Trigger
+                    className={"hover:bg-gwdarkgreen "}
+                    onHoverStart={() =>
+                      preloadConvention(c.id, session?.data?.token)
+                    }
+                    onFocus={() =>
+                      preloadConvention(c.id, session?.data?.token)
+                    }
+                  >
                     <span className="data-[open=true]:text-gwgreen mr-5">
                       {c.name}
                     </span>
@@ -164,6 +173,7 @@ export default function ConventionList(props: ConventionListProps) {
                     selectedKeys.has(String(c.id))) && (
                     <ConventionInfo
                       id={c.id}
+                      conventionIn={c}
                       hideTitle={true}
                       hideSubtitle={true}
                     />
