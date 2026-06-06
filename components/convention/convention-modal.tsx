@@ -213,7 +213,7 @@ export default function ConventionModal(props: ConventionModalProps) {
     if (organizationId) {
       frontendFetch(
         "GET",
-        "/org/" + organizationId + "/conventionType",
+        "/org/" + organizationId + "/conventionTypes",
         null,
         session?.data?.token
       )
