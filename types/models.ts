@@ -140,6 +140,10 @@ export interface Convention {
   endDate: string;
   registrationUrl: string | null;
   typeId: number;
+  /** Resolved convention type — embedded by the convention read endpoints
+   * (GET /con, GET /con/:id, GET /org/:id/conventions) via a scalar select, so
+   * the logo/logoSquare blobs are omitted. Absent on create/update responses. */
+  type?: ConventionTypeSummary;
   annual: string;
   size: number | null;
   cancelled: boolean;
@@ -157,6 +161,13 @@ export interface ConventionType {
   content: string | null;
   organizationId: number;
 }
+
+/** ConventionTypeSummaryEntity — the convention type as embedded in convention
+ * reads: every scalar except the logo/logoSquare Bytes blobs. */
+export type ConventionTypeSummary = Omit<
+  ConventionType,
+  "logo" | "logoSquare"
+>;
 
 /** ConventionCollectionsEntity */
 export interface ConventionCollections {
