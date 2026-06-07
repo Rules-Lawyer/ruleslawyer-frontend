@@ -227,13 +227,14 @@ export default function ConventionInfo(props: ConventionInfoProps) {
                       content: "max-w-[125px] text-center",
                     }}
                     ariaLabel={"Edit " + convention.name}
-                    triggerClassName="text-3xl inline-flex items-center hover:cursor-pointer"
+                    triggerClassName="inline-block appearance-none border-0 bg-transparent p-0 hover:cursor-pointer"
                     onPress={onOpenEdit}
                   >
-                    <FaEdit
-                      aria-hidden="true"
-                      className="h-8 w-auto text-white hover:text-gwgreen"
-                    />
+                    <span className="text-3xl inline-flex items-center hover:cursor-pointer">
+                      <span className="text-white hover:text-gwgreen">
+                        <FaEdit aria-hidden="true" className="h-8 w-auto" />
+                      </span>
+                    </span>
                   </SimpleTooltip>
 
                   <SimpleTooltip
