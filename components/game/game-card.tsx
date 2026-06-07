@@ -111,7 +111,7 @@ function GameCard(props: GameCardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center border-2 w-100 h-46 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] border-slate-800">
+      <div className="flex items-center border-2 w-full sm:w-100 h-46 bg-gwdarkblue hover:bg-gwgreen/[.50] border-slate-800">
         <div className="flex-col p-3 w-24">
           <IoLibrary size={64} className="text-slate-800" />
         </div>
@@ -129,7 +129,7 @@ function GameCard(props: GameCardProps) {
   }
 
   return (
-    <div>
+    <div className="w-full sm:w-100">
       <div
         role="button"
         tabIndex={0}
@@ -151,7 +151,7 @@ function GameCard(props: GameCardProps) {
             }
           }
         }}
-        className="flex items-center border-2 border-gwblue w-100 h-46 mr-5 mb-5 bg-gwdarkblue hover:bg-gwgreen/[.50] cursor-pointer"
+        className="flex items-center border-2 border-gwblue w-full h-46 bg-gwdarkblue hover:bg-gwgreen/[.50] cursor-pointer"
       >
         <div className="flex-col p-3 w-40">
           {coverArtSrc && !coverError ? (

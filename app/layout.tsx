@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark bg-gwdarkblue">
-      <body className={`${inter.className} min-h-screen`}>
+      <body className={`${inter.className} min-h-screen overflow-x-hidden`}>
         <Providers>{children}</Providers>
         <footer className="justify-center gap-3 text-center text-sm text-gray-500 py-4">
           <div>

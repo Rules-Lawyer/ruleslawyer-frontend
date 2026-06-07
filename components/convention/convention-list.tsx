@@ -192,7 +192,7 @@ export default function ConventionList(props: ConventionListProps) {
           content="Create Convention"
           delay={1000}
           ariaLabel="Create Convention"
-          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenCreate}
         >
           <IoMdAddCircle aria-hidden="true" />
