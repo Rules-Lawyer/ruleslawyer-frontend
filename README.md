@@ -77,7 +77,6 @@ The dashboard is at parity with the legacy admin SPA for core CRUD and adds seve
 **Collections / Copies**
 
 - **Bulk-upload copies into an existing collection (CSV)** — CSV upload is supported only when importing a brand-new collection; copies must otherwise be added one at a time.
-- **Export Plays** — there is no way to export/download a collection's play data.
 
 ### At parity
 
