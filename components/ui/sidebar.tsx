@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
 import { usePathname, useRouter } from "next/navigation";
-import { SignOut } from "./auth/signout-client";
+import { SignOut } from "../auth/signout-client";
 import { Spinner } from "@heroui/react";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { FaBuildingFlag, FaPeopleLine, FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";

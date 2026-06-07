@@ -15,6 +15,8 @@ interface AttendeeUpdate {
   badgeFirstName?: string;
   badgeLastName?: string;
   legalName?: string;
+  badgeNumber?: string;
+  barcode?: string;
   pronounsId?: number | null;
   email?: string | null;
 }
@@ -45,7 +47,12 @@ export default function AttendeeModal(props: AttendeeModalProps) {
   const [attendeeLegalName, setAttendeeLegalName] = useState("");
   const [attendeePronounsId, setAttendeePronounsId] = useState<number | null>(null);
   const [attendeeEmail, setAttendeeEmail] = useState<string | null>(null);
-  const [pronouns, setPronouns] = useState<{ id: number; pronouns: string }[]>(pronounsIn ?? []);
+  const [attendeeBadgeNumber, setAttendeeBadgeNumber] = useState("");
+  const [attendeeBarcode, setAttendeeBarcode] = useState("");
+  // Derive from the prop rather than seeding state once: the parent fetches
+  // pronouns asynchronously, so a value captured at first mount would freeze to
+  // the empty initial list and never pick up the fetched options.
+  const pronouns = pronounsIn ?? [];
   const [isLoading, setLoading] = useState(true);
   const [readOnly, setReadOnly] = useState(true);
 
@@ -65,6 +72,8 @@ export default function AttendeeModal(props: AttendeeModalProps) {
           badgeFirstName: attendeeBadgeFirstName,
           badgeLastName: attendeeBadgeLastName,
           legalName: attendeeLegalName,
+          badgeNumber: attendeeBadgeNumber,
+          barcode: attendeeBarcode,
           pronounsId: attendeePronounsId,
           email: attendeeEmail,
         },
@@ -80,9 +89,40 @@ export default function AttendeeModal(props: AttendeeModalProps) {
           badgeFirstName: attendeeBadgeFirstName,
           badgeLastName: attendeeBadgeLastName,
           legalName: attendeeLegalName,
+          badgeNumber: attendeeBadgeNumber,
+          barcode: attendeeBarcode,
           pronounsId: attendeePronounsId,
           email: attendeeEmail,
         });
+        onClose();
+      })
+      .catch(() => {
+          toastNetworkError();
+      });
+    } else {
+      frontendFetch(
+        "POST",
+        "/con/" + conventionId + "/attendee",
+        {
+          convention: { connect: { id: conventionId } },
+          badgeName: attendeeBadgeName,
+          badgeFirstName: attendeeBadgeFirstName,
+          badgeLastName: attendeeBadgeLastName,
+          legalName: attendeeLegalName,
+          badgeNumber: attendeeBadgeNumber,
+          barcode: attendeeBarcode,
+          ...(attendeePronounsId != null
+            ? { pronouns: { connect: { id: attendeePronounsId } } }
+            : {}),
+          ...(attendeeEmail ? { email: attendeeEmail } : {}),
+        },
+        session?.data?.token
+      )
+      .then((res) => {
+        if (!res.ok) {
+            toastSaveError(res);
+            return;
+        }
         onClose();
       })
       .catch(() => {
@@ -122,6 +162,8 @@ export default function AttendeeModal(props: AttendeeModalProps) {
       setAttendeeLegalName(attendee.legalName ?? "");
       setAttendeePronounsId(attendee.pronounsId ?? null);
       setAttendeeEmail(attendee.email ?? null);
+      setAttendeeBadgeNumber(attendee.badgeNumber ?? "");
+      setAttendeeBarcode(attendee.barcode ?? "");
     }
   }, [attendee, isOpen]);
 
@@ -200,6 +242,20 @@ export default function AttendeeModal(props: AttendeeModalProps) {
                     label="Legal Name"
                     onChange={setAttendeeLegalName}
                     value={attendeeLegalName}
+                    isReadOnly={readOnly}
+                  />
+                  {/* Badge number/barcode are required + unique per convention;
+                      editable on both create and update. */}
+                  <SimpleTextField
+                    label="Badge Number"
+                    onChange={setAttendeeBadgeNumber}
+                    value={attendeeBadgeNumber}
+                    isReadOnly={readOnly}
+                  />
+                  <SimpleTextField
+                    label="Barcode"
+                    onChange={setAttendeeBarcode}
+                    value={attendeeBarcode}
                     isReadOnly={readOnly}
                   />
                   <SimpleTextField

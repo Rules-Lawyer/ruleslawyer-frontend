@@ -114,6 +114,8 @@ describe("AttendeeModal", () => {
         badgeFirstName: "Ada",
         badgeLastName: "Lovelace",
         legalName: "Augusta Ada King",
+        badgeNumber: "101",
+        barcode: "*101*",
         pronounsId: null,
         email: "ada@test.dev",
       },

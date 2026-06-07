@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useUser } from "@auth0/nextjs-auth0";
 import { usePathname, useRouter } from "next/navigation";
-import SideBar from "@/components/sidebar";
+import SideBar from "@/components/ui/sidebar";
 import usePermissions from "@/utilities/swr/usePermissions";
 
 jest.mock("@/utilities/swr/usePermissions");
