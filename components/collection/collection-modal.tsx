@@ -1,7 +1,7 @@
 "use client";
 import frontendFetch from "@/utilities/frontendFetch";
 import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, toast } from "@heroui/react";
 import { SimpleTextField } from "@/components/ui/simple-field";
 import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 import { useAuth } from "@/utilities/swr/useAuth";
@@ -17,6 +17,7 @@ interface CollectionModalProps {
   disclosure: ReturnType<typeof useDisclosure>;
   conventionId?: number;
   importFile?: boolean;
+  importCopiesOnly?: boolean;
 }
 
 export default function CollectionModal(props: CollectionModalProps) {
@@ -27,6 +28,7 @@ export default function CollectionModal(props: CollectionModalProps) {
     disclosure,
     conventionId,
     importFile,
+    importCopiesOnly,
   } = props;
 
   const [collection, setData] = useState<Collection | null>(null);
@@ -49,7 +51,16 @@ export default function CollectionModal(props: CollectionModalProps) {
   };
 
   const onSave = () => {
-    if (collection) {
+    // Import flows require a chosen file; bail before sending an empty upload.
+    if (importFile && !importCSV) {
+      toast("No file selected", {
+        description: "Choose a CSV file to import before saving.",
+        variant: "danger",
+      });
+      return;
+    }
+
+    if (collection && !importFile) {
       frontendFetch(
         "PUT",
         "/collection/" + collection.id,
@@ -73,7 +84,7 @@ export default function CollectionModal(props: CollectionModalProps) {
         .catch(() => {
           toastNetworkError();
         });
-    } else if (importFile) {
+    } else if (importFile && !importCopiesOnly) {
       const formData = new FormData();
 
       formData.append("name", collectionName);
@@ -124,6 +135,29 @@ export default function CollectionModal(props: CollectionModalProps) {
           } else {
             onClose();
           }
+        })
+        .catch(() => {
+          toastNetworkError();
+        });
+    } else if (importFile && importCopiesOnly) {
+      const formData = new FormData();
+
+      formData.append("importCSV", importCSV as File, "import.csv");
+
+      frontendFetch(
+        "PUT",
+        "/collection/" + collectionId + "/importCopies",
+        formData,
+        session?.data?.token,
+        undefined,
+        true
+      )
+        .then((res) => {
+          if (!res.ok) {
+            toastSaveError(res);
+            return undefined;
+          }
+          return res.json();
         })
         .catch(() => {
           toastNetworkError();
@@ -290,28 +324,35 @@ export default function CollectionModal(props: CollectionModalProps) {
               <div>
                 <Modal.Header>
                   <Modal.Heading>
-                    {collection ? "Edit" : importFile ? "Import" : "Create"}{" "}
-                    Collection
+                    {collection && !importCopiesOnly ? "Edit" : importFile ? "Import" : "Create"}{" "}
+                    {!importCopiesOnly ? "Collection" : "Copies"}
                   </Modal.Heading>
                 </Modal.Header>
                 <Modal.Body>
-                  <SimpleTextField
-                    name="name"
-                    isRequired
-                    label="Name"
-                    value={collectionName}
-                    onChange={(value) => setCollectionName(value)}
-                    isDisabled={readOnly}
-                  />
-                  <SimpleCheckbox
-                    id="allow-winning"
-                    isSelected={allowWinning}
-                    onChange={(value) => setAllowWinning(value)}
-                    isDisabled={readOnly}
-                    label="Allow Winning"
-                    aria-label="Allow Winning"
-                  />
-                  <br/>
+                  {!importCopiesOnly ? (
+                    <div>
+                    <SimpleTextField
+                        name="name"
+                        isRequired
+                        label="Name"
+                        value={collectionName}
+                        onChange={(value) => setCollectionName(value)}
+                        isDisabled={readOnly}
+                      />
+                      <SimpleCheckbox
+                        id="allow-winning"
+                        isSelected={allowWinning}
+                        onChange={(value) => setAllowWinning(value)}
+                        isDisabled={readOnly}
+                        label="Allow Winning"
+                        aria-label="Allow Winning"
+                      />
+                      <br/>
+                    </div>
+                  ) : (
+                    null
+                  )}
+
                   {importFile ? (
                     <input
                       name="importFile"
@@ -323,12 +364,12 @@ export default function CollectionModal(props: CollectionModalProps) {
                   )}
                 </Modal.Body>
                 <Modal.Footer>
-                  {readOnly? (
-                    null
-                  ) : (
+                  {!importFile && !readOnly && collection ? (
                     <Button variant="danger" onPress={onArchive}>
                       Archive
                     </Button>
+                  ) : (
+                    null
                   )}
                   {readOnly && !collection?.archived ? (
                     null

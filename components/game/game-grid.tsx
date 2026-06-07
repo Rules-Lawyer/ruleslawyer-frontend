@@ -18,17 +18,17 @@ import CopyModal from "../copy/copy-modal";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { Collection, GameWithCopies } from "@/types/models";
 import Pagination from "../ui/pagination";
-import { TbPackageExport } from "react-icons/tb";
+import { TbPackageExport, TbPackageImport } from "react-icons/tb";
+import CollectionModal from "../../components/collection/collection-modal";
 
 interface GameGridProps {
   collectionId?: number;
-  conventionId?: number;
   organizationId?: number;
   showHeader?: boolean;
 }
 
 export default function GameGrid(props: GameGridProps) {
-  const { collectionId, conventionId, organizationId, showHeader } = props;
+  const { collectionId, organizationId, showHeader } = props;
 
   const [games, setData] = useState<GameWithCopies[] | null>(null);
   const [header, setHeader] = useState("");
@@ -101,6 +101,14 @@ export default function GameGrid(props: GameGridProps) {
       toastNetworkError();
     }
   };
+
+  const importDisclosure = useDisclosure();
+
+  const {
+    isOpen: isOpenImport,
+    onOpen: onOpenImport,
+    onClose: onCloseImport,
+  } = importDisclosure;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchText), 300);
@@ -265,17 +273,31 @@ export default function GameGrid(props: GameGridProps) {
         onPageChange={setPage}
       />
 
-      {readOnly && collectionId && conventionId ? (
+      {readOnly || !collectionId ? (
         null
       ) : (
         <SimpleTooltip
           content="Export Collection Plays"
           delay={1000}
           ariaLabel="Export Collection Plays"
-          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenExport}
         >
           <TbPackageExport aria-hidden="true" />
+        </SimpleTooltip>
+      )}
+
+      {readOnly || !collectionId ? (
+        null
+      ) : (
+        <SimpleTooltip
+          content="Import Copies"
+          delay={1000}
+          ariaLabel="Import Collection"
+          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenImport}
+        >
+          <TbPackageImport aria-hidden="true" />
         </SimpleTooltip>
       )}
 
@@ -297,6 +319,16 @@ export default function GameGrid(props: GameGridProps) {
         disclosure={createDisclosure}
         organizationId={organizationId}
       ></CopyModal>
+
+      {isOpenImport && (
+        <CollectionModal
+          disclosure={importDisclosure}
+          organizationId={organizationId}
+          collectionId={collectionId}
+          importFile={true}
+          importCopiesOnly={true}
+        />
+      )}
     </div>
   );
 }

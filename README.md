@@ -2,7 +2,7 @@
 
 The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, users and attendees, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
 
-This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees. Until then, the legacy `board-game-admin` SPA still covers some workflows this dashboard doesn't — see below.
+This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees the replaces the 3 legacy SPAs. Currently it only replaces the legacy `Board Game Admin` SPA.
 
 ## Tech stack
 
@@ -64,29 +64,8 @@ Deployed to AWS ECS via the **Build and Deploy** GitHub Action (manual `workflow
 
 See the full guide: [ruleslawyer-backend/DEPLOYMENT.md](https://github.com/geekwaytothewest/ruleslawyer-backend/blob/main/DEPLOYMENT.md).
 
-
-
 ## Migration status (vs. legacy `board-game-admin`)
 
 The primary goal is to replace the board-game-admin frontend and then move onto librarian, play-prize-enty, and pnw-picker, in that order.
 
 The dashboard is at parity with the legacy admin SPA for core CRUD and adds several capabilities the legacy app lacks (collection archiving, copy deletion, BoardGameGeek sync, organization/user-permission management, pagination). The items below are still only available in the legacy SPA.
-
-### Not yet ported
-
-**Collections / Copies**
-
-- **Bulk-upload copies into an existing collection (CSV)** — CSV upload is supported only when importing a brand-new collection; copies must otherwise be added one at a time.
-
-### At parity
-
-| Feature                       | ruleslawyer-frontend          |
-| ----------------------------- | ----------------------------- |
-| Search/list attendees         | ✓ (+ pagination)              |
-| Edit attendee                 | ✓                             |
-| Replace lost badge            | ✓                             |
-| Transfer badge                | ✓                             |
-| List/create/update collection | ✓ (+ archive)                 |
-| Import collection (CSV)       | ✓                             |
-| Add/update copy               | ✓ (+ delete)                  |
-| List/add/rename game          | ✓ (+ BoardGameGeek sync)      |
