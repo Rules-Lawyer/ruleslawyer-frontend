@@ -10,9 +10,11 @@ import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
 import { SimpleTooltip } from '@/components/ui/simple-tooltip';
 import Pagination from "../ui/pagination";
 import AttendeeMissingBadgeModal from "./atttendee-missing-badge-modal";
+import AttendeeImportCSVModal from './atttendee-import-csv-modal';
 import { useDisclosure } from "@/utilities/useDisclosure";
 import AttendeeModal from "./attendee-modal";
 import { IoMdAddCircle } from "react-icons/io";
+import { RiImportLine } from "react-icons/ri";
 
 interface AttendeeGridProps {
   attendeesIn?: Attendee[];
@@ -39,9 +41,11 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
 
   const missingBadgeDisclosure = useDisclosure();
   const createAttendeeDisclosure = useDisclosure();
+  const createAttendeeImportDisclosure = useDisclosure();
 
   const { isOpen: isOpenMissingBadge, onOpen: onOpenMissingBadge } = missingBadgeDisclosure;
   const { isOpen: isOpenCreateAttendee, onOpen: onOpenCreateAttendee } = createAttendeeDisclosure;
+  const { isOpen: isOpenCreateAttendeeImport, onOpen: onOpenCreateAttendeeImport } = createAttendeeImportDisclosure;
 
   const { permissions } = usePermissions();
 
@@ -176,7 +180,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           name="search"
           aria-label="Search Attendees"
           onChange={setSearchText}
-          className="mr-10"
+          className="mr-10 w-2/3"
         >
           <Label>Search Attendees</Label>
           <Input placeholder="Type a name" />
@@ -199,7 +203,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
       </div>
 
       <div className="flex items-center mx-10">
-        <div className="flex-1 flex justify-start">
+        <div className="flex-1 flex justify-start my-6">
           <Button onPress={onOpenMissingBadge}>Unable to find an Attendee Badge?</Button>
         </div>
         <div className="flex-1 flex justify-center">{pagination}</div>
@@ -225,6 +229,20 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
         null
       ) : (
         <SimpleTooltip
+          content="Import Attendees From CSV"
+          delay={1000}
+          ariaLabel="Import Attendees From CSV"
+          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreateAttendeeImport}
+        >
+          <RiImportLine aria-hidden="true" />
+        </SimpleTooltip>
+      )}
+
+      {readOnly ? (
+        null
+      ) : (
+        <SimpleTooltip
           content="Create Attendee Badge"
           delay={1000}
           ariaLabel="Create Attendee Badge"
@@ -240,6 +258,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
       )}
 
       <AttendeeModal disclosure={createAttendeeDisclosure} pronounsIn={pronouns} conventionId={conventionId}></AttendeeModal>
+      <AttendeeImportCSVModal disclosure={createAttendeeImportDisclosure} conventionId={conventionId}></AttendeeImportCSVModal>
     </div>
   );
 }
