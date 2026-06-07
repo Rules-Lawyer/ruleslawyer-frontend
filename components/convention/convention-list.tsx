@@ -185,7 +185,7 @@ export default function ConventionList(props: ConventionListProps) {
         )}
       </Accordion>
 
-      {readOnly ? (
+      {readOnly || !organizationId ? (
         null
       ) : (
         <SimpleTooltip
