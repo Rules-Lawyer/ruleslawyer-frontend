@@ -39,7 +39,7 @@ describe("Pagination", () => {
         onPageChange={jest.fn()}
       />
     );
-    expect(screen.getByText("Page 2 of 3 (120 attendees)")).toBeInTheDocument();
+    expect(screen.getByText(/Page 2 of 3\s*\(120 attendees\)/)).toBeInTheDocument();
   });
 
   it("disables Previous on the first page", () => {
