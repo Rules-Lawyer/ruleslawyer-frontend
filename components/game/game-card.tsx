@@ -49,7 +49,7 @@ function GameCard(props: GameCardProps) {
     } else {
       setReadOnly(true);
     }
-  }, [permissions.user?.data, permissions.organizations?.data, game]);
+  }, [permissions.user?.data, permissions.organizations?.data, archived, game]);
 
   const session = useAuth();
 
