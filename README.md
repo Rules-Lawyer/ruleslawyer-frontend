@@ -2,7 +2,7 @@
 
 The web frontend for the **Geekway to the West Library Management System** — a library management and Play and Win event tool built for and by [Geekway to the West](https://geekway.com). It provides a dashboard for managing organizations, conventions, collections, games, copies, users and attendees, backed by the [ruleslawyer-backend](https://github.com/geekwaytothewest/ruleslawyer-backend) API.
 
-This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees the replaces the 3 legacy SPAs. Currently it only replaces the legacy `Board Game Admin` SPA.
+This frontend is a **work in progress**. The end goal is a single unified experience for admins, geek guides, and attendees that replaces the 3 legacy SPAs. Currently it only replaces the legacy `Board Game Admin` SPA.
 
 ## Tech stack
 
@@ -63,8 +63,8 @@ Deployed to AWS ECS via the **Build and Deploy** GitHub Action (manual `workflow
 
 See the full guide: [ruleslawyer-backend/DEPLOYMENT.md](https://github.com/geekwaytothewest/ruleslawyer-backend/blob/main/DEPLOYMENT.md).
 
-## Migration status (vs. legacy SPAs)
+## Migration status (vs. legacy tools)
 
-The primary goal is to replace each legacy frontends projects. Currently board-game-admin is deprecated, and the next steps are to move onto librarian, play-prize-enty, and finally pnw-picker, in that order.
+The primary goal is to replace each legacy tool. Currently board-game-admin is deprecated, and the next steps are to move on to librarian, play-prize-entry, and finally pnw-picker.
 
-The `ruleslawyer-frontend` is at parity with the legacy board--game-admin SPA for core CRUD and adds several capabilities the legacy app lacks (collection archiving, copy deletion, BoardGameGeek sync, organization/user-permission management, pagination).
+The `ruleslawyer-frontend` is at parity with the legacy board-game-admin SPA for core CRUD and adds several capabilities the legacy app lacks (collection archiving, copy deletion, BoardGameGeek sync, organization/user-permission management, pagination).
