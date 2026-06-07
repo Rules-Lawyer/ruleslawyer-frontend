@@ -163,7 +163,7 @@ export default function UserGrid(props: UserGridProps) {
           content="Add User"
           delay={1000}
           ariaLabel="Add User"
-          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenCreate}
         >
           <IoMdAddCircle aria-hidden="true" />

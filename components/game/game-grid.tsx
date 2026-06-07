@@ -222,12 +222,12 @@ export default function GameGrid(props: GameGridProps) {
   return (
     <div>
       {showHeader ? <h1>{header}</h1> : ""}
-      <div className="flex m-10">
+      <div className="flex gap-5 mb-10">
         <TextField
           name="search"
           aria-label="Search Games"
           onChange={setSearchText}
-          className="mr-10 w-2/3"
+          className="flex-[2] min-w-0"
         >
           <Label>Search Games</Label>
           <Input className={"bg-gwdarkgreen"} placeholder="Type a game name" />
@@ -241,7 +241,7 @@ export default function GameGrid(props: GameGridProps) {
               setMaxResults(String(key));
             }
           }}
-          className="w-1/3"
+          className="flex-1 min-w-0"
         >
           <SimpleSelectItem id="50" textValue="50 Games" />
           <SimpleSelectItem id="100" textValue="100 Games" />
@@ -257,7 +257,7 @@ export default function GameGrid(props: GameGridProps) {
         onPageChange={setPage}
       />
 
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap gap-5">
         {games?.map(
           (g) => {
             return <GameCard key={g.id} gameIn={g} gameId={g.id} archived={collection?.archived} />;
@@ -280,7 +280,7 @@ export default function GameGrid(props: GameGridProps) {
           content="Export Collection Plays"
           delay={1000}
           ariaLabel="Export Collection Plays"
-          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-64 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenExport}
         >
           <TbPackageExport aria-hidden="true" />
@@ -294,7 +294,7 @@ export default function GameGrid(props: GameGridProps) {
           content="Import Copies"
           delay={1000}
           ariaLabel="Import Collection"
-          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-44 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenImport}
         >
           <TbPackageImport aria-hidden="true" />
@@ -308,7 +308,7 @@ export default function GameGrid(props: GameGridProps) {
           content="Create Game"
           delay={1000}
           ariaLabel="Create Game"
-          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenCreate}
         >
           <IoMdAddCircle aria-hidden="true" />

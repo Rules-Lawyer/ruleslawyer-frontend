@@ -64,7 +64,7 @@ export default function OrganizationLayout({
   return (
     <div>
       <div className="mb-5">
-        <Breadcrumbs>
+        <Breadcrumbs className="flex-wrap gap-y-1">
           {params?.orgId !== null && params?.orgId !== undefined ? (
             <BreadcrumbsItem href={`/dashboard/organization/${organization.id}`}>
               {organization.name}

@@ -179,12 +179,12 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
 
   return (
     <div>
-      <div className="flex m-10">
+      <div className="flex gap-5 mb-10">
         <TextField
           name="search"
           aria-label="Search Attendees"
           onChange={setSearchText}
-          className="mr-10 w-2/3"
+          className="flex-[2] min-w-0"
         >
           <Label>Search Attendees</Label>
           <Input placeholder="Type a name" />
@@ -198,7 +198,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
               setMaxResults(String(key));
             }
           }}
-          className="w-1/3"
+          className="flex-1 min-w-0"
         >
           <SimpleSelectItem id="50" textValue="50 Attendees" />
           <SimpleSelectItem id="100" textValue="100 Attendees" />
@@ -206,14 +206,14 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
         </SimpleSelect>
       </div>
 
-      <div className="flex items-center mx-10">
-        <div className="flex-1 flex justify-start my-6">
+      <div className="flex flex-col sm:flex-row items-center mx-10">
+        <div className="flex-1 flex justify-center sm:justify-start my-6">
           <Button onPress={onOpenMissingBadge}>Unable to find an Attendee Badge?</Button>
         </div>
         <div className="flex-1 flex justify-center">{pagination}</div>
-        <div className="flex-1" />
+        <div className="hidden sm:block flex-1" />
       </div>
-      <div className="flex flex-wrap">
+      <div className="flex flex-wrap gap-5">
         {attendees?.map((u) => (
           <AttendeeCard
             key={u.id}
@@ -236,7 +236,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           content="Sync with Tabletop Events"
           delay={1000}
           ariaLabel="Sync with Tabletop Events"
-          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-64 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenSyncTabletopEvents}
         >
           <MdOutlineCloudSync aria-hidden="true" />
@@ -250,7 +250,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           content="Import Attendees From CSV"
           delay={1000}
           ariaLabel="Import Attendees From CSV"
-          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-44 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenCreateAttendeeImport}
         >
           <RiImportLine aria-hidden="true" />
@@ -264,7 +264,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           content="Create Attendee Badge"
           delay={1000}
           ariaLabel="Create Attendee Badge"
-          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenCreateAttendee}
         >
           <IoMdAddCircle aria-hidden="true" />

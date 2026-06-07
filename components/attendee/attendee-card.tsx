@@ -90,7 +90,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
 
   if (isLoading || isLoadingPermissions) {
     return (
-      <div className="flex items-center border-2 w-100 h-40 mr-5 mb-5 bg-gwdarkblue border-slate-800">
+      <div className="flex items-center border-2 w-full sm:w-100 h-40 bg-gwdarkblue border-slate-800">
         <div className="flex-col p-3 w-24">
           <FaRegIdBadge size={64} className="text-slate-800" />
         </div>
@@ -105,7 +105,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
 
   if (!attendee) {
     return (
-      <div className="flex items-center border-2 w-100 h-40 mr-5 mb-5 bg-gwdarkblue border-slate-800">
+      <div className="flex items-center border-2 w-full sm:w-100 h-40 bg-gwdarkblue border-slate-800">
         <div className="flex-col p-3 w-24">
           <BiSolidMessageAltError size={64} className="text-slate-500" />
         </div>
@@ -121,8 +121,8 @@ export default function AttendeeCard(props: AttendeeCardProps) {
   }
 
   return (
-    <div className="w-100 mr-5">
-      <div className="relative flex items-center border-2 border-gwblue h-40 mr-5 mb-5 bg-gwdarkblue w-full">
+    <div className="w-full sm:w-100">
+      <div className="relative flex items-center border-2 border-gwblue h-40 bg-gwdarkblue w-full">
         <div className="flex-col p-3 w-24">
             <FaRegIdBadge size={64} />
         </div>

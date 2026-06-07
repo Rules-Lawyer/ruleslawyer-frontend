@@ -103,7 +103,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
           content="Import Collection"
           delay={1000}
           ariaLabel="Import Collection"
-          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-44 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenImport}
         >
           <TbPackageImport aria-hidden="true" />
@@ -117,7 +117,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
           content="Create Collection"
           delay={1000}
           ariaLabel="Create Collection"
-          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer"
           onPress={onOpenCreate}
         >
           <IoMdAddCircle aria-hidden="true" />

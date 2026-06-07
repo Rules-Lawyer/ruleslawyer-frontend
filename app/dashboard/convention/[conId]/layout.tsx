@@ -51,7 +51,7 @@ export default function ConventionLayout({
   return (
     <div>
       <div className="mb-5">
-        <Breadcrumbs>
+        <Breadcrumbs className="flex-wrap gap-y-1">
           {params?.conId !== null && params?.conId !== undefined ? (
             <BreadcrumbsItem href={`/dashboard/convention/${convention.id}`}>
               {convention.name}
