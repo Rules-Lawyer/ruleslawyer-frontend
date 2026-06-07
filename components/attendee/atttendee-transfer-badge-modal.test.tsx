@@ -76,6 +76,7 @@ describe("AttendeeTransferBadgeModal", () => {
   it("titles the modal with the source attendee's badge name", async () => {
     render(
       <AttendeeTransferBadgeModal
+        attendeeId={undefined}
         attendeeIn={makeAttendee()}
         disclosure={openDisclosure().disclosure}
         conventionId={5}
@@ -91,6 +92,7 @@ describe("AttendeeTransferBadgeModal", () => {
 
     render(
       <AttendeeTransferBadgeModal
+        attendeeId={undefined}
         attendeeIn={makeAttendee({ badgeNumber: "101" })}
         disclosure={disclosure}
         conventionId={5}
@@ -124,6 +126,7 @@ describe("AttendeeTransferBadgeModal", () => {
 
     render(
       <AttendeeTransferBadgeModal
+        attendeeId={undefined}
         attendeeIn={makeAttendee()}
         disclosure={disclosure}
         conventionId={5}
@@ -143,6 +146,7 @@ describe("AttendeeTransferBadgeModal", () => {
 
     render(
       <AttendeeTransferBadgeModal
+        attendeeId={undefined}
         attendeeIn={makeAttendee()}
         disclosure={disclosure}
         conventionId={5}
@@ -182,6 +186,7 @@ describe("AttendeeTransferBadgeModal", () => {
     mockPermissions({ superAdmin: false });
     render(
       <AttendeeTransferBadgeModal
+        attendeeId={undefined}
         attendeeIn={makeAttendee()}
         disclosure={openDisclosure().disclosure}
         conventionId={5}

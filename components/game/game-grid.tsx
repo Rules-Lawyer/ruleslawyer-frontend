@@ -12,11 +12,14 @@ import { SimpleTooltip } from "@/components/ui/simple-tooltip";
 import { useDisclosure } from "@/utilities/useDisclosure";
 import { useAuth } from "@/utilities/swr/useAuth";
 import frontendFetch from "@/utilities/frontendFetch";
+import { toastNetworkError, toastSaveError } from "@/utilities/toastFetchError";
 import { IoMdAddCircle } from "react-icons/io";
 import CopyModal from "../copy/copy-modal";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { Collection, GameWithCopies } from "@/types/models";
-import Pagination from "../pagination";
+import Pagination from "../ui/pagination";
+import { TbPackageExport, TbPackageImport } from "react-icons/tb";
+import CollectionModal from "../../components/collection/collection-modal";
 
 interface GameGridProps {
   collectionId?: number;
@@ -64,6 +67,48 @@ export default function GameGrid(props: GameGridProps) {
       }
     }
   }, [permissions.user?.data, permissions.organizations?.data, organizationId]);
+
+  // Fetch the collection's plays as CSV and download it in the browser. The
+  // endpoint returns { csvText, collectionName } JSON rather than a file.
+  const onOpenExport = async () => {
+    const token = session?.data?.token;
+    if (!token || !collectionId ) return;
+
+    try {
+      const res = await frontendFetch(
+        "GET",
+        "/collection/" + collectionId + "/exportPlays",
+        null,
+        token
+      );
+      if (!res.ok) {
+        toastSaveError(res);
+        return;
+      }
+      const { csvText, collectionName } = await res.json();
+
+      const url = URL.createObjectURL(
+        new Blob([csvText], { type: "text/csv" })
+      );
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = (collectionName ?? "collection") + "-plays.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      toastNetworkError();
+    }
+  };
+
+  const importDisclosure = useDisclosure();
+
+  const {
+    isOpen: isOpenImport,
+    onOpen: onOpenImport,
+    onClose: onCloseImport,
+  } = importDisclosure;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchText), 300);
@@ -228,6 +273,34 @@ export default function GameGrid(props: GameGridProps) {
         onPageChange={setPage}
       />
 
+      {readOnly || !collectionId ? (
+        null
+      ) : (
+        <SimpleTooltip
+          content="Export Collection Plays"
+          delay={1000}
+          ariaLabel="Export Collection Plays"
+          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenExport}
+        >
+          <TbPackageExport aria-hidden="true" />
+        </SimpleTooltip>
+      )}
+
+      {readOnly || !collectionId ? (
+        null
+      ) : (
+        <SimpleTooltip
+          content="Import Copies"
+          delay={1000}
+          ariaLabel="Import Collection"
+          triggerClassName="text-7xl fixed bottom-28 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenImport}
+        >
+          <TbPackageImport aria-hidden="true" />
+        </SimpleTooltip>
+      )}
+
       {readOnly ? (
         null
       ) : (
@@ -246,6 +319,16 @@ export default function GameGrid(props: GameGridProps) {
         disclosure={createDisclosure}
         organizationId={organizationId}
       ></CopyModal>
+
+      {isOpenImport && (
+        <CollectionModal
+          disclosure={importDisclosure}
+          organizationId={organizationId}
+          collectionId={collectionId}
+          importFile={true}
+          importCopiesOnly={true}
+        />
+      )}
     </div>
   );
 }

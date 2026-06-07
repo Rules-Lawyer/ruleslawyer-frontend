@@ -1,6 +1,6 @@
 import { Auth0Provider } from "@auth0/nextjs-auth0";
 import { cookies } from "next/headers";
-import SideBar from "@/components/sidebar";
+import SideBar from "@/components/ui/sidebar";
 import { SIDEBAR_STORAGE_KEY } from "@/utilities/constants";
 import { LegacyUrlsProvider } from "@/components/convention/legacy-urls-context";
 
