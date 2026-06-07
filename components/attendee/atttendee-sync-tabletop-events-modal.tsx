@@ -8,50 +8,43 @@ import {
 import { useAuth } from "@/utilities/swr/useAuth";
 import React, { useState } from "react";
 import { useDisclosure } from "@/utilities/useDisclosure";
+import { SimpleTextField } from "../ui/simple-field";
 
-interface AttendeeImportCSVUpdate {
+interface AttendeeSyncTabletopEventsUpdate {
   conventionId: string;
 }
 
-interface AttendeeImportCSVModalProps {
+interface AttendeeSyncTabletopEventsModalProps {
   disclosure: ReturnType<typeof useDisclosure>;
-  onSaved?: (updated: AttendeeImportCSVUpdate) => void;
+  onSaved?: (updated: AttendeeSyncTabletopEventsUpdate) => void;
   conventionId?: number;
-  organizationId?: number;
 }
 
-export default function AttendeeImportCSVModal(props: AttendeeImportCSVModalProps) {
+export default function AttendeeSyncTabletopEventsModal(props: AttendeeSyncTabletopEventsModalProps) {
   const {
     disclosure,
     conventionId,
   } = props;
 
-  const [importCSV, setImportCSV] = useState<File | null>(null);
+  const [userName, setUserName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [apiKey, setAPIKey] = useState<string>("");
 
   const session = useAuth();
 
   const { onClose } = disclosure;
 
-  const handleImportCSV = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setImportCSV(event.target.files?.[0] ?? null);
-  };
-
   const onSave = () => {
-    if (conventionId && importCSV) {
-      // The endpoint reads a multipart file part (request.file()), so send
-      // FormData and let the browser set the multipart boundary (multiPart=true).
-      const formData = new FormData();
-      formData.append("importCSV", importCSV, "import.csv");
-
+    if (conventionId) {
       frontendFetch(
         "POST",
-        "/con/" + conventionId + "/importAttendeesCSV",
-        formData,
-        session?.data?.token,
-        undefined,
-        true
+        "/con/" + conventionId + "/syncTabletopEventsAttendees",
+        {
+          userName: userName,
+          password: password,
+          apiKey: apiKey,
+        },
+        session?.data?.token
       )
         .then((res) => {
           if (!res.ok) {
@@ -81,23 +74,34 @@ export default function AttendeeImportCSVModal(props: AttendeeImportCSVModalProp
               onSubmit={(e) => {
                 e.preventDefault();
                 onSave();
-                alert('This may take some time. The job is running in the background.')
               }}
             >
               <div>
                 <Modal.Header>
                   <Modal.Heading>Import Attendees</Modal.Heading>
                 </Modal.Header>
-                <Modal.Body>
-                    <input
-                      name="importFile"
-                      type="file"
-                      onChange={handleImportCSV}
-                    />
+               <Modal.Body>
+                  <SimpleTextField
+                    label="User Name"
+                    onChange={setUserName}
+                    value={userName}
+                  />
+                  <SimpleTextField
+                    label="Password"
+                    type="password"
+                    onChange={setPassword}
+                    value={password}
+                  />
+                  <SimpleTextField
+                    label="API Key"
+                    type="password"
+                    onChange={setAPIKey}
+                    value={apiKey}
+                  />
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="primary" type="submit">
-                    Import
+                    Sync with TTE
                   </Button>
                   <Button variant="secondary" onPress={onClose}>
                     Close

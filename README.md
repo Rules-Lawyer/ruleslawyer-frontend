@@ -74,11 +74,6 @@ The dashboard is at parity with the legacy admin SPA for core CRUD and adds seve
 
 ### Not yet ported
 
-**Attendees**
-
-- **Bulk-upload attendees from CSV** — no attendee file-upload path exists yet.
-- **Sync with Tabletop.Events (manual trigger)** — the convention editor stores a `tteConventionId`, but nothing in the UI triggers an actual attendee sync from Tabletop.Events.
-
 **Collections / Copies**
 
 - **Bulk-upload copies into an existing collection (CSV)** — CSV upload is supported only when importing a brand-new collection; copies must otherwise be added one at a time.

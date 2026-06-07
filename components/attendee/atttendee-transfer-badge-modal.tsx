@@ -154,6 +154,7 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
               onSubmit={(e) => {
                 e.preventDefault();
                 onSave();
+                alert('This may take some time. The job is running in the background.')
               }}
             >
               <div>

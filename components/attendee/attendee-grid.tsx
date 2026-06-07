@@ -11,10 +11,12 @@ import { SimpleTooltip } from '@/components/ui/simple-tooltip';
 import Pagination from "../ui/pagination";
 import AttendeeMissingBadgeModal from "./atttendee-missing-badge-modal";
 import AttendeeImportCSVModal from './atttendee-import-csv-modal';
+import AttendeeSyncTabletopEventsModal from "./atttendee-sync-tabletop-events-modal";
 import { useDisclosure } from "@/utilities/useDisclosure";
 import AttendeeModal from "./attendee-modal";
 import { IoMdAddCircle } from "react-icons/io";
 import { RiImportLine } from "react-icons/ri";
+import { MdOutlineCloudSync } from "react-icons/md";
 
 interface AttendeeGridProps {
   attendeesIn?: Attendee[];
@@ -39,21 +41,23 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
   const [trigger, setTrigger] = useState(0);
   const [readOnly, setReadOnly] = useState(true);
 
+  const onModalClose = () => {
+    setTrigger((prev) => prev + 1);
+  };
+
   const missingBadgeDisclosure = useDisclosure();
   const createAttendeeDisclosure = useDisclosure();
-  const createAttendeeImportDisclosure = useDisclosure();
+  const createAttendeeImportDisclosure = useDisclosure({ onClose: onModalClose });
+  const createSyncTabletopEventsDisclosure = useDisclosure({ onClose: onModalClose });
 
   const { isOpen: isOpenMissingBadge, onOpen: onOpenMissingBadge } = missingBadgeDisclosure;
   const { isOpen: isOpenCreateAttendee, onOpen: onOpenCreateAttendee } = createAttendeeDisclosure;
   const { isOpen: isOpenCreateAttendeeImport, onOpen: onOpenCreateAttendeeImport } = createAttendeeImportDisclosure;
+  const { isOpen: isOpenSyncTabletopEvents, onOpen: onOpenSyncTabletopEvents } = createSyncTabletopEventsDisclosure;
 
   const { permissions } = usePermissions();
 
   const session = useAuth();
-
-  const onModalClose = () => {
-    setTrigger((prev) => prev + 1);
-  };
 
   useEffect(() => {
     frontendFetch("GET", "/attendee/pronouns", null, session?.data?.token)
@@ -229,6 +233,20 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
         null
       ) : (
         <SimpleTooltip
+          content="Sync with Tabletop Events"
+          delay={1000}
+          ariaLabel="Sync with Tabletop Events"
+          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenSyncTabletopEvents}
+        >
+          <MdOutlineCloudSync aria-hidden="true" />
+        </SimpleTooltip>
+      )}
+
+      {readOnly ? (
+        null
+      ) : (
+        <SimpleTooltip
           content="Import Attendees From CSV"
           delay={1000}
           ariaLabel="Import Attendees From CSV"
@@ -259,6 +277,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
 
       <AttendeeModal disclosure={createAttendeeDisclosure} pronounsIn={pronouns} conventionId={conventionId}></AttendeeModal>
       <AttendeeImportCSVModal disclosure={createAttendeeImportDisclosure} conventionId={conventionId}></AttendeeImportCSVModal>
+      <AttendeeSyncTabletopEventsModal disclosure={createSyncTabletopEventsDisclosure} conventionId={conventionId}></AttendeeSyncTabletopEventsModal>
     </div>
   );
 }
