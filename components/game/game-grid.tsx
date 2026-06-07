@@ -280,7 +280,7 @@ export default function GameGrid(props: GameGridProps) {
           content="Export Collection Plays"
           delay={1000}
           ariaLabel="Export Collection Plays"
-          triggerClassName="text-7xl fixed bottom-64 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-72 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenExport}
         >
           <TbPackageExport aria-hidden="true" />
@@ -294,7 +294,7 @@ export default function GameGrid(props: GameGridProps) {
           content="Import Copies"
           delay={1000}
           ariaLabel="Import Collection"
-          triggerClassName="text-7xl fixed bottom-44 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenImport}
         >
           <TbPackageImport aria-hidden="true" />
@@ -308,7 +308,7 @@ export default function GameGrid(props: GameGridProps) {
           content="Create Game"
           delay={1000}
           ariaLabel="Create Game"
-          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenCreate}
         >
           <IoMdAddCircle aria-hidden="true" />

@@ -236,7 +236,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           content="Sync with Tabletop Events"
           delay={1000}
           ariaLabel="Sync with Tabletop Events"
-          triggerClassName="text-7xl fixed bottom-64 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-72 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenSyncTabletopEvents}
         >
           <MdOutlineCloudSync aria-hidden="true" />
@@ -250,7 +250,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           content="Import Attendees From CSV"
           delay={1000}
           ariaLabel="Import Attendees From CSV"
-          triggerClassName="text-7xl fixed bottom-44 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-48 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenCreateAttendeeImport}
         >
           <RiImportLine aria-hidden="true" />
@@ -264,7 +264,7 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
           content="Create Attendee Badge"
           delay={1000}
           ariaLabel="Create Attendee Badge"
-          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenCreateAttendee}
         >
           <IoMdAddCircle aria-hidden="true" />
