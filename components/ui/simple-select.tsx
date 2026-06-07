@@ -114,8 +114,14 @@ export function SimpleSelectItem({
   textValue: string;
   children?: ReactNode;
 }) {
+  // react-aria requires a non-empty textValue for type-to-select a11y; the
+  // <ItemIndicator/> sibling makes the children "non-plain text", so it can't
+  // be inferred. Fall back to string children, then the id, so a row with a
+  // blank label never trips the warning (and stays keyboard-navigable).
+  const resolvedTextValue =
+    textValue || (typeof children === "string" ? children : String(id));
   return (
-    <ListBox.Item id={id} textValue={textValue}>
+    <ListBox.Item id={id} textValue={resolvedTextValue}>
       {children ?? textValue}
       <ListBox.ItemIndicator />
     </ListBox.Item>

@@ -138,6 +138,7 @@ export default function CollectionGrid(props: CollectionGridProps) {
           disclosure={importDisclosure}
           organizationId={organizationId}
           importFile={true}
+          importCopiesOnly={false}
         />
       )}
     </div>

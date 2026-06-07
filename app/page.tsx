@@ -1,6 +1,6 @@
 import Image from "next/image";
 import geekgayLogo from "@/public/geekgay.png";
-import Profile from "@/components/profile";
+import Profile from "@/components/ui/profile";
 
 export default async function Home() {
   return (

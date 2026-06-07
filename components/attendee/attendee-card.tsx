@@ -59,7 +59,7 @@ export default function AttendeeCard(props: AttendeeCardProps) {
         })
         .catch(() => {});
     }
-  }, [attendeeIn, session?.data?.token]);
+  }, [attendeeIn, attendeeId, session?.data?.token]);
 
   useEffect(() => {
     if (permissions.user?.data) {
@@ -202,7 +202,6 @@ export default function AttendeeCard(props: AttendeeCardProps) {
 
       {isOpenTransfer && (
         <AttendeeTransferModal
-          attendeeId={attendee.id}
           attendeeIn={attendee}
           conventionId={attendee.conventionId}
           pronounsIn={pronounsIn}

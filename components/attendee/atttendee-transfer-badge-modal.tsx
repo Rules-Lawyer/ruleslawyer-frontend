@@ -15,7 +15,7 @@ interface AttendeeBadgeTransfer {
 }
 
 interface AttendeeBadgeTransferModalProps {
-  attendeeId?: number;
+  attendeeId?: number | undefined;
   disclosure: ReturnType<typeof useDisclosure>;
   onSaved?: (updated: AttendeeBadgeTransfer) => void;
   conventionId?: number;
@@ -154,6 +154,7 @@ export default function AttendeeTransferBadgeModal(props: AttendeeBadgeTransferM
               onSubmit={(e) => {
                 e.preventDefault();
                 onSave();
+                alert('This may take some time. The job is running in the background.')
               }}
             >
               <div>
