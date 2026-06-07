@@ -15,7 +15,7 @@ interface AttendeeBadgeTransfer {
 }
 
 interface AttendeeBadgeTransferModalProps {
-  attendeeId?: number;
+  attendeeId?: number | undefined;
   disclosure: ReturnType<typeof useDisclosure>;
   onSaved?: (updated: AttendeeBadgeTransfer) => void;
   conventionId?: number;

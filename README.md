@@ -76,10 +76,8 @@ The dashboard is at parity with the legacy admin SPA for core CRUD and adds seve
 
 **Attendees**
 
-- **Manually add an attendee** — the attendee editor is edit-only; there is no "Add attendee" entry point in the attendee grid.
 - **Bulk-upload attendees from CSV** — no attendee file-upload path exists yet.
 - **Sync with Tabletop.Events (manual trigger)** — the convention editor stores a `tteConventionId`, but nothing in the UI triggers an actual attendee sync from Tabletop.Events.
-- **"Unable to find an attendee badge?" help dialog** — the step-by-step staff guidance (read TTE receipt → translate badge number → search → escalate) has no equivalent here.
 
 **Collections / Copies**
 

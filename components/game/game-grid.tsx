@@ -16,7 +16,7 @@ import { IoMdAddCircle } from "react-icons/io";
 import CopyModal from "../copy/copy-modal";
 import usePermissions from "@/utilities/swr/usePermissions";
 import { Collection, GameWithCopies } from "@/types/models";
-import Pagination from "../pagination";
+import Pagination from "../ui/pagination";
 
 interface GameGridProps {
   collectionId?: number;

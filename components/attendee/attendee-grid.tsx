@@ -5,14 +5,14 @@ import { useAuth } from "@/utilities/swr/useAuth";
 import usePermissions from "@/utilities/swr/usePermissions";
 import AttendeeCard from "./attendee-card";
 import { Attendee } from "@/types/models";
-import {
-  Spinner,
-  Input,
-  Label,
-  TextField,
-} from "@heroui/react";
+import { Spinner, Input, Label, TextField, Button } from "@heroui/react";
 import { SimpleSelect, SimpleSelectItem } from "@/components/ui/simple-select";
-import Pagination from "../pagination";
+import { SimpleTooltip } from '@/components/ui/simple-tooltip';
+import Pagination from "../ui/pagination";
+import AttendeeMissingBadgeModal from "./atttendee-missing-badge-modal";
+import { useDisclosure } from "@/utilities/useDisclosure";
+import AttendeeModal from "./attendee-modal";
+import { IoMdAddCircle } from "react-icons/io";
 
 interface AttendeeGridProps {
   attendeesIn?: Attendee[];
@@ -24,7 +24,9 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
   const { attendeesIn, conventionId, organizationId } = props;
 
   const [attendees, setData] = useState<Attendee[] | null>(null);
-  const [pronouns, setPronouns] = useState<{ id: number; pronouns: string }[]>([]);
+  const [pronouns, setPronouns] = useState<{ id: number; pronouns: string }[]>(
+    [],
+  );
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isLoading, setLoading] = useState(true);
@@ -33,7 +35,13 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
   const [trigger, setTrigger] = useState(0);
-  const [, setReadOnly] = useState(true);
+  const [readOnly, setReadOnly] = useState(true);
+
+  const missingBadgeDisclosure = useDisclosure();
+  const createAttendeeDisclosure = useDisclosure();
+
+  const { isOpen: isOpenMissingBadge, onOpen: onOpenMissingBadge } = missingBadgeDisclosure;
+  const { isOpen: isOpenCreateAttendee, onOpen: onOpenCreateAttendee } = createAttendeeDisclosure;
 
   const { permissions } = usePermissions();
 
@@ -57,16 +65,16 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
       } else if (conventionId) {
         if (
           permissions.conventions.data?.filter(
-            (d) =>
-              d.conventionId == conventionId && d.admin === true
+            (d) => d.conventionId == conventionId && d.admin === true,
           ).length > 0
         ) {
           setReadOnly(false);
         } else {
-          if (permissions.organizations.data?.filter(
-            (d) =>
-              d.organizationId == organizationId && d.admin === true
-          ).length > 0) {
+          if (
+            permissions.organizations.data?.filter(
+              (d) => d.organizationId == organizationId && d.admin === true,
+            ).length > 0
+          ) {
             setReadOnly(false);
           }
         }
@@ -74,7 +82,13 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
         setReadOnly(true);
       }
     }
-  }, [permissions.user?.data, permissions.organizations?.data, permissions.conventions?.data, conventionId, organizationId]);
+  }, [
+    permissions.user?.data,
+    permissions.organizations?.data,
+    permissions.conventions?.data,
+    conventionId,
+    organizationId,
+  ]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchText), 300);
@@ -110,11 +124,14 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
       "/con/" +
         conventionId +
         "/attendees" +
-        "?limit=" + maxResults +
-        "&page=" + page +
-        "&filter=" + encodeURIComponent(debouncedSearch),
+        "?limit=" +
+        maxResults +
+        "&page=" +
+        page +
+        "&filter=" +
+        encodeURIComponent(debouncedSearch),
       null,
-      token
+      token,
     )
       .then((res) => res.json())
       .then((data) => {
@@ -181,8 +198,13 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
         </SimpleSelect>
       </div>
 
-      {pagination}
-
+      <div className="flex items-center mx-10">
+        <div className="flex-1 flex justify-start">
+          <Button onPress={onOpenMissingBadge}>Unable to find an Attendee Badge?</Button>
+        </div>
+        <div className="flex-1 flex justify-center">{pagination}</div>
+        <div className="flex-1" />
+      </div>
       <div className="flex flex-wrap">
         {attendees?.map((u) => (
           <AttendeeCard
@@ -198,6 +220,26 @@ export default function AttendeeGrid(props: AttendeeGridProps) {
       </div>
 
       {pagination}
+
+      {readOnly ? (
+        null
+      ) : (
+        <SimpleTooltip
+          content="Create Attendee Badge"
+          delay={1000}
+          ariaLabel="Create Attendee Badge"
+          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          onPress={onOpenCreateAttendee}
+        >
+          <IoMdAddCircle aria-hidden="true" />
+        </SimpleTooltip>
+      )}
+
+      {isOpenMissingBadge && (
+        <AttendeeMissingBadgeModal disclosure={missingBadgeDisclosure} />
+      )}
+
+      <AttendeeModal disclosure={createAttendeeDisclosure} pronounsIn={pronouns} conventionId={conventionId}></AttendeeModal>
     </div>
   );
 }
