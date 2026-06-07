@@ -36,9 +36,9 @@ export default function Pagination(props: PaginationProps) {
       >
         Previous
       </Button>
-      <span>
-        Page {page} of {totalPages} ({total} {noun})
-      </span>
+      <p className="text-center">
+        Page {page} of {totalPages}<br/>({total} {noun})
+      </p>
       <Button
         isDisabled={page >= totalPages}
         onPress={() => goToPage(Math.min(totalPages, page + 1))}

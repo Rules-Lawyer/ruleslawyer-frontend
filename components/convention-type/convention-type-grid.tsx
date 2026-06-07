@@ -137,7 +137,7 @@ export default function ConventionTypeGrid(props: ConventionTypeGridProps) {
           content="Add Convention Type"
           delay={1000}
           ariaLabel="Add Convention Type"
-          triggerClassName="text-7xl fixed bottom-8 right-8 hover:text-gwgreen hover:cursor-pointer"
+          triggerClassName="text-7xl fixed bottom-24 right-8 hover:text-gwgreen hover:cursor-pointer bg-gwdarkgreen rounded-full p-2"
           onPress={onOpenCreate}
         >
           <IoMdAddCircle aria-hidden="true" />

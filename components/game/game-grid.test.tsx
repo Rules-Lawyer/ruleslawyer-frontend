@@ -77,7 +77,7 @@ describe("GameGrid", () => {
     render(<GameGrid organizationId={7} />);
 
     // Pagination is rendered both above and below the grid.
-    expect(await screen.findAllByText("Page 1 of 3 (120 games)")).toHaveLength(2);
+    expect(await screen.findAllByText(/Page 1 of 3\s*\(120 games\)/)).toHaveLength(2);
     expect(screen.getAllByRole("button", { name: "Previous" })[0]).toBeDisabled();
     expect(screen.getAllByRole("button", { name: "Next" })[0]).toBeEnabled();
   });
